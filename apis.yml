@@ -1,0 +1,35 @@
+aid: apache-nifi
+name: Apache NiFi
+description: >-
+  Apache NiFi is a dataflow management system designed to automate the flow of data between systems. It provides a web-based user interface for designing, controlling, and monitoring data flows with real-time operational control.
+type: Index
+position: Consumer
+access: 3rd-Party
+image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+tags:
+  - Dataflow
+  - ETL
+  - Data Integration
+  - Streaming
+  - IoT
+created: '2026-03-16'
+modified: '2026-03-16'
+url: >-
+  https://raw.githubusercontent.com/api-evangelist/apache-nifi/refs/heads/main/apis.yml
+specificationVersion: '0.19'
+apis:
+  - aid: apache-nifi:apache-nifi-rest-api
+    name: Apache NiFi REST API
+    description: >-
+      The NiFi REST API provides comprehensive endpoints for managing processors, connections, controller services, process groups, reporting tasks, provenance, system diagnostics, and flow management, along with the NiFi Registry API for versioned flows.
+    humanURL: https://nifi.apache.org/docs/nifi-docs/rest-api/index.html
+    tags:
+      - REST
+      - Dataflow
+      - Flow Management
+    properties:
+      - type: Documentation
+        url: https://nifi.apache.org/docs/nifi-docs/rest-api/index.html
+maintainers:
+  - FN: Kin Lane
+    email: info@apievangelist.com
