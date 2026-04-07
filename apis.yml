@@ -7,11 +7,11 @@ position: Consumer
 access: 3rd-Party
 image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
+  - Data Integration
   - Dataflow
   - ETL
-  - Data Integration
-  - Streaming
   - IoT
+  - Streaming
 created: '2026-03-16'
 modified: '2026-03-16'
 url: >-
@@ -24,9 +24,9 @@ apis:
       The NiFi REST API provides comprehensive endpoints for managing processors, connections, controller services, process groups, reporting tasks, provenance, system diagnostics, and flow management, along with the NiFi Registry API for versioned flows.
     humanURL: https://nifi.apache.org/docs/nifi-docs/rest-api/index.html
     tags:
-      - REST
       - Dataflow
       - Flow Management
+      - REST
     properties:
       - type: Documentation
         url: https://nifi.apache.org/docs/nifi-docs/rest-api/index.html
