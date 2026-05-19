@@ -67,6 +67,8 @@ apis:
       - type: GitHubRepository
         url: https://github.com/apache/nifi-minifi-cpp
 common:
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/apache-nifi
   - type: Portal
     url: https://nifi.apache.org/
   - type: GitHubOrganization
