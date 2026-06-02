@@ -2,13 +2,10 @@
   "repo": "apache-nifi",
   "feeds": [
     {
-      "source": "https://nifi.apache.org/blog/",
-      "feed_url": "",
-      "title": "",
-      "saved": 0,
-      "error": "no_feed"
+      "source": "https://join.slack.com/t/apachenifi/shared_invite/zt-11njbtkdx-ZRU8FKYSWoEHRJetidy0zA",
+      "error": "HTTPError"
     }
   ],
-  "fetched": "2026-05-17T20:48:52Z",
+  "fetched": "2026-06-01T23:35:02Z",
   "post_count": 0
 }
