@@ -1,0 +1,14 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/apache-nifi-openapi.yml
+summary:
+  types:
+  - http
+schemes:
+- name: bearerAuth
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: JWT issued by POST /access/token
+  sources:
+  - openapi/apache-nifi-openapi.yml

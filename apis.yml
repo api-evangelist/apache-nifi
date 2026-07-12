@@ -67,6 +67,12 @@ apis:
       - type: GitHubRepository
         url: https://github.com/apache/nifi-minifi-cpp
 common:
+  - type: VulnerabilityDisclosure
+    url: security/apache-nifi-vulnerability-disclosure.yml
+  - type: DomainSecurity
+    url: security/apache-nifi-domain-security.yml
+  - type: Authentication
+    url: authentication/apache-nifi-authentication.yml
   - type: LinkedIn
     url: https://www.linkedin.com/company/apache-nifi
   - type: Portal
