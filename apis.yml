@@ -67,6 +67,8 @@ apis:
       - type: GitHubRepository
         url: https://github.com/apache/nifi-minifi-cpp
 common:
+  - type: AgenticAccess
+    url: agentic-access/apache-nifi-agentic-access.yml
   - type: VulnerabilityDisclosure
     url: security/apache-nifi-vulnerability-disclosure.yml
   - type: DomainSecurity
