@@ -1,0 +1,98 @@
+openapi: 3.1.0
+info:
+  title: Apache NiFi REST Access API
+  version: 2.x
+  description: 'A best-effort OpenAPI 3.1 description of selected endpoints from the Apache
+
+    NiFi REST API. NiFi exposes a comprehensive JWT-authenticated REST API for
+
+    managing processors, connections, controller services, process groups,
+
+    reporting tasks, provenance, flow versions, system diagnostics, access
+
+    control, parameter contexts, and data transfer. The canonical machine
+
+    readable specification is published by the NiFi project as
+
+    `/nifi-docs/swagger.yaml`.
+
+    '
+  contact:
+    name: Apache NiFi
+    url: https://nifi.apache.org/
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+- url: http://{host}:{port}/nifi-api
+  description: Default NiFi REST API base URL
+  variables:
+    host:
+      default: localhost
+    port:
+      default: '8080'
+tags:
+- name: Access
+  description: Authentication and access token management
+paths:
+  /access/token:
+    post:
+      tags:
+      - Access
+      summary: Create an access token using username and password
+      operationId: createAccessToken
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - username
+              - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+      responses:
+        '201':
+          description: JWT bearer token issued
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Invalid credentials
+  /access/logout:
+    delete:
+      tags:
+      - Access
+      summary: Log the current user out and invalidate the JWT
+      operationId: logout
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Logged out
+  /authentication/configuration:
+    get:
+      tags:
+      - Access
+      summary: Retrieve authentication configuration and status
+      operationId: getAuthenticationConfiguration
+      responses:
+        '200':
+          description: Authentication configuration
+          content:
+            application/json:
+              schema:
+                type: object
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT issued by POST /access/token

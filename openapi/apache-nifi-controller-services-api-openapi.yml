@@ -1,0 +1,133 @@
+openapi: 3.1.0
+info:
+  title: Apache NiFi REST Access Controller Services API
+  version: 2.x
+  description: 'A best-effort OpenAPI 3.1 description of selected endpoints from the Apache
+
+    NiFi REST API. NiFi exposes a comprehensive JWT-authenticated REST API for
+
+    managing processors, connections, controller services, process groups,
+
+    reporting tasks, provenance, flow versions, system diagnostics, access
+
+    control, parameter contexts, and data transfer. The canonical machine
+
+    readable specification is published by the NiFi project as
+
+    `/nifi-docs/swagger.yaml`.
+
+    '
+  contact:
+    name: Apache NiFi
+    url: https://nifi.apache.org/
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+- url: http://{host}:{port}/nifi-api
+  description: Default NiFi REST API base URL
+  variables:
+    host:
+      default: localhost
+    port:
+      default: '8080'
+tags:
+- name: Controller Services
+  description: Manage shared controller services
+paths:
+  /controller-services/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Controller Services
+      summary: Retrieve a controller service
+      operationId: getControllerService
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Controller service entity
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      tags:
+      - Controller Services
+      summary: Update a controller service
+      operationId: updateControllerService
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated controller service
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      tags:
+      - Controller Services
+      summary: Delete a controller service
+      operationId: deleteControllerService
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: version
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: clientId
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Controller service deleted
+  /flow/process-groups/{id}/controller-services:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    post:
+      tags:
+      - Controller Services
+      summary: Create a controller service within a process group
+      operationId: createControllerService
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Controller service created
+          content:
+            application/json:
+              schema:
+                type: object
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT issued by POST /access/token
