@@ -3,9 +3,22 @@ name: Apache NiFi
 description: >-
   Apache NiFi is a dataflow management system designed to automate the flow of data between systems. It provides a web-based user interface for designing, controlling, and monitoring data flows with real-time operational control, data provenance tracking, and support for hundreds of processors. NiFi Version 2 is the current major version with enhanced security and performance.
 type: Index
+accessModel:
+  pricing: freemium
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Freemium · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
 position: Consumer
 access: 3rd-Party
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/apache-nifi.png
 tags:
   - Data Integration
   - Dataflow
@@ -19,53 +32,98 @@ url: >-
   https://raw.githubusercontent.com/api-evangelist/apache-nifi/refs/heads/main/apis.yml
 specificationVersion: '0.19'
 apis:
-  - aid: apache-nifi:apache-nifi-rest-api
-    name: Apache NiFi REST API
-    description: >-
-      The NiFi REST API provides comprehensive JWT-authenticated endpoints for managing processors, connections, controller services, process groups, reporting tasks, provenance, flow versions, system diagnostics, access control, parameter contexts, and data transfer. Base URL is http://nifi-host:8080/nifi-api. OpenAPI spec available at /nifi-docs/swagger.yaml.
-    humanURL: https://nifi.apache.org/components/
-    tags:
-      - Dataflow
-      - Flow Management
-      - REST
-      - JWT
-    properties:
-      - type: Documentation
-        url: https://nifi.apache.org/components/
-      - type: OpenAPI
-        url: https://nifi.apache.org/nifi-docs/swagger.yaml
-      - type: GettingStarted
-        url: https://nifi.apache.org/documentation/guides/
-      - type: GitHubRepository
-        url: https://github.com/apache/nifi
-  - aid: apache-nifi:apache-nifi-registry
-    name: Apache NiFi Registry
-    description: >-
-      NiFi Registry provides a central location for storage and management of shared NiFi flow resources, enabling versioned flows across NiFi environments. It provides its own REST API for managing buckets, flows, versions, and users.
-    humanURL: https://nifi.apache.org/documentation/
-    tags:
-      - Flow Versioning
-      - Registry
-      - REST
-    properties:
-      - type: Documentation
-        url: https://nifi.apache.org/documentation/
-      - type: GitHubRepository
-        url: https://github.com/apache/nifi
-  - aid: apache-nifi:apache-minifi
-    name: Apache MiNiFi
-    description: >-
-      MiNiFi is a lightweight agent for edge data collection that is a subproject of NiFi. MiNiFi C++ (nifi-minifi-cpp) provides a small-footprint agent for IoT edge data collection with local processing and a remote NiFi parent instance for management.
-    humanURL: https://nifi.apache.org/minifi/
-    tags:
-      - Edge Computing
-      - IoT
-      - Lightweight Agent
-    properties:
-      - type: Documentation
-        url: https://nifi.apache.org/minifi/
-      - type: GitHubRepository
-        url: https://github.com/apache/nifi-minifi-cpp
+- aid: apache-nifi:apache-nifi-registry
+  name: Apache NiFi Registry
+  description: >-
+    NiFi Registry provides a central location for storage and management of shared NiFi flow resources,
+    enabling versioned flows across NiFi environments. It provides its own REST API for managing buckets,
+    flows, versions, and users.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - Flow Versioning
+  - Registry
+  - REST
+  properties:
+  - type: Documentation
+    url: https://nifi.apache.org/documentation/
+  - type: GitHubRepository
+    url: https://github.com/apache/nifi
+- aid: apache-nifi:apache-minifi
+  name: Apache MiNiFi
+  description: >-
+    MiNiFi is a lightweight agent for edge data collection that is a subproject of NiFi. MiNiFi C++ (nifi-minifi-cpp)
+    provides a small-footprint agent for IoT edge data collection with local processing and a remote NiFi
+    parent instance for management.
+  humanURL: https://nifi.apache.org/minifi/
+  tags:
+  - Edge Computing
+  - IoT
+  - Lightweight Agent
+  properties:
+  - type: Documentation
+    url: https://nifi.apache.org/minifi/
+  - type: GitHubRepository
+    url: https://github.com/apache/nifi-minifi-cpp
+- aid: apache-nifi:apache-nifi-access-api
+  name: Apache NiFi Access API
+  description: Authentication and access token management
+  humanURL: https://nifi.apache.org/components/
+  tags:
+  - Access
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-access-api-openapi.yml
+  - type: Documentation
+    url: https://nifi.apache.org/components/
+  - type: GettingStarted
+    url: https://nifi.apache.org/documentation/guides/
+  - type: GitHubRepository
+    url: https://github.com/apache/nifi
+- aid: apache-nifi:apache-nifi-connections-api
+  name: Apache NiFi Connections API
+  description: Manage connections between processors
+  humanURL: https://nifi.apache.org/components/
+  tags:
+  - Connections
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-connections-api-openapi.yml
+  - type: Documentation
+    url: https://nifi.apache.org/components/
+  - type: GettingStarted
+    url: https://nifi.apache.org/documentation/guides/
+  - type: GitHubRepository
+    url: https://github.com/apache/nifi
+- aid: apache-nifi:apache-nifi-controller-services-api
+  name: Apache NiFi Controller Services API
+  description: Manage shared controller services
+  humanURL: https://nifi.apache.org/components/
+  tags:
+  - Controller Services
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-controller-services-api-openapi.yml
+  - type: Documentation
+    url: https://nifi.apache.org/components/
+  - type: GettingStarted
+    url: https://nifi.apache.org/documentation/guides/
+  - type: GitHubRepository
+    url: https://github.com/apache/nifi
+- aid: apache-nifi:apache-nifi-flow-api
+  name: Apache NiFi Flow API
+  description: Read overall flow status and process group hierarchy
+  humanURL: https://nifi.apache.org/components/
+  tags:
+  - Flow
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-flow-api-openapi.yml
+  - type: Documentation
+    url: https://nifi.apache.org/components/
+  - type: GettingStarted
+    url: https://nifi.apache.org/documentation/guides/
+  - type: GitHubRepository
+    url: https://github.com/apache/nifi
 common:
   - type: AgenticAccess
     url: agentic-access/apache-nifi-agentic-access.yml
