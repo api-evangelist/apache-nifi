@@ -125,6 +125,15 @@ apis:
   - type: GitHubRepository
     url: https://github.com/apache/nifi
 common:
+  - type: Releases
+    url: https://github.com/apache/nifi/releases
+  - type: SecurityPolicy
+    url: https://github.com/apache/nifi/blob/main/SECURITY.md
+  - type: CodeOfConduct
+    url: https://github.com/apache/.github/blob/main/.github/CODE_OF_CONDUCT.md
+  - type: License
+    name: Apache-2.0
+    url: https://github.com/apache/nifi/blob/main/LICENSE
   - type: AgenticAccess
     url: agentic-access/apache-nifi-agentic-access.yml
   - type: VulnerabilityDisclosure
