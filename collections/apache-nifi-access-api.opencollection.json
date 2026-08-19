@@ -1,0 +1,68 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Apache NiFi REST Access API",
+    "version": "2.x"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Access",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create an access token using username and password",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://{host}:{port}/nifi-api/access/token",
+            "body": {
+              "type": "form-urlencoded",
+              "data": [
+                {
+                  "name": "username",
+                  "value": ""
+                },
+                {
+                  "name": "password",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Create an access token using username and password"
+        },
+        {
+          "info": {
+            "name": "Log the current user out and invalidate the JWT",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "http://{host}:{port}/nifi-api/access/logout",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Log the current user out and invalidate the JWT"
+        },
+        {
+          "info": {
+            "name": "Retrieve authentication configuration and status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/nifi-api/authentication/configuration"
+          },
+          "docs": "Retrieve authentication configuration and status"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

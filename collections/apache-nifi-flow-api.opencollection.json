@@ -1,0 +1,59 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Apache NiFi REST Access Flow API",
+    "version": "2.x"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Flow",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a controller service within a process group",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://{host}:{port}/nifi-api/flow/process-groups/:id/controller-services",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a controller service within a process group"
+        },
+        {
+          "info": {
+            "name": "Retrieve overall flow status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/nifi-api/flow/status",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve overall flow status"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
