@@ -147,6 +147,8 @@ apis:
   - type: GitHubRepository
     url: https://github.com/apache/nifi
 common:
+  - type: Website
+    url: https://www.apache.org/
   - type: Releases
     url: https://github.com/apache/nifi/releases
   - type: SecurityPolicy
