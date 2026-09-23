@@ -1,10 +1,7 @@
 {
   "provider": "apache-nifi",
   "sources": [
-    "apache-nifi-access-api-openapi.yml",
-    "apache-nifi-connections-api-openapi.yml",
-    "apache-nifi-controller-services-api-openapi.yml",
-    "apache-nifi-flow-api-openapi.yml"
+    "_original/apache-nifi-openapi.yml"
   ],
   "outputs": [
     "apache-nifi-access-api-openapi.yml",
@@ -15,6 +12,15 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "apache-nifi-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "apache-nifi-access-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "apache-nifi-connections-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "apache-nifi-controller-services-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "apache-nifi-flow-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

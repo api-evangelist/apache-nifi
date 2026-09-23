@@ -1,6 +1,6 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Apache NiFi REST Access Connections API
+  title: Apache NiFi REST Connections API
   version: 2.x
   description: 'A best-effort OpenAPI 3.1 description of selected endpoints from the Apache
 
@@ -14,9 +14,7 @@ info:
 
     readable specification is published by the NiFi project as
 
-    `/nifi-docs/swagger.yaml`.
-
-    '
+    `/nifi-docs/swagger.yaml`.'
   contact:
     name: Apache NiFi
     url: https://nifi.apache.org/
