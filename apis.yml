@@ -147,6 +147,9 @@ apis:
   - type: GitHubRepository
     url: https://github.com/apache/nifi
 common:
+  - type: CapabilityMap
+    url: capabilities/apache-nifi-capability-edges.yml
+    name: Apache NiFi Business Capability Map
   - type: Website
     url: https://www.apache.org/
   - type: Releases
