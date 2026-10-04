@@ -105,16 +105,6 @@ paths:
           description: Connection deleted
 components:
   schemas:
-    RevisionDTO:
-      type: object
-      properties:
-        clientId:
-          type: string
-        version:
-          type: integer
-          format: int64
-        lastModifier:
-          type: string
     ConnectionEntity:
       type: object
       properties:
@@ -127,6 +117,16 @@ components:
           description: Connection component (source, destination, selected relationships)
         status:
           type: object
+    RevisionDTO:
+      type: object
+      properties:
+        clientId:
+          type: string
+        version:
+          type: integer
+          format: int64
+        lastModifier:
+          type: string
   securitySchemes:
     bearerAuth:
       type: http
