@@ -147,6 +147,12 @@ apis:
   - type: GitHubRepository
     url: https://github.com/apache/nifi
 common:
+  - type: Plans
+    url: plans/apache-nifi-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/apache-nifi-rate-limits.yml
+  - type: FinOps
+    url: finops/apache-nifi-finops.yml
   - type: CapabilityMap
     url: capabilities/apache-nifi-capability-edges.yml
     name: Apache NiFi Business Capability Map
