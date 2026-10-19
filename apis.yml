@@ -146,6 +146,231 @@ apis:
     url: https://nifi.apache.org/documentation/guides/
   - type: GitHubRepository
     url: https://github.com/apache/nifi
+- aid: apache-nifi:apache-nifi-authentication-api
+  name: Apache NiFi Authentication API
+  description: The Authentication API from Apache NiFi — 1 operation(s) for authentication.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - Authentication
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-authentication-api-openapi.yml
+- aid: apache-nifi:apache-nifi-connectors-api
+  name: Apache NiFi Connectors API
+  description: The Connectors API from Apache NiFi — 37 operation(s) for connectors.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - Connectors
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-connectors-api-openapi.yml
+- aid: apache-nifi:apache-nifi-controller-api
+  name: Apache NiFi Controller API
+  description: The Controller API from Apache NiFi — 34 operation(s) for controller.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - Controller
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-controller-api-openapi.yml
+- aid: apache-nifi:apache-nifi-counters-api
+  name: Apache NiFi Counters API
+  description: The Counters API from Apache NiFi — 2 operation(s) for counters.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - Counters
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-counters-api-openapi.yml
+- aid: apache-nifi:apache-nifi-datatransfer-api
+  name: Apache NiFi Data Transfer API
+  description: The DataTransfer API from Apache NiFi — 5 operation(s) for datatransfer.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - DataTransfer
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-datatransfer-api-openapi.yml
+- aid: apache-nifi:apache-nifi-flowfilequeues-api
+  name: Apache NiFi Flow File Queues API
+  description: The FlowFileQueues API from Apache NiFi — 6 operation(s) for flowfilequeues.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - FlowFileQueues
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-flowfilequeues-api-openapi.yml
+- aid: apache-nifi:apache-nifi-funnels-api
+  name: Apache NiFi Funnels API
+  description: The Funnels API from Apache NiFi — 1 operation(s) for funnels.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - Funnels
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-funnels-api-openapi.yml
+- aid: apache-nifi:apache-nifi-inputports-api
+  name: Apache NiFi Input Ports API
+  description: The InputPorts API from Apache NiFi — 3 operation(s) for inputports.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - InputPorts
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-inputports-api-openapi.yml
+- aid: apache-nifi:apache-nifi-labels-api
+  name: Apache NiFi Labels API
+  description: The Labels API from Apache NiFi — 1 operation(s) for labels.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - Labels
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-labels-api-openapi.yml
+- aid: apache-nifi:apache-nifi-outputports-api
+  name: Apache NiFi Output Ports API
+  description: The OutputPorts API from Apache NiFi — 3 operation(s) for outputports.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - OutputPorts
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-outputports-api-openapi.yml
+- aid: apache-nifi:apache-nifi-parametercontexts-api
+  name: Apache NiFi Parameter Contexts API
+  description: The ParameterContexts API from Apache NiFi — 8 operation(s) for parametercontexts.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - ParameterContexts
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-parametercontexts-api-openapi.yml
+- aid: apache-nifi:apache-nifi-parameterproviders-api
+  name: Apache NiFi Parameter Providers API
+  description: The ParameterProviders API from Apache NiFi — 12 operation(s) for parameterproviders.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - ParameterProviders
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-parameterproviders-api-openapi.yml
+- aid: apache-nifi:apache-nifi-policies-api
+  name: Apache NiFi Policies API
+  description: The Policies API from Apache NiFi — 3 operation(s) for policies.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - Policies
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-policies-api-openapi.yml
+- aid: apache-nifi:apache-nifi-processgroups-api
+  name: Apache NiFi Process Groups API
+  description: The ProcessGroups API from Apache NiFi — 22 operation(s) for processgroups.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - ProcessGroups
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-processgroups-api-openapi.yml
+- aid: apache-nifi:apache-nifi-processors-api
+  name: Apache NiFi Processors API
+  description: The Processors API from Apache NiFi — 14 operation(s) for processors.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - Processors
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-processors-api-openapi.yml
+- aid: apache-nifi:apache-nifi-provenance-api
+  name: Apache NiFi Provenance API
+  description: The Provenance API from Apache NiFi — 5 operation(s) for provenance.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - Provenance
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-provenance-api-openapi.yml
+- aid: apache-nifi:apache-nifi-provenanceevents-api
+  name: Apache NiFi Provenance Events API
+  description: The ProvenanceEvents API from Apache NiFi — 6 operation(s) for provenanceevents.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - ProvenanceEvents
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-provenanceevents-api-openapi.yml
+- aid: apache-nifi:apache-nifi-remoteprocessgroups-api
+  name: Apache NiFi Remote Process Groups API
+  description: The RemoteProcessGroups API from Apache NiFi — 9 operation(s) for remoteprocessgroups.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - RemoteProcessGroups
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-remoteprocessgroups-api-openapi.yml
+- aid: apache-nifi:apache-nifi-reportingtasks-api
+  name: Apache NiFi Reporting Tasks API
+  description: The ReportingTasks API from Apache NiFi — 9 operation(s) for reportingtasks.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - ReportingTasks
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-reportingtasks-api-openapi.yml
+- aid: apache-nifi:apache-nifi-resources-api
+  name: Apache NiFi Resources API
+  description: The Resources API from Apache NiFi — 1 operation(s) for resources.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - Resources
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-resources-api-openapi.yml
+- aid: apache-nifi:apache-nifi-sitetosite-api
+  name: Apache NiFi Site To Site API
+  description: The SiteToSite API from Apache NiFi — 2 operation(s) for sitetosite.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - SiteToSite
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-sitetosite-api-openapi.yml
+- aid: apache-nifi:apache-nifi-snippets-api
+  name: Apache NiFi Snippets API
+  description: The Snippets API from Apache NiFi — 2 operation(s) for snippets.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - Snippets
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-snippets-api-openapi.yml
+- aid: apache-nifi:apache-nifi-systemdiagnostics-api
+  name: Apache NiFi System Diagnostics API
+  description: The SystemDiagnostics API from Apache NiFi — 2 operation(s) for systemdiagnostics.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - SystemDiagnostics
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-systemdiagnostics-api-openapi.yml
+- aid: apache-nifi:apache-nifi-tenants-api
+  name: Apache NiFi Tenants API
+  description: The Tenants API from Apache NiFi — 5 operation(s) for tenants.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - Tenants
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-tenants-api-openapi.yml
+- aid: apache-nifi:apache-nifi-versions-api
+  name: Apache NiFi Versions API
+  description: The Versions API from Apache NiFi — 13 operation(s) for versions.
+  humanURL: https://nifi.apache.org/documentation/
+  tags:
+  - Versions
+  properties:
+  - type: OpenAPI
+    url: openapi/apache-nifi-versions-api-openapi.yml
 common:
   - type: Plans
     url: plans/apache-nifi-plans-pricing.yml

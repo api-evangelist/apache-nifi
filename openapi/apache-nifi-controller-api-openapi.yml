@@ -1,0 +1,3864 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST Controller API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
+tags:
+- name: Controller
+paths:
+  /controller/bulletin:
+    post:
+      operationId: createBulletin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulletinEntity'
+        description: The reporting task configuration details.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulletinEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller: []
+      summary: Creates a new bulletin
+      tags:
+      - Controller
+  /controller/cluster:
+    get:
+      description: Returns the contents of the cluster including all nodes and their status.
+      operationId: getCluster
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClusterEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /controller: []
+      summary: Gets the contents of the cluster
+      tags:
+      - Controller
+  /controller/cluster/nodes/{id}:
+    delete:
+      operationId: deleteNode
+      parameters:
+      - description: The node id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller: []
+      summary: Removes a node from the cluster
+      tags:
+      - Controller
+    get:
+      operationId: getNode
+      parameters:
+      - description: The node id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /controller: []
+      summary: Gets a node in the cluster
+      tags:
+      - Controller
+    put:
+      operationId: updateNode
+      parameters:
+      - description: The node id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NodeEntity'
+        description: The node configuration. The only configuration that will be honored at this endpoint is the status.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller: []
+      summary: Updates a node in the cluster
+      tags:
+      - Controller
+  /controller/config:
+    get:
+      operationId: getControllerConfig
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControllerConfigurationEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /controller: []
+      summary: Retrieves the configuration for this NiFi Controller
+      tags:
+      - Controller
+    put:
+      operationId: updateControllerConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ControllerConfigurationEntity'
+        description: The controller configuration.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControllerConfigurationEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller: []
+      summary: Updates the configuration for this NiFi
+      tags:
+      - Controller
+  /controller/controller-services:
+    post:
+      operationId: createControllerService
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ControllerServiceEntity'
+        description: The controller service configuration details.
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControllerServiceEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller: []
+      - Read - any referenced Controller Services - /controller-services/{uuid}: []
+      summary: Creates a new controller service
+      tags:
+      - Controller
+  /controller/flow-analysis-rules:
+    get:
+      operationId: getFlowAnalysisRules
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowAnalysisRulesEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /flow: []
+      summary: Gets all flow analysis rules
+      tags:
+      - Controller
+    post:
+      operationId: createFlowAnalysisRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowAnalysisRuleEntity'
+        description: The flow analysis rule configuration details.
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowAnalysisRuleEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller: []
+      - Read - any referenced Controller Services - /controller-services/{uuid}: []
+      summary: Creates a new flow analysis rule
+      tags:
+      - Controller
+  /controller/flow-analysis-rules/{id}:
+    delete:
+      operationId: removeFlowAnalysisRule
+      parameters:
+      - description: The revision is used to verify the client is working with the latest version of the flow.
+        in: query
+        name: version
+        schema:
+          $ref: '#/components/schemas/LongParameter'
+      - description: If the client id is not specified, new one will be generated. This value (whether specified or generated) is included in the response.
+        in: query
+        name: clientId
+        schema:
+          $ref: '#/components/schemas/ClientIdParameter'
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: The flow analysis rule id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowAnalysisRuleEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /flow-analysis-rules/{uuid}: []
+      - Write - /controller: []
+      - Read - any referenced Controller Services - /controller-services/{uuid}: []
+      summary: Deletes a flow analysis rule
+      tags:
+      - Controller
+    get:
+      operationId: getFlowAnalysisRule
+      parameters:
+      - description: The flow analysis rule id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowAnalysisRuleEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /flow-analysis-rules/{uuid}: []
+      summary: Gets a flow analysis rule
+      tags:
+      - Controller
+    put:
+      operationId: updateFlowAnalysisRule
+      parameters:
+      - description: The flow analysis rule id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowAnalysisRuleEntity'
+        description: The flow analysis rule configuration details.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowAnalysisRuleEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /flow-analysis-rules/{uuid}: []
+      - Read - any referenced Controller Services if this request changes the reference - /controller-services/{uuid}: []
+      summary: Updates a flow analysis rule
+      tags:
+      - Controller
+  /controller/flow-analysis-rules/{id}/bulletins/clear-requests:
+    post:
+      operationId: clearFlowAnalysisRuleBulletins
+      parameters:
+      - description: The flow analysis rule id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClearBulletinsRequestEntity'
+        description: The request to clear bulletins.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClearBulletinsResultEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /flow-analysis-rules/{uuid}: []
+      summary: Clears bulletins for a flow analysis rule
+      tags:
+      - Controller
+  /controller/flow-analysis-rules/{id}/config/analysis:
+    post:
+      operationId: analyzeFlowAnalysisRuleConfiguration
+      parameters:
+      - description: The flow analysis rules id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigurationAnalysisEntity'
+        description: The configuration analysis request.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigurationAnalysisEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /flow-analysis-rules/{uuid}: []
+      summary: Performs analysis of the component's configuration, providing information about…
+      tags:
+      - Controller
+  /controller/flow-analysis-rules/{id}/config/verification-requests:
+    post:
+      description: This will initiate the process of verifying a given Flow Analysis Rule configuration. This may be a long-running task. As a result, this endpoint will immediately return a FlowAnalysisRuleConfigVerificationRequestEntity, and the process of performing the verification will occur asynchronously in the background. The client may then periodically poll the status of the request by issuing a GET request to /flow-analysis-rules/{taskId}/verification-requests/{requestId}. Once the request is completed, the client is expected to issue a DELETE request to /flow-analysis-rules/{serviceId}/verification-requests/{requestId}.
+      operationId: submitFlowAnalysisRuleConfigVerificationRequest
+      parameters:
+      - description: The flow analysis rules id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyConfigRequestEntity'
+        description: The flow analysis rules configuration verification request.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyConfigRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller: []
+      - Write - /flow-analysis-rules/{uuid}: []
+      - Read - any referenced Controller Services - /controller-services/{uuid}: []
+      summary: Performs verification of the Flow Analysis Rule's configuration
+      tags:
+      - Controller
+  /controller/flow-analysis-rules/{id}/config/verification-requests/{requestId}:
+    delete:
+      description: Deletes the Verification Request with the given ID. After a request is created, it is expected that the client will properly clean up the request by DELETE'ing it, once the Verification process has completed. If the request is deleted before the request completes, then the Verification request will finish the step that it is currently performing and then will cancel any subsequent steps.
+      operationId: deleteFlowAnalysisRuleVerificationRequest
+      parameters:
+      - description: The ID of the Flow Analysis Rule
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The ID of the Verification Request
+        in: path
+        name: requestId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyConfigRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can remove it: []
+      summary: Deletes the Verification Request with the given ID
+      tags:
+      - Controller
+    get:
+      description: Returns the Verification Request with the given ID. Once an Verification Request has been created, that request can subsequently be retrieved via this endpoint, and the request that is fetched will contain the updated state, such as percent complete, the current state of the request, and any failures.
+      operationId: getFlowAnalysisRuleVerificationRequest
+      parameters:
+      - description: The ID of the Flow Analysis Rule
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The ID of the Verification Request
+        in: path
+        name: requestId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyConfigRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can get it: []
+      summary: Returns the Verification Request with the given ID
+      tags:
+      - Controller
+  /controller/flow-analysis-rules/{id}/descriptors:
+    get:
+      operationId: getFlowAnalysisRulePropertyDescriptor
+      parameters:
+      - description: The flow analysis rule id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The property name.
+        in: query
+        name: propertyName
+        required: true
+        schema:
+          type: string
+      - description: Property Descriptor requested sensitive status
+        in: query
+        name: sensitive
+        schema:
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyDescriptorEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /flow-analysis-rules/{uuid}: []
+      summary: Gets a flow analysis rule property descriptor
+      tags:
+      - Controller
+  /controller/flow-analysis-rules/{id}/run-status:
+    put:
+      operationId: updateRunStatus_1
+      parameters:
+      - description: The flow analysis rule id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowAnalysisRuleRunStatusEntity'
+        description: The flow analysis rule run status.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowAnalysisRuleEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /flow-analysis-rules/{uuid} or  or /operation/flow-analysis-rules/{uuid}: []
+      summary: Updates run status of a flow analysis rule
+      tags:
+      - Controller
+  /controller/flow-analysis-rules/{id}/state:
+    get:
+      operationId: getFlowAnalysisRuleState
+      parameters:
+      - description: The flow analysis rule id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentStateEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /flow-analysis-rules/{uuid}: []
+      summary: Gets the state for a flow analysis rule
+      tags:
+      - Controller
+  /controller/flow-analysis-rules/{id}/state/clear-requests:
+    post:
+      operationId: clearState
+      parameters:
+      - description: The flow analysis rule id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/ComponentStateEntity'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentStateEntity'
+        description: Optional component state to perform a selective key removal. If omitted, clears all state.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentStateEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /flow-analysis-rules/{uuid}: []
+      summary: Clears the state for a flow analysis rule
+      tags:
+      - Controller
+  /controller/history:
+    delete:
+      operationId: deleteHistory
+      parameters:
+      - description: Purge actions before this date/time.
+        in: query
+        name: endDate
+        required: true
+        schema:
+          $ref: '#/components/schemas/DateTimeParameter'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoryEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller: []
+      summary: Purges history
+      tags:
+      - Controller
+  /controller/nar-manager/nars:
+    get:
+      operationId: getNarSummaries
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NarSummariesEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /controller: []
+      summary: Retrieves summary information for installed NARs
+      tags:
+      - Controller
+  /controller/nar-manager/nars/content:
+    post:
+      operationId: uploadNar
+      parameters:
+      - in: header
+        name: Filename
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: object
+        description: The contents of the NAR file.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NarSummaryEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller: []
+      summary: Uploads a NAR and requests for it to be installed
+      tags:
+      - Controller
+  /controller/nar-manager/nars/{id}:
+    delete:
+      operationId: deleteNar
+      parameters:
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: Indicates if the NAR should be deleted even when components are instantiated.
+        in: query
+        name: force
+        schema:
+          type: boolean
+          default: false
+      - description: The id of the NAR.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NarSummaryEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller: []
+      summary: Deletes an installed NAR
+      tags:
+      - Controller
+    get:
+      operationId: getNarSummary
+      parameters:
+      - description: The id of the NAR.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NarDetailsEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /controller: []
+      summary: Retrieves the summary information for the NAR with the given identifier
+      tags:
+      - Controller
+  /controller/nar-manager/nars/{id}/content:
+    get:
+      operationId: downloadNar
+      parameters:
+      - description: The id of the NAR.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: byte
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /controller: []
+      summary: Retrieves the content of the NAR with the given id
+      tags:
+      - Controller
+  /controller/nar-manager/nars/{id}/details:
+    get:
+      operationId: getNarDetails
+      parameters:
+      - description: The id of the NAR.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NarDetailsEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /controller: []
+      summary: Retrieves the component types available from the installed NARs
+      tags:
+      - Controller
+  /controller/parameter-providers:
+    post:
+      operationId: createParameterProvider
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParameterProviderEntity'
+        description: The parameter provider configuration details.
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterProviderEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller: []
+      - Read - any referenced Controller Services - /controller-services/{uuid}: []
+      summary: Creates a new parameter provider
+      tags:
+      - Controller
+  /controller/parameter-providers/{id}/bulletins/clear-requests:
+    post:
+      operationId: clearParameterProviderBulletins
+      parameters:
+      - description: The parameter provider id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClearBulletinsRequestEntity'
+        description: The request to clear bulletins.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClearBulletinsResultEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /parameter-providers/{uuid}: []
+      summary: Clears bulletins for a parameter provider
+      tags:
+      - Controller
+  /controller/registry-clients:
+    get:
+      operationId: getFlowRegistryClients
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowRegistryClientsEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /controller: []
+      summary: Gets the listing of available flow registry clients
+      tags:
+      - Controller
+    post:
+      operationId: createFlowRegistryClient
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowRegistryClientEntity'
+        description: The flow registry client configuration details.
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowRegistryClientEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /controller: []
+      - Write - /controller: []
+      summary: Creates a new flow registry client
+      tags:
+      - Controller
+  /controller/registry-clients/{id}:
+    delete:
+      operationId: deleteFlowRegistryClient
+      parameters:
+      - description: The revision is used to verify the client is working with the latest version of the flow.
+        in: query
+        name: version
+        schema:
+          $ref: '#/components/schemas/LongParameter'
+      - description: If the client id is not specified, new one will be generated. This value (whether specified or generated) is included in the response.
+        in: query
+        name: clientId
+        schema:
+          $ref: '#/components/schemas/ClientIdParameter'
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: The flow registry client id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowRegistryClientEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller/registry-clients/{id}: []
+      summary: Deletes a flow registry client
+      tags:
+      - Controller
+    get:
+      operationId: getFlowRegistryClient
+      parameters:
+      - description: The flow registry client id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowRegistryClientEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /controller/registry-clients/{id}: []
+      summary: Gets a flow registry client
+      tags:
+      - Controller
+    put:
+      operationId: updateFlowRegistryClient
+      parameters:
+      - description: The flow registry client id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowRegistryClientEntity'
+        description: The flow registry client configuration details.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowRegistryClientEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller/registry-clients/{id}: []
+      summary: Updates a flow registry client
+      tags:
+      - Controller
+  /controller/registry-clients/{id}/bulletins/clear-requests:
+    post:
+      operationId: clearRegistryClientBulletins
+      parameters:
+      - description: The registry client id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClearBulletinsRequestEntity'
+        description: The request to clear bulletins.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClearBulletinsResultEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller/registry-clients/{uuid}: []
+      summary: Clears bulletins for a registry client
+      tags:
+      - Controller
+  /controller/registry-clients/{id}/config/analysis:
+    post:
+      operationId: analyzeFlowRegistryClientConfiguration
+      parameters:
+      - description: The registry client id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigurationAnalysisEntity'
+        description: The configuration analysis request.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigurationAnalysisEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /controller: []
+      summary: Performs analysis of the component's configuration, providing information about…
+      tags:
+      - Controller
+  /controller/registry-clients/{id}/config/verification-requests:
+    post:
+      description: Initiates verification of a Registry Client configuration. The request returns immediately with a request entity while verification runs asynchronously. The client should poll /controller/registry-clients/{clientId}/config/verification-requests/{requestId} for status and DELETE the request once verification completes.
+      operationId: submitRegistryClientConfigVerificationRequest
+      parameters:
+      - description: The registry client id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyConfigRequestEntity'
+        description: The registry client configuration verification request.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyConfigRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller/registry-clients/{uuid}: []
+      - Read - any referenced Controller Services - /controller-services/{uuid}: []
+      summary: Performs verification of the Registry Client's configuration
+      tags:
+      - Controller
+  /controller/registry-clients/{id}/config/verification-requests/{requestId}:
+    delete:
+      description: Deletes the Verification Request with the given ID. After a request is created, it is expected that the client will properly clean up the request by DELETE'ing it, once the Verification process has completed. If the request is deleted before the request completes, then the Verification request will finish the step that it is currently performing and then will cancel any subsequent steps.
+      operationId: deleteRegistryClientVerificationRequest
+      parameters:
+      - description: The ID of the Registry Client
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The ID of the Verification Request
+        in: path
+        name: requestId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyConfigRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can remove it: []
+      summary: Deletes the Verification Request with the given ID
+      tags:
+      - Controller
+    get:
+      description: Returns the Verification Request with the given ID. Once a Verification Request has been created, that request can subsequently be retrieved via this endpoint, and the request that is fetched will contain the updated state, such as percent complete, the current state of the request, and any failures.
+      operationId: getRegistryClientVerificationRequest
+      parameters:
+      - description: The ID of the Registry Client
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The ID of the Verification Request
+        in: path
+        name: requestId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyConfigRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can get it: []
+      summary: Returns the Verification Request with the given ID
+      tags:
+      - Controller
+  /controller/registry-clients/{id}/descriptors:
+    get:
+      operationId: getPropertyDescriptor
+      parameters:
+      - description: The flow registry client id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The property name.
+        in: query
+        name: propertyName
+        required: true
+        schema:
+          type: string
+      - description: Property Descriptor requested sensitive status
+        in: query
+        name: sensitive
+        schema:
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyDescriptorEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /controller/registry-clients/{id}: []
+      summary: Gets a flow registry client property descriptor
+      tags:
+      - Controller
+  /controller/registry-types:
+    get:
+      description: 'Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: getRegistryClientTypes
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowRegistryClientTypesEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /controller: []
+      summary: Retrieves the types of flow registry clients that this NiFi supports
+      tags:
+      - Controller
+  /controller/reporting-tasks:
+    post:
+      operationId: createReportingTask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportingTaskEntity'
+        description: The reporting task configuration details.
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportingTaskEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller: []
+      - Read - any referenced Controller Services - /controller-services/{uuid}: []
+      summary: Creates a new reporting task
+      tags:
+      - Controller
+  /controller/reporting-tasks/import:
+    post:
+      operationId: importReportingTaskSnapshot
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionedReportingTaskImportRequestEntity'
+        description: The import request containing the reporting task snapshot to import.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionedReportingTaskImportResponseEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /controller: []
+      summary: Imports a reporting task snapshot
+      tags:
+      - Controller
+  /controller/status/history:
+    get:
+      description: 'Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: getNodeStatusHistory
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentHistoryEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /controller: []
+      summary: Gets status history for the node
+      tags:
+      - Controller
+components:
+  schemas:
+    PropertyDescriptorDTO:
+      type: object
+      description: The descriptors for the reporting tasks properties.
+      properties:
+        allowableValues:
+          type: array
+          description: Allowable values for the property. If empty then the allowed values are not constrained.
+          items:
+            $ref: '#/components/schemas/AllowableValueEntity'
+        defaultValue:
+          type: string
+          description: The default value for the property.
+        dependencies:
+          type: array
+          description: A list of dependencies that must be met in order for this Property to be relevant. If any of these dependencies is not met, the property described by this Property Descriptor is not relevant.
+          items:
+            $ref: '#/components/schemas/PropertyDependencyDTO'
+        description:
+          type: string
+          description: The description for the property. Used to relay additional details to a user or provide a mechanism of documenting intent.
+        displayName:
+          type: string
+          description: The human readable name for the property.
+        dynamic:
+          type: boolean
+          description: Whether the property is dynamic (user-defined).
+        expressionLanguageScope:
+          type: string
+          description: Scope of the Expression Language evaluation for the property.
+        identifiesControllerService:
+          type: string
+          description: If the property identifies a controller service this returns the fully qualified type.
+        identifiesControllerServiceBundle:
+          $ref: '#/components/schemas/BundleDTO'
+        name:
+          type: string
+          description: The name for the property.
+        required:
+          type: boolean
+          description: Whether the property is required.
+        sensitive:
+          type: boolean
+          description: Whether the property is sensitive and protected whenever stored or represented.
+        supportsEl:
+          type: boolean
+          description: Whether the property supports expression language.
+    ControllerConfigurationEntity:
+      type: object
+      properties:
+        component:
+          $ref: '#/components/schemas/ControllerConfigurationDTO'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+      xml:
+        name: controllerConfigurationEntity
+    StateMapDTO:
+      type: object
+      description: The local state for this component.
+      properties:
+        scope:
+          type: string
+          description: The scope of this StateMap.
+        state:
+          type: array
+          description: The state.
+          items:
+            $ref: '#/components/schemas/StateEntryDTO'
+        totalEntryCount:
+          type: integer
+          format: int32
+          description: The total number of state entries. When the state map is lengthy, only of portion of the entries are returned.
+    ParameterEntity:
+      type: object
+      description: The name of the Parameter
+      properties:
+        canWrite:
+          type: boolean
+          description: Indicates whether the user can write a given resource.
+          readOnly: true
+        parameter:
+          $ref: '#/components/schemas/ParameterDTO'
+      xml:
+        name: parameterEntity
+    ClearBulletinsRequestEntity:
+      type: object
+      properties:
+        fromTimestamp:
+          type: string
+          description: The timestamp from which to clear bulletins (inclusive). This field is required.
+      required:
+      - fromTimestamp
+      xml:
+        name: clearBulletinsRequestEntity
+    FlowAnalysisRuleEntity:
+      type: object
+      properties:
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/FlowAnalysisRuleDTO'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        operatePermissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        status:
+          $ref: '#/components/schemas/FlowAnalysisRuleStatusDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      xml:
+        name: flowAnalysisRuleEntity
+    ProcessGroupNameDTO:
+      type: object
+      description: The Process Group that the component belongs to
+      properties:
+        id:
+          type: string
+          description: The ID of the Process Group
+        name:
+          type: string
+          description: The name of the Process Group, or the ID of the Process Group if the user does not have the READ policy for the Process Group
+    ComponentDetailsDTO:
+      type: object
+      description: The details of the source component.
+    VersionedComponentState:
+      type: object
+      description: The state of the component, if exported with state
+      properties:
+        clusterState:
+          type: object
+          additionalProperties:
+            type: string
+            description: The cluster-scoped state of the component, or null if not exported
+          description: The cluster-scoped state of the component, or null if not exported
+        localNodeStates:
+          type: array
+          description: The local-scoped state of the component ordered by node ordinal index, or null if not exported
+          items:
+            $ref: '#/components/schemas/VersionedNodeState'
+    ParameterProviderReferencingComponentEntity:
+      type: object
+      description: The Parameter Contexts that reference this Parameter Provider
+      properties:
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/ParameterProviderReferencingComponentDTO'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      readOnly: true
+      xml:
+        name: parameterProviderReferencingComponentEntity
+    AllowableValueDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: A description for this allowable value.
+        displayName:
+          type: string
+          description: A human readable value that is allowed for the property descriptor.
+        value:
+          type: string
+          description: A value that is allowed for the property descriptor.
+    ControllerServiceEntity:
+      type: object
+      properties:
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/ControllerServiceDTO'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        operatePermissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this ControllerService.
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        status:
+          $ref: '#/components/schemas/ControllerServiceStatusDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      xml:
+        name: controllerServiceEntity
+    VersionedReportingTaskImportRequestEntity:
+      type: object
+      properties:
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: The disconnected node acknowledged flag
+        reportingTaskSnapshot:
+          $ref: '#/components/schemas/VersionedReportingTaskSnapshot'
+      xml:
+        name: versionedReportingTaskImportRequestEntity
+    VersionedControllerService:
+      type: object
+      description: The Controller Services
+      properties:
+        annotationData:
+          type: string
+          description: The annotation for the controller service. This is how the custom UI relays configuration to the controller service.
+        bulletinLevel:
+          type: string
+          description: The level at which the controller service will report bulletins.
+        bundle:
+          $ref: '#/components/schemas/Bundle'
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentState:
+          $ref: '#/components/schemas/VersionedComponentState'
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        controllerServiceApis:
+          type: array
+          description: Lists the APIs this Controller Service implements.
+          items:
+            $ref: '#/components/schemas/ControllerServiceAPI'
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        name:
+          type: string
+          description: The component's name
+        position:
+          $ref: '#/components/schemas/Position'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties for the component. Properties whose value is not set will only contain the property name.
+          description: The properties for the component. Properties whose value is not set will only contain the property name.
+        propertyDescriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/VersionedPropertyDescriptor'
+          description: The property descriptors for the component.
+        scheduledState:
+          type: string
+          description: The ScheduledState denoting whether the Controller Service is ENABLED or DISABLED
+          enum:
+          - ENABLED
+          - DISABLED
+          - RUNNING
+        type:
+          type: string
+          description: The type of the extension component
+    FlowRegistryClientEntity:
+      type: object
+      properties:
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/FlowRegistryClientDTO'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        operatePermissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      xml:
+        name: registryClientEntity
+    ActionEntity:
+      type: object
+      description: The actions.
+      properties:
+        action:
+          $ref: '#/components/schemas/ActionDTO'
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        id:
+          type: integer
+          format: int32
+        sourceId:
+          type: string
+        timestamp:
+          type: string
+          description: The timestamp of the action.
+      xml:
+        name: actionEntity
+    BulletinEntity:
+      type: object
+      description: The bulletins for this component.
+      properties:
+        bulletin:
+          $ref: '#/components/schemas/BulletinDTO'
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        groupId:
+          type: string
+        id:
+          type: integer
+          format: int64
+        nodeAddress:
+          type: string
+        sourceId:
+          type: string
+        timestamp:
+          type: string
+          description: When this bulletin was generated.
+        timestampIso:
+          type: string
+          description: When this bulletin was generated in ISO format with full date and milliseconds.
+      xml:
+        name: bulletinEntity
+    HistoryDTO:
+      type: object
+      properties:
+        actions:
+          type: array
+          description: The actions.
+          items:
+            $ref: '#/components/schemas/ActionEntity'
+        lastRefreshed:
+          type: string
+          description: The timestamp when the report was generated.
+        total:
+          type: integer
+          format: int32
+          description: The number of number of actions that matched the search criteria..
+    FlowRegistryClientDTO:
+      type: object
+      properties:
+        annotationData:
+          type: string
+          description: The annotation data for the registry client. This is how the custom UI relays configuration to the registry client.
+        bundle:
+          $ref: '#/components/schemas/BundleDTO'
+        deprecated:
+          type: boolean
+          description: Whether the registry client has been deprecated.
+        description:
+          type: string
+          description: The registry description
+        descriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PropertyDescriptorDTO'
+          description: The descriptors for the registry client properties.
+        extensionMissing:
+          type: boolean
+          description: Whether the underlying extension is missing.
+        id:
+          type: string
+          description: The registry identifier
+        multipleVersionsAvailable:
+          type: boolean
+          description: Whether the flow registry client has multiple versions available.
+        name:
+          type: string
+          description: The registry name
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties of the registry client.
+          description: The properties of the registry client.
+        restricted:
+          type: boolean
+          description: Whether the registry client requires elevated privileges.
+        sensitiveDynamicPropertyNames:
+          type: array
+          description: Set of sensitive dynamic property names
+          items:
+            type: string
+            description: Set of sensitive dynamic property names
+          uniqueItems: true
+        supportsBranching:
+          type: boolean
+          description: Whether the registry client supports branching.
+        supportsSensitiveDynamicProperties:
+          type: boolean
+          description: Whether the registry client supports sensitive dynamic properties.
+        type:
+          type: string
+          description: The type of the registry client.
+        validationErrors:
+          type: array
+          description: Gets the validation errors from the registry client. These validation errors represent the problems with the registry client that must be resolved before it can be used for interacting with the flow registry.
+          items:
+            type: string
+            description: Gets the validation errors from the registry client. These validation errors represent the problems with the registry client that must be resolved before it can be used for interacting with the flow registry.
+        validationStatus:
+          type: string
+          description: Indicates whether the Registry Client is valid, invalid, or still in the process of validating (i.e., it is unknown whether or not the Registry Client is valid)
+          enum:
+          - VALID
+          - INVALID
+          - VALIDATING
+          readOnly: true
+    AssetReferenceDTO:
+      type: object
+      description: A list of identifiers of the assets that are referenced by the parameter
+      properties:
+        id:
+          type: string
+          description: The identifier of the referenced asset.
+        missingContent:
+          type: boolean
+          description: Indicates if the content of the asset is missing.
+          readOnly: true
+        name:
+          type: string
+          description: The name of the referenced asset.
+          readOnly: true
+    ParameterStatusDTO:
+      type: object
+      description: The status of all provided parameters for this parameter provider
+      properties:
+        parameter:
+          $ref: '#/components/schemas/ParameterEntity'
+        status:
+          type: string
+          description: Indicates the status of the parameter, compared to the existing parameter context
+          enum:
+          - NEW
+          - CHANGED
+          - REMOVED
+          - MISSING_BUT_REFERENCED
+          - UNCHANGED
+    FlowAnalysisRulesEntity:
+      type: object
+      properties:
+        currentTime:
+          type: string
+          description: The current time on the system.
+        flowAnalysisRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowAnalysisRuleEntity'
+          uniqueItems: true
+      xml:
+        name: flowAnalysisRulesEntity
+    PermissionsDTO:
+      type: object
+      description: The permissions for this component.
+      properties:
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        canWrite:
+          type: boolean
+          description: Indicates whether the user can write a given resource.
+          readOnly: true
+    ControllerServiceAPI:
+      type: object
+      description: Lists the APIs this Controller Service implements.
+      properties:
+        bundle:
+          $ref: '#/components/schemas/Bundle'
+        type:
+          type: string
+          description: The fully qualified name of the service interface.
+    NodeDTO:
+      type: object
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The active threads for the NiFi on the node.
+          readOnly: true
+        address:
+          type: string
+          description: The node's host/ip address.
+          readOnly: true
+        apiPort:
+          type: integer
+          format: int32
+          description: The port the node is listening for API requests.
+          readOnly: true
+        bytesQueued:
+          type: integer
+          format: int64
+          description: The total size of all FlowFiles that are queued up on the node
+          readOnly: true
+        connectionRequested:
+          type: string
+          description: The time of the node's last connection request.
+          readOnly: true
+        events:
+          type: array
+          description: The node's events.
+          items:
+            $ref: '#/components/schemas/NodeEventDTO'
+          readOnly: true
+        flowFileBytes:
+          type: integer
+          format: int64
+          writeOnly: true
+        flowFilesQueued:
+          type: integer
+          format: int32
+          description: The number of FlowFiles that are queued up on the node
+          readOnly: true
+        heartbeat:
+          type: string
+          description: the time of the nodes's last heartbeat.
+          readOnly: true
+        nodeId:
+          type: string
+          description: The id of the node.
+          readOnly: true
+        nodeStartTime:
+          type: string
+          description: The time at which this Node was last refreshed.
+          readOnly: true
+        queued:
+          type: string
+          description: The queue the NiFi on the node.
+          readOnly: true
+        roles:
+          type: array
+          description: The roles of this node.
+          items:
+            type: string
+            description: The roles of this node.
+            readOnly: true
+          readOnly: true
+          uniqueItems: true
+        status:
+          type: string
+          description: The node's status.
+    ConfigurationAnalysisEntity:
+      type: object
+      properties:
+        configurationAnalysis:
+          $ref: '#/components/schemas/ConfigurationAnalysisDTO'
+      xml:
+        name: configurationAnalysis
+    ReportingTaskStatusDTO:
+      type: object
+      description: The status for this ReportingTask.
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The number of active threads for the component.
+        runStatus:
+          type: string
+          description: The run status of this ReportingTask
+          enum:
+          - RUNNING
+          - STOPPED
+          - DISABLED
+          readOnly: true
+        validationStatus:
+          type: string
+          description: Indicates whether the component is valid, invalid, or still in the process of validating (i.e., it is unknown whether or not the component is valid)
+          enum:
+          - VALID
+          - INVALID
+          - VALIDATING
+          readOnly: true
+      readOnly: true
+    ParameterProviderEntity:
+      type: object
+      properties:
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/ParameterProviderDTO'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      xml:
+        name: parameterProviderEntity
+    VerifyConfigRequestEntity:
+      type: object
+      properties:
+        request:
+          $ref: '#/components/schemas/VerifyConfigRequestDTO'
+      xml:
+        name: verifyConfigRequest
+    NodeEventDTO:
+      type: object
+      description: The node's events.
+      properties:
+        category:
+          type: string
+          description: The category of the node event.
+        message:
+          type: string
+          description: The message in the node event.
+        timestamp:
+          type: string
+          description: The timestamp of the node event.
+      readOnly: true
+    NarCoordinateDTO:
+      type: object
+      description: The coordinate of another NAR that the this NAR is dependent on, or null if not dependent on another NAR.
+      properties:
+        artifact:
+          type: string
+          description: The artifact id of the NAR.
+        group:
+          type: string
+          description: The group of the NAR.
+        version:
+          type: string
+          description: The version of the NAR.
+    ComponentHistoryDTO:
+      type: object
+      properties:
+        componentId:
+          type: string
+          description: The component id.
+        propertyHistory:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PropertyHistoryDTO'
+          description: The history for the properties of the component.
+    ParameterProviderDTO:
+      type: object
+      properties:
+        affectedComponents:
+          type: array
+          description: The set of all components in the flow that are referencing Parameters provided by this provider
+          items:
+            $ref: '#/components/schemas/AffectedComponentEntity'
+          uniqueItems: true
+        annotationData:
+          type: string
+          description: The annotation data for the parameter provider. This is how the custom UI relays configuration to the parameter provider.
+        bundle:
+          $ref: '#/components/schemas/BundleDTO'
+        comments:
+          type: string
+          description: The comments of the parameter provider.
+        customUiUrl:
+          type: string
+          description: The URL for the custom configuration UI for the parameter provider.
+        deprecated:
+          type: boolean
+          description: Whether the parameter provider has been deprecated.
+        descriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PropertyDescriptorDTO'
+          description: The descriptors for the parameter providers properties.
+        extensionMissing:
+          type: boolean
+          description: Whether the underlying extension is missing.
+        id:
+          type: string
+          description: The id of the component.
+        multipleVersionsAvailable:
+          type: boolean
+          description: Whether the parameter provider has multiple versions available.
+        name:
+          type: string
+          description: The name of the parameter provider.
+        parameterGroupConfigurations:
+          type: array
+          description: Configuration for any fetched parameter groups.
+          items:
+            $ref: '#/components/schemas/ParameterGroupConfigurationEntity'
+        parameterStatus:
+          type: array
+          description: The status of all provided parameters for this parameter provider
+          items:
+            $ref: '#/components/schemas/ParameterStatusDTO'
+          uniqueItems: true
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        persistsState:
+          type: boolean
+          description: Whether the parameter provider persists state.
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties of the parameter provider.
+          description: The properties of the parameter provider.
+        referencingParameterContexts:
+          type: array
+          description: The Parameter Contexts that reference this Parameter Provider
+          items:
+            $ref: '#/components/schemas/ParameterProviderReferencingComponentEntity'
+          readOnly: true
+          uniqueItems: true
+        restricted:
+          type: boolean
+          description: Whether the parameter provider requires elevated privileges.
+        type:
+          type: string
+          description: The fully qualified type of the parameter provider.
+        validationErrors:
+          type: array
+          description: Gets the validation errors from the parameter provider. These validation errors represent the problems with the parameter provider that must be resolved before it can be scheduled to run.
+          items:
+            type: string
+            description: Gets the validation errors from the parameter provider. These validation errors represent the problems with the parameter provider that must be resolved before it can be scheduled to run.
+        validationStatus:
+          type: string
+          description: Indicates whether the Parameter Provider is valid, invalid, or still in the process of validating (i.e., it is unknown whether or not the Parameter Provider is valid)
+          enum:
+          - VALID
+          - INVALID
+          - VALIDATING
+          readOnly: true
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+    AffectedComponentDTO:
+      type: object
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The number of active threads for the referencing component.
+        id:
+          type: string
+          description: The UUID of this component
+        name:
+          type: string
+          description: The name of this component.
+        processGroupId:
+          type: string
+          description: The UUID of the Process Group that this component is in
+        referenceType:
+          type: string
+          description: The type of this component
+          enum:
+          - PROCESSOR
+          - CONTROLLER_SERVICE
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - STATELESS_GROUP
+        state:
+          type: string
+          description: The scheduled state of a processor or reporting task referencing a controller service. If this component is another controller service, this field represents the controller service state.
+        validationErrors:
+          type: array
+          description: The validation errors for the component.
+          items:
+            type: string
+            description: The validation errors for the component.
+    HistoryEntity:
+      type: object
+      properties:
+        history:
+          $ref: '#/components/schemas/HistoryDTO'
+      xml:
+        name: historyEntity
+    ClusterDTO:
+      type: object
+      properties:
+        generated:
+          type: string
+          description: The timestamp the report was generated.
+        nodes:
+          type: array
+          description: The collection of nodes that are part of the cluster.
+          items:
+            $ref: '#/components/schemas/NodeDTO'
+    ActionDetailsDTO:
+      type: object
+      description: The details of the action.
+    VersionedPropertyDescriptor:
+      type: object
+      description: The property descriptors for the component.
+      properties:
+        displayName:
+          type: string
+          description: The display name of the property
+        dynamic:
+          type: boolean
+          description: Whether or not the property is user-defined
+        identifiesControllerService:
+          type: boolean
+          description: Whether or not the property provides the identifier of a Controller Service
+        listenPortDefinition:
+          $ref: '#/components/schemas/VersionedListenPortDefinition'
+        name:
+          type: string
+          description: The name of the property
+        resourceDefinition:
+          $ref: '#/components/schemas/VersionedResourceDefinition'
+        sensitive:
+          type: boolean
+          description: Whether or not the property is considered sensitive
+    ParameterContextReferenceDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the Parameter Context
+        name:
+          type: string
+          description: The name of the Parameter Context
+    AffectedComponentEntity:
+      type: object
+      description: The set of all components in the flow that are referencing this Parameter
+      properties:
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/AffectedComponentDTO'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        processGroup:
+          $ref: '#/components/schemas/ProcessGroupNameDTO'
+        referenceType:
+          type: string
+          description: The type of component referenced
+          enum:
+          - PROCESSOR
+          - CONTROLLER_SERVICE
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      xml:
+        name: affectedComponentEntity
+    PropertyHistoryDTO:
+      type: object
+      description: The history for the properties of the component.
+      properties:
+        previousValues:
+          type: array
+          description: Previous values for a given property.
+          items:
+            $ref: '#/components/schemas/PreviousValueDTO'
+    ComponentHistoryEntity:
+      type: object
+      properties:
+        componentHistory:
+          $ref: '#/components/schemas/ComponentHistoryDTO'
+      xml:
+        name: componentHistoryEntity
+    NarSummaryDTO:
+      type: object
+      description: The NAR summary
+      properties:
+        buildTime:
+          type: string
+          description: The time the NAR was built according to it's MANIFEST
+        coordinate:
+          $ref: '#/components/schemas/NarCoordinateDTO'
+        createdBy:
+          type: string
+          description: The plugin that created the NAR according to it's MANIFEST
+        dependencyCoordinate:
+          $ref: '#/components/schemas/NarCoordinateDTO'
+        digest:
+          type: string
+          description: The hex digest of the NAR contents
+        extensionCount:
+          type: integer
+          format: int32
+          description: The number of extensions contained in this NAR
+        failureMessage:
+          type: string
+          description: Information about why the installation failed, only populated when the state is failed
+        identifier:
+          type: string
+          description: The identifier of the NAR.
+        installComplete:
+          type: boolean
+          description: Indicates if the install task has completed
+        sourceIdentifier:
+          type: string
+          description: The identifier of the source of this NAR
+        sourceType:
+          type: string
+          description: The source of this NAR
+        state:
+          type: string
+          description: The state of the NAR (i.e. Installed, or not)
+    ClusterEntity:
+      type: object
+      properties:
+        cluster:
+          $ref: '#/components/schemas/ClusterDTO'
+      xml:
+        name: clusterEntity
+    VersionedListenPortDefinition:
+      type: object
+      description: Returns the Listen Port Definition for the port this property specifies, if applicable
+      properties:
+        applicationProtocols:
+          type: array
+          description: The application protocol(s) that the listen port could support (if any)
+          items:
+            type: string
+            description: The application protocol(s) that the listen port could support (if any)
+        transportProtocol:
+          type: string
+          description: The transport protocol used by the listen port
+          enum:
+          - TCP
+          - UDP
+    LongParameter:
+      type: object
+      properties:
+        long:
+          type: integer
+          format: int64
+    BulletinDTO:
+      type: object
+      properties:
+        category:
+          type: string
+          description: The category of this bulletin.
+        groupId:
+          type: string
+          description: The group id of the source component.
+        id:
+          type: integer
+          format: int64
+          description: The id of the bulletin.
+        level:
+          type: string
+          description: The level of the bulletin.
+        message:
+          type: string
+          description: The bulletin message.
+        nodeAddress:
+          type: string
+          description: If clustered, the address of the node from which the bulletin originated.
+        sourceId:
+          type: string
+          description: The id of the source component.
+        sourceName:
+          type: string
+          description: The name of the source component.
+        sourceType:
+          type: string
+          description: The type of the source component
+        stackTrace:
+          type: string
+          description: The stack trace associated with the bulletin, if any.
+        timestamp:
+          type: string
+          description: When this bulletin was generated.
+        timestampIso:
+          type: string
+          description: When this bulletin was generated in ISO format with full date and milliseconds.
+    ParameterDTO:
+      type: object
+      description: The parameter information
+      properties:
+        description:
+          type: string
+          description: The description of the Parameter
+        inherited:
+          type: boolean
+          description: Whether or not the Parameter is inherited from another context
+          readOnly: true
+        name:
+          type: string
+          description: The name of the Parameter
+        parameterContext:
+          $ref: '#/components/schemas/ParameterContextReferenceEntity'
+        provided:
+          type: boolean
+          description: Whether or not the Parameter is provided by a ParameterProvider
+        referencedAssets:
+          type: array
+          description: A list of identifiers of the assets that are referenced by the parameter
+          items:
+            $ref: '#/components/schemas/AssetReferenceDTO'
+        referencingComponents:
+          type: array
+          description: The set of all components in the flow that are referencing this Parameter
+          items:
+            $ref: '#/components/schemas/AffectedComponentEntity'
+          uniqueItems: true
+        sensitive:
+          type: boolean
+          description: Whether or not the Parameter is sensitive
+        value:
+          type: string
+          description: The value of the Parameter
+        valueRemoved:
+          type: boolean
+          description: 'Whether or not the value of the Parameter was removed.
+
+            When a request is made to change a parameter, the value may be null.
+
+            The absence of the value may be used either to indicate that the value is not to be changed, or that the value is to be set to null (i.e., removed).
+
+            This denotes which of the two scenarios is being encountered.
+
+            '
+    VersionedReportingTaskSnapshot:
+      type: object
+      properties:
+        controllerServices:
+          type: array
+          description: The controller services
+          items:
+            $ref: '#/components/schemas/VersionedControllerService'
+        reportingTasks:
+          type: array
+          description: The reporting tasks
+          items:
+            $ref: '#/components/schemas/VersionedReportingTask'
+    NarSummaryEntity:
+      type: object
+      properties:
+        narSummary:
+          $ref: '#/components/schemas/NarSummaryDTO'
+      xml:
+        name: entity
+    FlowRegistryClientsEntity:
+      type: object
+      properties:
+        currentTime:
+          type: string
+          description: The current time on the system.
+        registries:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowRegistryClientEntity'
+          uniqueItems: true
+      xml:
+        name: registryClientsEntity
+    ReportingTaskDTO:
+      type: object
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The number of active threads for the reporting task.
+        annotationData:
+          type: string
+          description: The annotation data for the reporting task. This is how the custom UI relays configuration to the reporting task.
+        bundle:
+          $ref: '#/components/schemas/BundleDTO'
+        comments:
+          type: string
+          description: The comments of the reporting task.
+        customUiUrl:
+          type: string
+          description: The URL for the custom configuration UI for the reporting task.
+        defaultSchedulingPeriod:
+          type: object
+          additionalProperties:
+            type: string
+            description: The default scheduling period for the different scheduling strategies.
+          description: The default scheduling period for the different scheduling strategies.
+        deprecated:
+          type: boolean
+          description: Whether the reporting task has been deprecated.
+        descriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PropertyDescriptorDTO'
+          description: The descriptors for the reporting tasks properties.
+        extensionMissing:
+          type: boolean
+          description: Whether the underlying extension is missing.
+        id:
+          type: string
+          description: The id of the component.
+        multipleVersionsAvailable:
+          type: boolean
+          description: Whether the reporting task has multiple versions available.
+        name:
+          type: string
+          description: The name of the reporting task.
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        persistsState:
+          type: boolean
+          description: Whether the reporting task persists state.
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties of the reporting task.
+          description: The properties of the reporting task.
+        restricted:
+          type: boolean
+          description: Whether the reporting task requires elevated privileges.
+        schedulingPeriod:
+          type: string
+          description: The frequency with which to schedule the reporting task. The format of the value will depend on the value of the schedulingStrategy.
+        schedulingStrategy:
+          type: string
+          description: The scheduling strategy that determines how the schedulingPeriod value should be interpreted.
+        sensitiveDynamicPropertyNames:
+          type: array
+          description: Set of sensitive dynamic property names
+          items:
+            type: string
+            description: Set of sensitive dynamic property names
+          uniqueItems: true
+        state:
+          type: string
+          description: The state of the reporting task.
+          enum:
+          - RUNNING
+          - STOPPED
+          - DISABLED
+        supportsSensitiveDynamicProperties:
+          type: boolean
+          description: Whether the reporting task supports sensitive dynamic properties.
+        type:
+          type: string
+          description: The fully qualified type of the reporting task.
+        validationErrors:
+          type: array
+          description: Gets the validation errors from the reporting task. These validation errors represent the problems with the reporting task that must be resolved before it can be scheduled to run.
+          items:
+            type: string
+            description: Gets the validation errors from the reporting task. These validation errors represent the problems with the reporting task that must be resolved before it can be scheduled to run.
+        validationStatus:
+          type: string
+          description: Indicates whether the Reporting Task is valid, invalid, or still in the process of validating (i.e., it is unknown whether or not the Reporting Task is valid)
+          enum:
+          - VALID
+          - INVALID
+          - VALIDATING
+          readOnly: true
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+    RequiredPermissionDTO:
+      type: object
+      description: The required permission necessary for this restriction.
+      properties:
+        id:
+          type: string
+          description: The required sub-permission necessary for this restriction.
+        label:
+          type: string
+          description: The label for the required sub-permission necessary for this restriction.
+    ControllerServiceReferencingComponentEntity:
+      type: object
+      description: All components referencing this controller service.
+      properties:
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/ControllerServiceReferencingComponentDTO'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        operatePermissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      xml:
+        name: controllerServiceReferencingComponentEntity
+    NarSummariesEntity:
+      type: object
+      properties:
+        currentTime:
+          type: string
+          description: The current time on the system.
+        narSummaries:
+          type: array
+          description: The NAR summaries
+          items:
+            $ref: '#/components/schemas/NarSummaryEntity'
+      xml:
+        name: entity
+    ControllerServiceReferencingComponentDTO:
+      type: object
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The number of active threads for the referencing component.
+        descriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PropertyDescriptorDTO'
+          description: The descriptors for the component properties.
+        groupId:
+          type: string
+          description: The group id for the component referencing a controller service. If this component is another controller service or a reporting task, this field is blank.
+        id:
+          type: string
+          description: The id of the component referencing a controller service.
+        name:
+          type: string
+          description: The name of the component referencing a controller service.
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties for the component.
+          description: The properties for the component.
+        referenceCycle:
+          type: boolean
+          description: If the referencing component represents a controller service, this indicates whether it has already been represented in this hierarchy.
+        referenceType:
+          type: string
+          description: The type of reference this is.
+          enum:
+          - Processor
+          - ControllerService
+          - ReportingTask
+          - FlowRegistryClient
+          - ParameterProvider
+          - FlowAnalysisRule
+        referencingComponents:
+          type: array
+          description: If the referencing component represents a controller service, these are the components that reference it.
+          items:
+            $ref: '#/components/schemas/ControllerServiceReferencingComponentEntity'
+          uniqueItems: true
+        state:
+          type: string
+          description: The scheduled state of a processor or reporting task referencing a controller service. If this component is another controller service, this field represents the controller service state.
+        type:
+          type: string
+          description: The type of the component referencing a controller service in simple Java class name format without package name.
+        validationErrors:
+          type: array
+          description: The validation errors for the component.
+          items:
+            type: string
+            description: The validation errors for the component.
+    ComponentStateEntity:
+      type: object
+      properties:
+        componentState:
+          $ref: '#/components/schemas/ComponentStateDTO'
+      xml:
+        name: componentStateEntity
+    PreviousValueDTO:
+      type: object
+      description: Previous values for a given property.
+      properties:
+        previousValue:
+          type: string
+          description: The previous value.
+        timestamp:
+          type: string
+          description: The timestamp when the value was modified.
+        userIdentity:
+          type: string
+          description: The user who changed the previous value.
+    VersionedReportingTaskImportResponseEntity:
+      type: object
+      properties:
+        controllerServices:
+          type: array
+          description: The controller services created by the import
+          items:
+            $ref: '#/components/schemas/ControllerServiceEntity'
+          uniqueItems: true
+        reportingTasks:
+          type: array
+          description: The reporting tasks created by the import
+          items:
+            $ref: '#/components/schemas/ReportingTaskEntity'
+          uniqueItems: true
+      xml:
+        name: versionedReportingTaskImportResponseEntity
+    ParameterGroupConfigurationEntity:
+      type: object
+      description: Configuration for any fetched parameter groups.
+      properties:
+        groupName:
+          type: string
+          description: The name of the external parameter group to which the provided parameter names apply.
+        parameterContextName:
+          type: string
+          description: The name of the ParameterContext that receives the parameters in this group
+        parameterSensitivities:
+          type: object
+          additionalProperties:
+            type: string
+            description: All fetched parameter names that should be applied.
+            enum:
+            - SENSITIVE
+            - NON_SENSITIVE
+          description: All fetched parameter names that should be applied.
+        synchronized:
+          type: boolean
+          description: True if this group should be synchronized to a ParameterContext, including creating one if it does not exist.
+      xml:
+        name: entity
+    ReportingTaskEntity:
+      type: object
+      properties:
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/ReportingTaskDTO'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        operatePermissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        status:
+          $ref: '#/components/schemas/ReportingTaskStatusDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      xml:
+        name: reportingTaskEntity
+    ControllerServiceStatusDTO:
+      type: object
+      description: The status for this ControllerService.
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The number of active threads for the component.
+        runStatus:
+          type: string
+          description: The run status of this ControllerService
+          enum:
+          - ENABLED
+          - ENABLING
+          - DISABLED
+          - DISABLING
+          readOnly: true
+        validationStatus:
+          type: string
+          description: Indicates whether the component is valid, invalid, or still in the process of validating (i.e., it is unknown whether or not the component is valid)
+          enum:
+          - VALID
+          - INVALID
+          - VALIDATING
+          readOnly: true
+      readOnly: true
+    ComponentStateDTO:
+      type: object
+      description: The component state.
+      properties:
+        clusterState:
+          $ref: '#/components/schemas/StateMapDTO'
+        componentId:
+          type: string
+          description: The component identifier.
+        dropStateKeySupported:
+          type: boolean
+          description: Whether dropping state by key is supported for this component. Defaults to false when not specified by the component.
+        localState:
+          $ref: '#/components/schemas/StateMapDTO'
+        stateDescription:
+          type: string
+          description: Description of the state this component persists.
+    Bundle:
+      type: object
+      description: The details of the artifact that bundled this parameter provider.
+      properties:
+        artifact:
+          type: string
+          description: The artifact of the bundle
+        group:
+          type: string
+          description: The group of the bundle
+        version:
+          type: string
+          description: The version of the bundle
+    NarDetailsEntity:
+      type: object
+      properties:
+        connectorTypes:
+          type: array
+          description: The Connector types contained in the NAR
+          items:
+            $ref: '#/components/schemas/DocumentedTypeDTO'
+          uniqueItems: true
+        controllerServiceTypes:
+          type: array
+          description: The ControllerService types contained in the NAR
+          items:
+            $ref: '#/components/schemas/DocumentedTypeDTO'
+          uniqueItems: true
+        dependentCoordinates:
+          type: array
+          description: The coordinates of NARs that depend on this NAR
+          items:
+            $ref: '#/components/schemas/NarCoordinateDTO'
+          uniqueItems: true
+        flowAnalysisRuleTypes:
+          type: array
+          description: The FlowAnalysisRule types contained in the NAR
+          items:
+            $ref: '#/components/schemas/DocumentedTypeDTO'
+          uniqueItems: true
+        flowRegistryClientTypes:
+          type: array
+          description: The FlowRegistryClient types contained in the NAR
+          items:
+            $ref: '#/components/schemas/DocumentedTypeDTO'
+          uniqueItems: true
+        narSummary:
+          $ref: '#/components/schemas/NarSummaryDTO'
+        parameterProviderTypes:
+          type: array
+          description: The ParameterProvider types contained in the NAR
+          items:
+            $ref: '#/components/schemas/DocumentedTypeDTO'
+          uniqueItems: true
+        processorTypes:
+          type: array
+          description: The Processor types contained in the NAR
+          items:
+            $ref: '#/components/schemas/DocumentedTypeDTO'
+          uniqueItems: true
+        reportingTaskTypes:
+          type: array
+          description: The ReportingTask types contained in the NAR
+          items:
+            $ref: '#/components/schemas/DocumentedTypeDTO'
+          uniqueItems: true
+      xml:
+        name: entity
+    RevisionDTO:
+      type: object
+      description: The revision of the Process Group
+      properties:
+        clientId:
+          type: string
+          description: 'A client identifier used to make a request.
+
+            By including a client identifier, the API can allow multiple requests without needing the current revision.
+
+            Due to the asynchronous nature of requests/responses this was implemented to allow the client to make numerous requests without having to wait for the previous response to come back
+
+            '
+        lastModifier:
+          type: string
+          description: The user that last modified the flow.
+          readOnly: true
+        version:
+          type: integer
+          format: int64
+          description: 'NiFi employs an optimistic locking strategy where the client must include a revision in their request when performing an update.
+
+            In a response to a mutable flow request, this field represents the updated base version.
+
+            '
+    FlowAnalysisRuleStatusDTO:
+      type: object
+      description: The status for this FlowAnalysisRule.
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The number of active threads for the component.
+        runStatus:
+          type: string
+          description: The run status of this FlowAnalysisRule
+          enum:
+          - ENABLED
+          - DISABLED
+          readOnly: true
+        validationStatus:
+          type: string
+          description: Indicates whether the component is valid, invalid, or still in the process of validating (i.e., it is unknown whether or not the component is valid)
+          enum:
+          - VALID
+          - INVALID
+          - VALIDATING
+          readOnly: true
+      readOnly: true
+    BundleDTO:
+      type: object
+      description: If the property identifies a controller service this returns the bundle of the type, null otherwise.
+      properties:
+        artifact:
+          type: string
+          description: The artifact of the bundle.
+        group:
+          type: string
+          description: The group of the bundle.
+        version:
+          type: string
+          description: The version of the bundle.
+    VersionedReportingTask:
+      type: object
+      description: The reporting tasks
+      properties:
+        annotationData:
+          type: string
+          description: The annotation for the reporting task. This is how the custom UI relays configuration to the reporting task.
+        bundle:
+          $ref: '#/components/schemas/Bundle'
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentState:
+          $ref: '#/components/schemas/VersionedComponentState'
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        name:
+          type: string
+          description: The component's name
+        position:
+          $ref: '#/components/schemas/Position'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties for the component. Properties whose value is not set will only contain the property name.
+          description: The properties for the component. Properties whose value is not set will only contain the property name.
+        propertyDescriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/VersionedPropertyDescriptor'
+          description: The property descriptors for the component.
+        scheduledState:
+          type: string
+          description: Indicates the scheduled state for the Reporting Task
+          enum:
+          - ENABLED
+          - DISABLED
+          - RUNNING
+        schedulingPeriod:
+          type: string
+          description: The frequency with which to schedule the reporting task. The format of the value will depend on the value of schedulingStrategy.
+        schedulingStrategy:
+          type: string
+          description: Indicates scheduling strategy that should dictate how the reporting task is triggered.
+        type:
+          type: string
+          description: The type of the extension component
+    VerifyConfigUpdateStepDTO:
+      type: object
+      description: The steps that are required in order to complete the request, along with the status of each
+      properties:
+        complete:
+          type: boolean
+          description: Whether or not this step has completed
+          readOnly: true
+        description:
+          type: string
+          description: Explanation of what happens in this step
+          readOnly: true
+        failureReason:
+          type: string
+          description: An explanation of why this step failed, or null if this step did not fail
+          readOnly: true
+      readOnly: true
+    ConfigVerificationResultDTO:
+      type: object
+      description: The Results of the verification
+      properties:
+        explanation:
+          type: string
+          description: An explanation of why the step was or was not successful
+        outcome:
+          type: string
+          description: The outcome of the verification
+          enum:
+          - SUCCESSFUL
+          - FAILED
+          - SKIPPED
+        subject:
+          type: string
+          description: The subject of the verification step
+        verificationStepName:
+          type: string
+          description: The name of the verification step
+      readOnly: true
+    FlowRegistryClientTypesEntity:
+      type: object
+      properties:
+        flowRegistryClientTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentedTypeDTO'
+          uniqueItems: true
+      xml:
+        name: flowRegistryClientTypesEntity
+    Position:
+      type: object
+      description: The position of a component on the graph
+      properties:
+        x:
+          type: number
+          format: double
+          description: The x coordinate.
+        y:
+          type: number
+          format: double
+          description: The y coordinate.
+    ControllerServiceDTO:
+      type: object
+      description: The controller services in this flow snippet.
+      properties:
+        annotationData:
+          type: string
+          description: The annotation for the controller service. This is how the custom UI relays configuration to the controller service.
+        bulletinLevel:
+          type: string
+          description: The level at which the controller service will report bulletins.
+        bundle:
+          $ref: '#/components/schemas/BundleDTO'
+        comments:
+          type: string
+          description: The comments for the controller service.
+        controllerServiceApis:
+          type: array
+          description: Lists the APIs this Controller Service implements.
+          items:
+            $ref: '#/components/schemas/ControllerServiceApiDTO'
+        customUiUrl:
+          type: string
+          description: The URL for the controller services custom configuration UI if applicable.
+        deprecated:
+          type: boolean
+          description: Whether the controller service has been deprecated.
+        descriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PropertyDescriptorDTO'
+          description: The descriptors for the controller service properties.
+        extensionMissing:
+          type: boolean
+          description: Whether the underlying extension is missing.
+        id:
+          type: string
+          description: The id of the component.
+        multipleVersionsAvailable:
+          type: boolean
+          description: Whether the controller service has multiple versions available.
+        name:
+          type: string
+          description: The name of the controller service.
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        persistsState:
+          type: boolean
+          description: Whether the controller service persists state.
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties of the controller service.
+          description: The properties of the controller service.
+        referencingComponents:
+          type: array
+          description: All components referencing this controller service.
+          items:
+            $ref: '#/components/schemas/ControllerServiceReferencingComponentEntity'
+          uniqueItems: true
+        restricted:
+          type: boolean
+          description: Whether the controller service requires elevated privileges.
+        sensitiveDynamicPropertyNames:
+          type: array
+          description: Set of sensitive dynamic property names
+          items:
+            type: string
+            description: Set of sensitive dynamic property names
+          uniqueItems: true
+        state:
+          type: string
+          description: The state of the controller service.
+          enum:
+          - ENABLED
+          - ENABLING
+          - DISABLED
+          - DISABLING
+        supportsSensitiveDynamicProperties:
+          type: boolean
+          description: Whether the controller service supports sensitive dynamic properties.
+        type:
+          type: string
+          description: The type of the controller service.
+        validationErrors:
+          type: array
+          description: 'The validation errors from the controller service.
+
+            These validation errors represent the problems with the controller service that must be resolved before it can be enabled.
+
+            '
+          items:
+            type: string
+            description: 'The validation errors from the controller service.
+
+              These validation errors represent the problems with the controller service that must be resolved before it can be enabled.
+
+              '
+        validationStatus:
+          type: string
+          description: Indicates whether the ControllerService is valid, invalid, or still in the process of validating (i.e., it is unknown whether or not the ControllerService is valid)
+          enum:
+          - VALID
+          - INVALID
+          - VALIDATING
+          readOnly: true
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+    DocumentedTypeDTO:
+      type: object
+      properties:
+        bundle:
+          $ref: '#/components/schemas/BundleDTO'
+        controllerServiceApis:
+          type: array
+          description: If this type represents a ControllerService, this lists the APIs it implements.
+          items:
+            $ref: '#/components/schemas/ControllerServiceApiDTO'
+        deprecationReason:
+          type: string
+          description: The description of why the usage of this component is restricted.
+        description:
+          type: string
+          description: The description of the type.
+        explicitRestrictions:
+          type: array
+          description: An optional collection of explicit restrictions. If specified, these explicit restrictions will be enforced.
+          items:
+            $ref: '#/components/schemas/ExplicitRestrictionDTO'
+          uniqueItems: true
+        restricted:
+          type: boolean
+          description: Whether this type is restricted.
+        tags:
+          type: array
+          description: The tags associated with this type.
+          items:
+            type: string
+            description: The tags associated with this type.
+          uniqueItems: true
+        type:
+          type: string
+          description: The fully qualified name of the type.
+        usageRestriction:
+          type: string
+          description: The optional description of why the usage of this component is restricted.
+    ActionDTO:
+      type: object
+      properties:
+        actionDetails:
+          $ref: '#/components/schemas/ActionDetailsDTO'
+        componentDetails:
+          $ref: '#/components/schemas/ComponentDetailsDTO'
+        id:
+          type: integer
+          format: int32
+          description: The action id.
+        operation:
+          type: string
+          description: The operation that was performed.
+        sourceId:
+          type: string
+          description: The id of the source component.
+        sourceName:
+          type: string
+          description: The name of the source component.
+        sourceType:
+          type: string
+          description: The type of the source component.
+        timestamp:
+          type: string
+          description: The timestamp of the action.
+        userIdentity:
+          type: string
+          description: The identity of the user that performed the action.
+    NodeEntity:
+      type: object
+      properties:
+        node:
+          $ref: '#/components/schemas/NodeDTO'
+      xml:
+        name: nodeEntity
+    VersionedNodeState:
+      type: object
+      description: The state entries for a single node
+      properties:
+        state:
+          type: object
+          additionalProperties:
+            type: string
+            description: The state key-value pairs for this node
+          description: The state key-value pairs for this node
+    PropertyDescriptorEntity:
+      type: object
+      properties:
+        propertyDescriptor:
+          $ref: '#/components/schemas/PropertyDescriptorDTO'
+      xml:
+        name: propertyDescriptor
+    ClearBulletinsResultEntity:
+      type: object
+      properties:
+        bulletins:
+          type: array
+          description: The current bulletins for the component after clearing.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        bulletinsCleared:
+          type: integer
+          format: int32
+          description: The number of bulletins that were cleared.
+        componentId:
+          type: string
+          description: The id of the component for which bulletins were cleared.
+      xml:
+        name: clearBulletinsResultEntity
+    PropertyDependencyDTO:
+      type: object
+      description: A list of dependencies that must be met in order for this Property to be relevant. If any of these dependencies is not met, the property described by this Property Descriptor is not relevant.
+      properties:
+        dependentValues:
+          type: array
+          description: The values for the property that satisfies the dependency, or null if the dependency is satisfied by the presence of any value for the associated property name
+          items:
+            type: string
+            description: The values for the property that satisfies the dependency, or null if the dependency is satisfied by the presence of any value for the associated property name
+          uniqueItems: true
+        propertyName:
+          type: string
+          description: The name of the property that is being depended upon
+    ExplicitRestrictionDTO:
+      type: object
+      description: An optional collection of explicit restrictions. If specified, these explicit restrictions will be enforced.
+      properties:
+        explanation:
+          type: string
+          description: The description of why the usage of this component is restricted for this required permission.
+        requiredPermission:
+          $ref: '#/components/schemas/RequiredPermissionDTO'
+    FlowAnalysisRuleRunStatusEntity:
+      type: object
+      properties:
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        state:
+          type: string
+          description: The state of the FlowAnalysisRule.
+          enum:
+          - ENABLED
+          - DISABLED
+      xml:
+        name: entity
+    DateTimeParameter:
+      type: object
+      properties:
+        dateTime:
+          type: string
+          format: date-time
+    ParameterContextReferenceEntity:
+      type: object
+      description: The Parameter Context, or null if no Parameter Context has been bound to the Process Group
+      properties:
+        component:
+          $ref: '#/components/schemas/ParameterContextReferenceDTO'
+        id:
+          type: string
+          description: The id of the component.
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+      xml:
+        name: parameterContextReferenceEntity
+    VersionedResourceDefinition:
+      type: object
+      description: Returns the Resource Definition that defines which type(s) of resource(s) this property references, if any
+      properties:
+        cardinality:
+          type: string
+          description: The cardinality of the resource
+          enum:
+          - SINGLE
+          - MULTIPLE
+        resourceTypes:
+          type: array
+          description: The types of resource that the Property Descriptor is allowed to reference
+          items:
+            type: string
+            description: The types of resource that the Property Descriptor is allowed to reference
+            enum:
+            - FILE
+            - DIRECTORY
+            - TEXT
+            - URL
+          uniqueItems: true
+    ControllerConfigurationDTO:
+      type: object
+      description: The controller configuration.
+      properties:
+        maxTimerDrivenThreadCount:
+          type: integer
+          format: int32
+          description: The maximum number of timer driven threads the NiFi has available.
+    ConfigurationAnalysisDTO:
+      type: object
+      description: The configuration analysis
+      properties:
+        componentId:
+          type: string
+          description: The ID of the component
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The configured properties for the component
+          description: The configured properties for the component
+        referencedAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: The attributes that are referenced by the properties, mapped to recently used values
+          description: The attributes that are referenced by the properties, mapped to recently used values
+        supportsVerification:
+          type: boolean
+          description: Whether or not the component supports verification
+    StateEntryDTO:
+      type: object
+      description: The state.
+      properties:
+        clusterNodeAddress:
+          type: string
+          description: The label for the node where the state originated.
+        clusterNodeId:
+          type: string
+          description: The identifier for the node where the state originated.
+        key:
+          type: string
+          description: The key for this state.
+        value:
+          type: string
+          description: The value for this state.
+    VerifyConfigRequestDTO:
+      type: object
+      description: The request
+      properties:
+        attributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: FlowFile Attributes that should be used to evaluate Expression Language for resolving property values
+          description: FlowFile Attributes that should be used to evaluate Expression Language for resolving property values
+        complete:
+          type: boolean
+          description: Whether or not the request is completed
+          readOnly: true
+        componentId:
+          type: string
+          description: The ID of the component whose configuration was verified
+        failureReason:
+          type: string
+          description: The reason for the request failing, or null if the request has not failed
+          readOnly: true
+        lastUpdated:
+          type: string
+          format: date-time
+          description: The timestamp of when the request was last updated
+          readOnly: true
+        percentCompleted:
+          type: integer
+          format: int32
+          description: A value between 0 and 100 (inclusive) indicating how close the request is to completion
+          readOnly: true
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The configured component properties
+          description: The configured component properties
+        requestId:
+          type: string
+          description: The ID of the request
+          readOnly: true
+        results:
+          type: array
+          description: The Results of the verification
+          items:
+            $ref: '#/components/schemas/ConfigVerificationResultDTO'
+          readOnly: true
+        state:
+          type: string
+          description: A description of the current state of the request
+          readOnly: true
+        submissionTime:
+          type: string
+          format: date-time
+          description: The timestamp of when the request was submitted
+          readOnly: true
+        updateSteps:
+          type: array
+          description: The steps that are required in order to complete the request, along with the status of each
+          items:
+            $ref: '#/components/schemas/VerifyConfigUpdateStepDTO'
+          readOnly: true
+        uri:
+          type: string
+          description: The URI for the request
+          readOnly: true
+    AllowableValueEntity:
+      type: object
+      description: Allowable values for the property. If empty then the allowed values are not constrained.
+      properties:
+        allowableValue:
+          $ref: '#/components/schemas/AllowableValueDTO'
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+      xml:
+        name: entity
+    FlowAnalysisRuleDTO:
+      type: object
+      properties:
+        bundle:
+          $ref: '#/components/schemas/BundleDTO'
+        comments:
+          type: string
+          description: The comments of the flow analysis rule.
+        deprecated:
+          type: boolean
+          description: Whether the flow analysis rule has been deprecated.
+        descriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PropertyDescriptorDTO'
+          description: The descriptors for the flow analysis rules properties.
+        enforcementPolicy:
+          type: string
+          description: Enforcement Policy.
+        extensionMissing:
+          type: boolean
+          description: Whether the underlying extension is missing.
+        id:
+          type: string
+          description: The id of the component.
+        multipleVersionsAvailable:
+          type: boolean
+          description: Whether the flow analysis rule has multiple versions available.
+        name:
+          type: string
+          description: The name of the flow analysis rule.
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        persistsState:
+          type: boolean
+          description: Whether the flow analysis rule persists state.
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties of the flow analysis rule.
+          description: The properties of the flow analysis rule.
+        restricted:
+          type: boolean
+          description: Whether the flow analysis rule requires elevated privileges.
+        sensitiveDynamicPropertyNames:
+          type: array
+          description: Set of sensitive dynamic property names
+          items:
+            type: string
+            description: Set of sensitive dynamic property names
+          uniqueItems: true
+        state:
+          type: string
+          description: The state of the flow analysis rule.
+          enum:
+          - ENABLED
+          - DISABLED
+        supportsSensitiveDynamicProperties:
+          type: boolean
+          description: Whether the flow analysis rule supports sensitive dynamic properties.
+        type:
+          type: string
+          description: The fully qualified type of the flow analysis rule.
+        validationErrors:
+          type: array
+          description: Gets the validation errors from the flow analysis rule. These validation errors represent the problems with the flow analysis rule that must be resolved before it can be scheduled to run.
+          items:
+            type: string
+            description: Gets the validation errors from the flow analysis rule. These validation errors represent the problems with the flow analysis rule that must be resolved before it can be scheduled to run.
+        validationStatus:
+          type: string
+          description: Indicates whether the Flow Analysis Rule is valid, invalid, or still in the process of validating (i.e., it is unknown whether or not the Flow Analysis Rule is valid)
+          enum:
+          - VALID
+          - INVALID
+          - VALIDATING
+          readOnly: true
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+    ControllerServiceApiDTO:
+      type: object
+      description: Lists the APIs this Controller Service implements.
+      properties:
+        bundle:
+          $ref: '#/components/schemas/BundleDTO'
+        type:
+          type: string
+          description: The fully qualified name of the service interface.
+    ParameterProviderReferencingComponentDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the component referencing a parameter provider.
+        name:
+          type: string
+          description: The name of the component referencing a parameter provider.
+    ClientIdParameter:
+      type: object
+      properties:
+        clientId:
+          type: string
+    PositionDTO:
+      type: object
+      description: The position of this component in the UI if applicable.
+      properties:
+        x:
+          type: number
+          format: double
+          description: The x coordinate.
+        y:
+          type: number
+          format: double
+          description: The y coordinate.
+  securitySchemes:
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
+      bearerFormat: JWT
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http

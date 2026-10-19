@@ -1,0 +1,377 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST System Diagnostics API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
+tags:
+- name: SystemDiagnostics
+paths:
+  /system-diagnostics:
+    get:
+      operationId: getSystemDiagnostics
+      parameters:
+      - description: Whether or not to include the breakdown per node. Optional, defaults to false
+        in: query
+        name: nodewise
+        schema:
+          type: boolean
+          default: false
+      - description: BASIC or VERBOSE verbosity details. Optional, defaults to BASIC
+        in: query
+        name: diagnosticLevel
+        schema:
+          type: string
+          default: BASIC
+          enum:
+          - BASIC
+          - VERBOSE
+      - description: The id of the node where to get the status.
+        in: query
+        name: clusterNodeId
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemDiagnosticsEntity'
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+      security:
+      - Read - /system: []
+      summary: Gets the diagnostics for the system NiFi is running on
+      tags:
+      - SystemDiagnostics
+  /system-diagnostics/jmx-metrics:
+    get:
+      description: 'Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: getJmxMetrics
+      parameters:
+      - description: Regular Expression Pattern to be applied against the ObjectName
+        in: query
+        name: beanNameFilter
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JmxMetricsResultsEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /system: []
+      summary: Retrieve available JMX metrics
+      tags:
+      - SystemDiagnostics
+components:
+  schemas:
+    JmxMetricsResultDTO:
+      type: object
+      properties:
+        attributeName:
+          type: string
+          description: The attribute name of the metrics bean's attribute.
+        attributeValue:
+          type: object
+          description: The attribute value of the the metrics bean's attribute
+        beanName:
+          type: string
+          description: The bean name of the metrics bean.
+    NodeSystemDiagnosticsSnapshotDTO:
+      type: object
+      description: A systems diagnostics snapshot for each node in the cluster. If the NiFi instance is a standalone instance, rather than a cluster, this may be null.
+      properties:
+        address:
+          type: string
+          description: The API address of the node
+        apiPort:
+          type: integer
+          format: int32
+          description: The API port used to communicate with the node
+        nodeId:
+          type: string
+          description: The unique ID that identifies the node
+        snapshot:
+          $ref: '#/components/schemas/SystemDiagnosticsSnapshotDTO'
+    SystemDiagnosticsSnapshotDTO:
+      type: object
+      description: The System Diagnostics snapshot from the node.
+      properties:
+        availableProcessors:
+          type: integer
+          format: int32
+          description: Number of available processors if supported by the underlying system.
+        contentRepositoryStorageUsage:
+          type: array
+          description: The content repository storage usage.
+          items:
+            $ref: '#/components/schemas/StorageUsageDTO'
+          uniqueItems: true
+        daemonThreads:
+          type: integer
+          format: int32
+          description: Number of daemon threads.
+        flowFileRepositoryStorageUsage:
+          $ref: '#/components/schemas/StorageUsageDTO'
+        freeHeap:
+          type: string
+          description: Amount of free heap.
+        freeHeapBytes:
+          type: integer
+          format: int64
+          description: The number of bytes that are allocated to the JVM heap but not currently being used
+        freeNonHeap:
+          type: string
+          description: Amount of free non heap.
+        freeNonHeapBytes:
+          type: integer
+          format: int64
+          description: Total number of free non-heap bytes available to the JVM
+        garbageCollection:
+          type: array
+          description: The garbage collection details.
+          items:
+            $ref: '#/components/schemas/GarbageCollectionDTO'
+          uniqueItems: true
+        heapUtilization:
+          type: string
+          description: Utilization of heap.
+        maxHeap:
+          type: string
+          description: Maximum size of heap.
+        maxHeapBytes:
+          type: integer
+          format: int64
+          description: The maximum number of bytes that can be used by the JVM
+        maxNonHeap:
+          type: string
+          description: Maximum size of non heap.
+        maxNonHeapBytes:
+          type: integer
+          format: int64
+          description: The maximum number of bytes that the JVM can use for non-heap purposes
+        nonHeapUtilization:
+          type: string
+          description: Utilization of non heap.
+        processorLoadAverage:
+          type: number
+          format: double
+          description: The processor load average if supported by the underlying system.
+        provenanceRepositoryStorageUsage:
+          type: array
+          description: The provenance repository storage usage.
+          items:
+            $ref: '#/components/schemas/StorageUsageDTO'
+          uniqueItems: true
+        resourceClaimDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceClaimDetailsDTO'
+        statsLastRefreshed:
+          type: string
+          description: When the diagnostics were generated.
+        totalHeap:
+          type: string
+          description: Total size of heap.
+        totalHeapBytes:
+          type: integer
+          format: int64
+          description: The total number of bytes that are available for the JVM heap to use
+        totalNonHeap:
+          type: string
+          description: Total size of non heap.
+        totalNonHeapBytes:
+          type: integer
+          format: int64
+          description: Total number of bytes allocated to the JVM not used for heap
+        totalThreads:
+          type: integer
+          format: int32
+          description: Total number of threads.
+        uptime:
+          type: string
+          description: The uptime of the Java virtual machine
+        usedHeap:
+          type: string
+          description: Amount of used heap.
+        usedHeapBytes:
+          type: integer
+          format: int64
+          description: The number of bytes of JVM heap that are currently being used
+        usedNonHeap:
+          type: string
+          description: Amount of use non heap.
+        usedNonHeapBytes:
+          type: integer
+          format: int64
+          description: Total number of bytes used by the JVM not in the heap space
+        versionInfo:
+          $ref: '#/components/schemas/VersionInfoDTO'
+    VersionInfoDTO:
+      type: object
+      description: The nifi, os, java, and build version information
+      properties:
+        buildBranch:
+          type: string
+          description: Build branch
+        buildRevision:
+          type: string
+          description: Build revision or commit hash
+        buildTag:
+          type: string
+          description: Build tag
+        buildTimestamp:
+          type: string
+          format: date-time
+          description: Build timestamp
+        javaVendor:
+          type: string
+          description: Java JVM vendor
+        javaVersion:
+          type: string
+          description: Java version
+        niFiVersion:
+          type: string
+          description: The version of this NiFi.
+        osArchitecture:
+          type: string
+          description: Host operating system architecture
+        osName:
+          type: string
+          description: Host operating system name
+        osVersion:
+          type: string
+          description: Host operating system version
+    JmxMetricsResultsEntity:
+      type: object
+      properties:
+        jmxMetricsResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/JmxMetricsResultDTO'
+      xml:
+        name: jmxMetricsResult
+    SystemDiagnosticsEntity:
+      type: object
+      properties:
+        systemDiagnostics:
+          $ref: '#/components/schemas/SystemDiagnosticsDTO'
+      xml:
+        name: systemDiagnosticsEntity
+    ResourceClaimDetailsDTO:
+      type: object
+      properties:
+        awaitingDestruction:
+          type: boolean
+          description: Whether or not the Resource Claim is awaiting destruction
+        claimantCount:
+          type: integer
+          format: int32
+          description: The number of FlowFiles that have a claim to the Resource
+        container:
+          type: string
+          description: The container of the Content Repository in which the Resource Claim exists
+        identifier:
+          type: string
+          description: The identifier of the Resource Claim
+        inUse:
+          type: boolean
+          description: Whether or not the Resource Claim is in use
+        section:
+          type: string
+          description: The section of the Content Repository in which the Resource Claim exists
+        writable:
+          type: boolean
+          description: Whether or not the Resource Claim can still have more data written to it
+    StorageUsageDTO:
+      type: object
+      description: The provenance repository storage usage.
+      properties:
+        freeSpace:
+          type: string
+          description: Amount of free space.
+        freeSpaceBytes:
+          type: integer
+          format: int64
+          description: The number of bytes of free space.
+        identifier:
+          type: string
+          description: The identifier of this storage location. The identifier will correspond to the identifier keyed in the storage configuration.
+        totalSpace:
+          type: string
+          description: Amount of total space.
+        totalSpaceBytes:
+          type: integer
+          format: int64
+          description: The number of bytes of total space.
+        usedSpace:
+          type: string
+          description: Amount of used space.
+        usedSpaceBytes:
+          type: integer
+          format: int64
+          description: The number of bytes of used space.
+        utilization:
+          type: string
+          description: Utilization of this storage location.
+    SystemDiagnosticsDTO:
+      type: object
+      properties:
+        aggregateSnapshot:
+          $ref: '#/components/schemas/SystemDiagnosticsSnapshotDTO'
+        nodeSnapshots:
+          type: array
+          description: A systems diagnostics snapshot for each node in the cluster. If the NiFi instance is a standalone instance, rather than a cluster, this may be null.
+          items:
+            $ref: '#/components/schemas/NodeSystemDiagnosticsSnapshotDTO'
+    GarbageCollectionDTO:
+      type: object
+      description: The garbage collection details.
+      properties:
+        collectionCount:
+          type: integer
+          format: int64
+          description: The number of times garbage collection has run.
+        collectionMillis:
+          type: integer
+          format: int64
+          description: The total number of milliseconds spent garbage collecting.
+        collectionTime:
+          type: string
+          description: The total amount of time spent garbage collecting.
+        name:
+          type: string
+          description: The name of the garbage collector.
+  securitySchemes:
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
+      bearerFormat: JWT
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http

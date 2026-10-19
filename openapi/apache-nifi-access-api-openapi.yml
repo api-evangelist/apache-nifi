@@ -1,96 +1,89 @@
 openapi: 3.2.0
 info:
-  title: Apache NiFi REST Access API
-  version: 2.x
-  description: 'A best-effort OpenAPI 3.1 description of selected endpoints from the Apache
-
-    NiFi REST API. NiFi exposes a comprehensive JWT-authenticated REST API for
-
-    managing processors, connections, controller services, process groups,
-
-    reporting tasks, provenance, flow versions, system diagnostics, access
-
-    control, parameter contexts, and data transfer. The canonical machine
-
-    readable specification is published by the NiFi project as
-
-    `/nifi-docs/swagger.yaml`.'
   contact:
-    name: Apache NiFi
-    url: https://nifi.apache.org/
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
   license:
-    name: Apache-2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0
-servers:
-- url: http://{host}:{port}/nifi-api
-  description: Default NiFi REST API base URL
-  variables:
-    host:
-      default: localhost
-    port:
-      default: '8080'
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST Access API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
 tags:
 - name: Access
-  description: Authentication and access token management
 paths:
-  /access/token:
-    post:
+  /access/logout:
+    delete:
+      description: 'Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: logOut
+      responses:
+        '200':
+          description: User was logged out successfully.
+        '401':
+          description: Authentication token provided was empty or not in the correct JWT format.
+        '500':
+          description: Client failed to log out.
+      summary: Performs a logout for other providers that have been issued a JWT
       tags:
       - Access
-      summary: Create an access token using username and password
+  /access/logout/complete:
+    get:
+      description: 'Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: logOutComplete
+      responses:
+        '302':
+          description: User was logged out successfully.
+        '401':
+          description: Authentication token provided was empty or not in the correct JWT format.
+        '500':
+          description: Client failed to log out.
+      summary: Completes the logout sequence by removing the cached Logout Request and Cookie…
+      tags:
+      - Access
+  /access/token:
+    post:
+      description: The token returned is formatted as a JSON Web Token (JWT). The token is base64 encoded and comprised of three parts. The header, the body, and the signature. The expiration of the token is a contained within the body. It is stored in the browser as a cookie, but also returned inthe response body to be stored/used by third party client scripts.
       operationId: createAccessToken
       requestBody:
-        required: true
         content:
           application/x-www-form-urlencoded:
             schema:
               type: object
-              required:
-              - username
-              - password
               properties:
-                username:
-                  type: string
                 password:
                   type: string
-                  format: password
+                username:
+                  type: string
       responses:
         '201':
-          description: JWT bearer token issued
           content:
             text/plain:
               schema:
                 type: string
-        '401':
-          description: Invalid credentials
-  /access/logout:
-    delete:
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+        '500':
+          description: Unable to create access token because an unexpected error occurred.
+      security: []
+      summary: Creates a token for accessing the REST API via username/password
       tags:
       - Access
-      summary: Log the current user out and invalidate the JWT
-      operationId: logout
-      security:
-      - bearerAuth: []
-      responses:
-        '200':
-          description: Logged out
-  /authentication/configuration:
-    get:
-      tags:
-      - Access
-      summary: Retrieve authentication configuration and status
-      operationId: getAuthenticationConfiguration
-      responses:
-        '200':
-          description: Authentication configuration
-          content:
-            application/json:
-              schema:
-                type: object
 components:
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
       bearerFormat: JWT
-      description: JWT issued by POST /access/token
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http

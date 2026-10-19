@@ -1,0 +1,66 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST Resources API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
+tags:
+- name: Resources
+paths:
+  /resources:
+    get:
+      operationId: getResources
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourcesEntity'
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+      security:
+      - Read - /resources: []
+      summary: Gets the available resources that support access/authorization policies
+      tags:
+      - Resources
+components:
+  schemas:
+    ResourceDTO:
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: The identifier of the resource.
+        name:
+          type: string
+          description: The name of the resource.
+    ResourcesEntity:
+      type: object
+      properties:
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceDTO'
+      xml:
+        name: resourcesEntity
+  securitySchemes:
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
+      bearerFormat: JWT
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http

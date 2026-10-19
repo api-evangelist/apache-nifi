@@ -1,0 +1,540 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST Provenance Events API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
+tags:
+- name: ProvenanceEvents
+paths:
+  /provenance-events/latest/replays:
+    post:
+      operationId: submitReplayLatestEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplayLastEventRequestEntity'
+        description: The replay request.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplayLastEventResponseEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read Component Provenance Data - /provenance-data/{component-type}/{uuid}: []
+      - Read Component Data - /data/{component-type}/{uuid}: []
+      - Write Component Data - /data/{component-type}/{uuid}: []
+      summary: Replays content from a provenance event
+      tags:
+      - ProvenanceEvents
+  /provenance-events/latest/{componentId}:
+    get:
+      operationId: getLatestProvenanceEvents
+      parameters:
+      - description: The ID of the component to retrieve the latest Provenance Events for.
+        in: path
+        name: componentId
+        required: true
+        schema:
+          type: string
+      - description: The number of events to limit the response to. Defaults to 10.
+        in: query
+        name: limit
+        schema:
+          type: integer
+          format: int32
+          default: 10
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LatestProvenanceEventsEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read Component Provenance Data - /provenance-data/{component-type}/{uuid}: []
+      - Read Component Data - /data/{component-type}/{uuid}: []
+      summary: Retrieves the latest cached Provenance Events for the specified component
+      tags:
+      - ProvenanceEvents
+  /provenance-events/replays:
+    post:
+      operationId: submitReplay
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitReplayRequestEntity'
+        description: The replay request.
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvenanceEventEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read Component Provenance Data - /provenance-data/{component-type}/{uuid}: []
+      - Read Component Data - /data/{component-type}/{uuid}: []
+      - Write Component Data - /data/{component-type}/{uuid}: []
+      summary: Replays content from a provenance event
+      tags:
+      - ProvenanceEvents
+  /provenance-events/{id}:
+    get:
+      operationId: getProvenanceEvent
+      parameters:
+      - description: The id of the node where this event exists if clustered.
+        in: query
+        name: clusterNodeId
+        schema:
+          type: string
+      - description: The provenance event id.
+        in: path
+        name: id
+        required: true
+        schema:
+          $ref: '#/components/schemas/LongParameter'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvenanceEventEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read Component Provenance Data - /provenance-data/{component-type}/{uuid}: []
+      summary: Gets a provenance event
+      tags:
+      - ProvenanceEvents
+  /provenance-events/{id}/content/input:
+    get:
+      operationId: getInputContent
+      parameters:
+      - description: Range of bytes requested
+        in: header
+        name: Range
+        schema:
+          type: string
+      - description: The id of the node where the content exists if clustered.
+        in: query
+        name: clusterNodeId
+        schema:
+          type: string
+      - description: The provenance event id.
+        in: path
+        name: id
+        required: true
+        schema:
+          $ref: '#/components/schemas/LongParameter'
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StreamingOutput'
+        '206':
+          description: Partial Content with range of bytes requested
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+        '416':
+          description: Requested Range Not Satisfiable based on bytes requested
+      security:
+      - Read Component Provenance Data - /provenance-data/{component-type}/{uuid}: []
+      - Read Component Data - /data/{component-type}/{uuid}: []
+      summary: Gets the input content for a provenance event
+      tags:
+      - ProvenanceEvents
+  /provenance-events/{id}/content/output:
+    get:
+      operationId: getOutputContent
+      parameters:
+      - description: Range of bytes requested
+        in: header
+        name: Range
+        schema:
+          type: string
+      - description: The id of the node where the content exists if clustered.
+        in: query
+        name: clusterNodeId
+        schema:
+          type: string
+      - description: The provenance event id.
+        in: path
+        name: id
+        required: true
+        schema:
+          $ref: '#/components/schemas/LongParameter'
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StreamingOutput'
+        '206':
+          description: Partial Content with range of bytes requested
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+        '416':
+          description: Requested Range Not Satisfiable based on bytes requested
+      security:
+      - Read Component Provenance Data - /provenance-data/{component-type}/{uuid}: []
+      - Read Component Data - /data/{component-type}/{uuid}: []
+      summary: Gets the output content for a provenance event
+      tags:
+      - ProvenanceEvents
+components:
+  schemas:
+    ProvenanceEventDTO:
+      type: object
+      description: The provenance events that matched the search criteria.
+      properties:
+        alternateIdentifierUri:
+          type: string
+          description: The alternate identifier uri for the fileflow for the event.
+        attributes:
+          type: array
+          description: The attributes of the flowfile for the event.
+          items:
+            $ref: '#/components/schemas/AttributeDTO'
+        childUuids:
+          type: array
+          description: The child uuids for the event.
+          items:
+            type: string
+            description: The child uuids for the event.
+        clusterNodeAddress:
+          type: string
+          description: The label for the node where the event originated.
+        clusterNodeId:
+          type: string
+          description: The identifier for the node where the event originated.
+        componentId:
+          type: string
+          description: The id of the component that generated the event.
+        componentName:
+          type: string
+          description: The name of the component that generated the event.
+        componentType:
+          type: string
+          description: The type of the component that generated the event.
+        connectorId:
+          type: string
+          description: The id of the connector that manages the component that generated the event. If the component is not managed by a connector, this will not be set.
+        contentEqual:
+          type: boolean
+          description: Whether the input and output content claim is the same.
+        details:
+          type: string
+          description: The event details.
+        eventDuration:
+          type: integer
+          format: int64
+          description: The event duration in milliseconds.
+        eventId:
+          type: integer
+          format: int64
+          description: The event id. This is a one up number that's unique per node.
+        eventTime:
+          type: string
+          description: The timestamp of the event.
+        eventTimestamp:
+          type: string
+          description: Event Timestamp formatted using ISO8601
+        eventType:
+          type: string
+          description: The type of the event.
+        fileSize:
+          type: string
+          description: The size of the flowfile for the event.
+        fileSizeBytes:
+          type: integer
+          format: int64
+          description: The size of the flowfile in bytes for the event.
+        flowFileUuid:
+          type: string
+          description: The uuid of the flowfile for the event.
+        groupId:
+          type: string
+          description: The id of the group that the component resides in. If the component is no longer in the flow, the group id will not be set.
+        id:
+          type: string
+          description: The event uuid.
+        inputContentAvailable:
+          type: boolean
+          description: Whether the input content is still available.
+        inputContentClaimContainer:
+          type: string
+          description: The container in which the input content claim lives.
+        inputContentClaimFileSize:
+          type: string
+          description: The file size of the input content claim formatted.
+        inputContentClaimFileSizeBytes:
+          type: integer
+          format: int64
+          description: The file size of the intput content claim in bytes.
+        inputContentClaimIdentifier:
+          type: string
+          description: The identifier of the input content claim.
+        inputContentClaimOffset:
+          type: integer
+          format: int64
+          description: The offset into the input content claim where the FlowFiles content begins.
+        inputContentClaimSection:
+          type: string
+          description: The section in which the input content claim lives.
+        lineageDuration:
+          type: integer
+          format: int64
+          description: The duration since the lineage began, in milliseconds.
+        outputContentAvailable:
+          type: boolean
+          description: Whether the output content is still available.
+        outputContentClaimContainer:
+          type: string
+          description: The container in which the output content claim lives.
+        outputContentClaimFileSize:
+          type: string
+          description: The file size of the output content claim formatted.
+        outputContentClaimFileSizeBytes:
+          type: integer
+          format: int64
+          description: The file size of the output content claim in bytes.
+        outputContentClaimIdentifier:
+          type: string
+          description: The identifier of the output content claim.
+        outputContentClaimOffset:
+          type: integer
+          format: int64
+          description: The offset into the output content claim where the FlowFiles content begins.
+        outputContentClaimSection:
+          type: string
+          description: The section in which the output content claim lives.
+        parentUuids:
+          type: array
+          description: The parent uuids for the event.
+          items:
+            type: string
+            description: The parent uuids for the event.
+        relationship:
+          type: string
+          description: The relationship to which the flowfile was routed if the event is of type ROUTE.
+        replayAvailable:
+          type: boolean
+          description: Whether or not replay is available.
+        replayExplanation:
+          type: string
+          description: Explanation as to why replay is unavailable.
+        sourceConnectionIdentifier:
+          type: string
+          description: The identifier of the queue/connection from which the flowfile was pulled to generate this event. May be null if the queue/connection is unknown or the flowfile was generated from this event.
+        sourceSystemFlowFileId:
+          type: string
+          description: The source system flowfile id.
+        transitUri:
+          type: string
+          description: The source/destination system uri if the event was a RECEIVE/SEND.
+    StreamingOutput:
+      type: object
+    LongParameter:
+      type: object
+      properties:
+        long:
+          type: integer
+          format: int64
+    NodeReplayLastEventSnapshotDTO:
+      type: object
+      description: The node-wise results
+      properties:
+        address:
+          type: string
+          description: The API address of the node
+        apiPort:
+          type: integer
+          format: int32
+          description: The API port used to communicate with the node
+        nodeId:
+          type: string
+          description: The unique ID that identifies the node
+        snapshot:
+          $ref: '#/components/schemas/ReplayLastEventSnapshotDTO'
+      xml:
+        name: nodeReplayLastEventSnapshot
+    ProvenanceEventEntity:
+      type: object
+      properties:
+        provenanceEvent:
+          $ref: '#/components/schemas/ProvenanceEventDTO'
+      xml:
+        name: provenanceEventEntity
+    LatestProvenanceEventsEntity:
+      type: object
+      properties:
+        latestProvenanceEvents:
+          $ref: '#/components/schemas/LatestProvenanceEventsDTO'
+      xml:
+        name: latestProvenanceEventsEntity
+    SubmitReplayRequestEntity:
+      type: object
+      properties:
+        clusterNodeId:
+          type: string
+          description: The identifier of the node where to submit the replay request.
+        eventId:
+          type: integer
+          format: int64
+          description: The event identifier
+      xml:
+        name: copySnippetRequestEntity
+    LatestProvenanceEventsDTO:
+      type: object
+      properties:
+        componentId:
+          type: string
+        provenanceEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProvenanceEventDTO'
+    AttributeDTO:
+      type: object
+      description: The attributes of the flowfile for the event.
+      properties:
+        name:
+          type: string
+          description: The attribute name.
+        previousValue:
+          type: string
+          description: The value of the attribute before the event took place.
+        value:
+          type: string
+          description: The attribute value.
+    ReplayLastEventResponseEntity:
+      type: object
+      properties:
+        aggregateSnapshot:
+          $ref: '#/components/schemas/ReplayLastEventSnapshotDTO'
+        componentId:
+          type: string
+          description: The UUID of the component whose last event should be replayed.
+        nodeSnapshots:
+          type: array
+          description: The node-wise results
+          items:
+            $ref: '#/components/schemas/NodeReplayLastEventSnapshotDTO'
+        nodes:
+          type: string
+          description: Which nodes were requested to replay their last provenance event.
+          enum:
+          - ALL
+          - PRIMARY
+      xml:
+        name: replayLastEventResponseEntity
+    ReplayLastEventSnapshotDTO:
+      type: object
+      description: The snapshot from the node
+      properties:
+        eventAvailable:
+          type: boolean
+          description: Whether or not an event was available. This may not be populated if there was a failure.
+        eventsReplayed:
+          type: array
+          description: The IDs of the events that were successfully replayed
+          items:
+            type: integer
+            format: int64
+            description: The IDs of the events that were successfully replayed
+        failureExplanation:
+          type: string
+          description: If unable to replay an event, specifies why the event could not be replayed
+      xml:
+        name: replayLastEventSnapshot
+    ReplayLastEventRequestEntity:
+      type: object
+      properties:
+        componentId:
+          type: string
+          description: The UUID of the component whose last event should be replayed.
+        nodes:
+          type: string
+          description: Which nodes are to replay their last provenance event.
+          enum:
+          - ALL
+          - PRIMARY
+      xml:
+        name: replayLastEventRequestEntity
+  securitySchemes:
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
+      bearerFormat: JWT
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http

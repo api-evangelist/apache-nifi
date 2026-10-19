@@ -1,0 +1,73 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST Authentication API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
+tags:
+- name: Authentication
+paths:
+  /authentication/configuration:
+    get:
+      operationId: getAuthenticationConfiguration
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationConfigurationEntity'
+      security: []
+      summary: Retrieves the authentication configuration details and status information
+      tags:
+      - Authentication
+components:
+  schemas:
+    AuthenticationConfigurationEntity:
+      type: object
+      properties:
+        authenticationConfiguration:
+          $ref: '#/components/schemas/AuthenticationConfigurationDTO'
+      xml:
+        name: authenticationConfigurationEntity
+    AuthenticationConfigurationDTO:
+      type: object
+      properties:
+        externalLoginRequired:
+          type: boolean
+          description: Whether the system requires login through an external Identity Provider
+          readOnly: true
+        loginSupported:
+          type: boolean
+          description: Whether the system is configured to support login operations
+          readOnly: true
+        loginUri:
+          type:
+          - string
+          - 'null'
+          description: Location for initiating login processing
+          readOnly: true
+        logoutUri:
+          type:
+          - string
+          - 'null'
+          description: Location for initiating logout processing
+          readOnly: true
+  securitySchemes:
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
+      bearerFormat: JWT
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http

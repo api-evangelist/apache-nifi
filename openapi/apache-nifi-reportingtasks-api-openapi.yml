@@ -1,0 +1,1119 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST Reporting Tasks API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
+tags:
+- name: ReportingTasks
+paths:
+  /reporting-tasks/{id}:
+    delete:
+      operationId: removeReportingTask
+      parameters:
+      - description: The revision is used to verify the client is working with the latest version of the flow.
+        in: query
+        name: version
+        schema:
+          $ref: '#/components/schemas/LongParameter'
+      - description: If the client id is not specified, new one will be generated. This value (whether specified or generated) is included in the response.
+        in: query
+        name: clientId
+        schema:
+          $ref: '#/components/schemas/ClientIdParameter'
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: The reporting task id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportingTaskEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /reporting-tasks/{uuid}: []
+      - Write - /controller: []
+      - Read - any referenced Controller Services - /controller-services/{uuid}: []
+      summary: Deletes a reporting task
+      tags:
+      - ReportingTasks
+    get:
+      operationId: getReportingTask
+      parameters:
+      - description: The reporting task id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportingTaskEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /reporting-tasks/{uuid}: []
+      summary: Gets a reporting task
+      tags:
+      - ReportingTasks
+    put:
+      operationId: updateReportingTask
+      parameters:
+      - description: The reporting task id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportingTaskEntity'
+        description: The reporting task configuration details.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportingTaskEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /reporting-tasks/{uuid}: []
+      - Read - any referenced Controller Services if this request changes the reference - /controller-services/{uuid}: []
+      summary: Updates a reporting task
+      tags:
+      - ReportingTasks
+  /reporting-tasks/{id}/bulletins/clear-requests:
+    post:
+      operationId: clearBulletins_7
+      parameters:
+      - description: The reporting task id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClearBulletinsRequestEntity'
+        description: The clear bulletin request specifying the timestamp from which to clear bulletins.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClearBulletinsResultEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /reporting-tasks/{uuid}: []
+      summary: Clears bulletins for a reporting task
+      tags:
+      - ReportingTasks
+  /reporting-tasks/{id}/config/analysis:
+    post:
+      operationId: analyzeConfiguration_3
+      parameters:
+      - description: The reporting task id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigurationAnalysisEntity'
+        description: The configuration analysis request.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigurationAnalysisEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /reporting-tasks/{uuid}: []
+      summary: Performs analysis of the component's configuration, providing information about…
+      tags:
+      - ReportingTasks
+  /reporting-tasks/{id}/config/verification-requests:
+    post:
+      description: This will initiate the process of verifying a given Reporting Task configuration. This may be a long-running task. As a result, this endpoint will immediately return a ReportingTaskConfigVerificationRequestEntity, and the process of performing the verification will occur asynchronously in the background. The client may then periodically poll the status of the request by issuing a GET request to /reporting-tasks/{taskId}/verification-requests/{requestId}. Once the request is completed, the client is expected to issue a DELETE request to /reporting-tasks/{serviceId}/verification-requests/{requestId}.
+      operationId: submitConfigVerificationRequest_2
+      parameters:
+      - description: The reporting task id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyConfigRequestEntity'
+        description: The reporting task configuration verification request.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyConfigRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /reporting-tasks/{uuid}: []
+      - Read - any referenced Controller Services - /controller-services/{uuid}: []
+      summary: Performs verification of the Reporting Task's configuration
+      tags:
+      - ReportingTasks
+  /reporting-tasks/{id}/config/verification-requests/{requestId}:
+    delete:
+      description: Deletes the Verification Request with the given ID. After a request is created, it is expected that the client will properly clean up the request by DELETE'ing it, once the Verification process has completed. If the request is deleted before the request completes, then the Verification request will finish the step that it is currently performing and then will cancel any subsequent steps.
+      operationId: deleteVerificationRequest_3
+      parameters:
+      - description: The ID of the Reporting Task
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The ID of the Verification Request
+        in: path
+        name: requestId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyConfigRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can remove it: []
+      summary: Deletes the Verification Request with the given ID
+      tags:
+      - ReportingTasks
+    get:
+      description: Returns the Verification Request with the given ID. Once an Verification Request has been created, that request can subsequently be retrieved via this endpoint, and the request that is fetched will contain the updated state, such as percent complete, the current state of the request, and any failures.
+      operationId: getVerificationRequest_3
+      parameters:
+      - description: The ID of the Reporting Task
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The ID of the Verification Request
+        in: path
+        name: requestId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyConfigRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can get it: []
+      summary: Returns the Verification Request with the given ID
+      tags:
+      - ReportingTasks
+  /reporting-tasks/{id}/descriptors:
+    get:
+      operationId: getPropertyDescriptor_4
+      parameters:
+      - description: The reporting task id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The property name.
+        in: query
+        name: propertyName
+        required: true
+        schema:
+          type: string
+      - description: Property Descriptor requested sensitive status
+        in: query
+        name: sensitive
+        schema:
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyDescriptorEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /reporting-tasks/{uuid}: []
+      summary: Gets a reporting task property descriptor
+      tags:
+      - ReportingTasks
+  /reporting-tasks/{id}/run-status:
+    put:
+      operationId: updateRunStatus_6
+      parameters:
+      - description: The reporting task id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportingTaskRunStatusEntity'
+        description: The reporting task run status.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportingTaskEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /reporting-tasks/{uuid} or  or /operation/reporting-tasks/{uuid}: []
+      summary: Updates run status of a reporting task
+      tags:
+      - ReportingTasks
+  /reporting-tasks/{id}/state:
+    get:
+      operationId: getState_4
+      parameters:
+      - description: The reporting task id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentStateEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /reporting-tasks/{uuid}: []
+      summary: Gets the state for a reporting task
+      tags:
+      - ReportingTasks
+  /reporting-tasks/{id}/state/clear-requests:
+    post:
+      operationId: clearState_4
+      parameters:
+      - description: The reporting task id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/ComponentStateEntity'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentStateEntity'
+        description: Optional component state to perform a selective key removal. If omitted, clears all state.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentStateEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /reporting-tasks/{uuid}: []
+      summary: Clears the state for a reporting task
+      tags:
+      - ReportingTasks
+components:
+  schemas:
+    PropertyDescriptorDTO:
+      type: object
+      description: The descriptors for the reporting tasks properties.
+      properties:
+        allowableValues:
+          type: array
+          description: Allowable values for the property. If empty then the allowed values are not constrained.
+          items:
+            $ref: '#/components/schemas/AllowableValueEntity'
+        defaultValue:
+          type: string
+          description: The default value for the property.
+        dependencies:
+          type: array
+          description: A list of dependencies that must be met in order for this Property to be relevant. If any of these dependencies is not met, the property described by this Property Descriptor is not relevant.
+          items:
+            $ref: '#/components/schemas/PropertyDependencyDTO'
+        description:
+          type: string
+          description: The description for the property. Used to relay additional details to a user or provide a mechanism of documenting intent.
+        displayName:
+          type: string
+          description: The human readable name for the property.
+        dynamic:
+          type: boolean
+          description: Whether the property is dynamic (user-defined).
+        expressionLanguageScope:
+          type: string
+          description: Scope of the Expression Language evaluation for the property.
+        identifiesControllerService:
+          type: string
+          description: If the property identifies a controller service this returns the fully qualified type.
+        identifiesControllerServiceBundle:
+          $ref: '#/components/schemas/BundleDTO'
+        name:
+          type: string
+          description: The name for the property.
+        required:
+          type: boolean
+          description: Whether the property is required.
+        sensitive:
+          type: boolean
+          description: Whether the property is sensitive and protected whenever stored or represented.
+        supportsEl:
+          type: boolean
+          description: Whether the property supports expression language.
+    ReportingTaskDTO:
+      type: object
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The number of active threads for the reporting task.
+        annotationData:
+          type: string
+          description: The annotation data for the reporting task. This is how the custom UI relays configuration to the reporting task.
+        bundle:
+          $ref: '#/components/schemas/BundleDTO'
+        comments:
+          type: string
+          description: The comments of the reporting task.
+        customUiUrl:
+          type: string
+          description: The URL for the custom configuration UI for the reporting task.
+        defaultSchedulingPeriod:
+          type: object
+          additionalProperties:
+            type: string
+            description: The default scheduling period for the different scheduling strategies.
+          description: The default scheduling period for the different scheduling strategies.
+        deprecated:
+          type: boolean
+          description: Whether the reporting task has been deprecated.
+        descriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PropertyDescriptorDTO'
+          description: The descriptors for the reporting tasks properties.
+        extensionMissing:
+          type: boolean
+          description: Whether the underlying extension is missing.
+        id:
+          type: string
+          description: The id of the component.
+        multipleVersionsAvailable:
+          type: boolean
+          description: Whether the reporting task has multiple versions available.
+        name:
+          type: string
+          description: The name of the reporting task.
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        persistsState:
+          type: boolean
+          description: Whether the reporting task persists state.
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties of the reporting task.
+          description: The properties of the reporting task.
+        restricted:
+          type: boolean
+          description: Whether the reporting task requires elevated privileges.
+        schedulingPeriod:
+          type: string
+          description: The frequency with which to schedule the reporting task. The format of the value will depend on the value of the schedulingStrategy.
+        schedulingStrategy:
+          type: string
+          description: The scheduling strategy that determines how the schedulingPeriod value should be interpreted.
+        sensitiveDynamicPropertyNames:
+          type: array
+          description: Set of sensitive dynamic property names
+          items:
+            type: string
+            description: Set of sensitive dynamic property names
+          uniqueItems: true
+        state:
+          type: string
+          description: The state of the reporting task.
+          enum:
+          - RUNNING
+          - STOPPED
+          - DISABLED
+        supportsSensitiveDynamicProperties:
+          type: boolean
+          description: Whether the reporting task supports sensitive dynamic properties.
+        type:
+          type: string
+          description: The fully qualified type of the reporting task.
+        validationErrors:
+          type: array
+          description: Gets the validation errors from the reporting task. These validation errors represent the problems with the reporting task that must be resolved before it can be scheduled to run.
+          items:
+            type: string
+            description: Gets the validation errors from the reporting task. These validation errors represent the problems with the reporting task that must be resolved before it can be scheduled to run.
+        validationStatus:
+          type: string
+          description: Indicates whether the Reporting Task is valid, invalid, or still in the process of validating (i.e., it is unknown whether or not the Reporting Task is valid)
+          enum:
+          - VALID
+          - INVALID
+          - VALIDATING
+          readOnly: true
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+    StateMapDTO:
+      type: object
+      description: The local state for this component.
+      properties:
+        scope:
+          type: string
+          description: The scope of this StateMap.
+        state:
+          type: array
+          description: The state.
+          items:
+            $ref: '#/components/schemas/StateEntryDTO'
+        totalEntryCount:
+          type: integer
+          format: int32
+          description: The total number of state entries. When the state map is lengthy, only of portion of the entries are returned.
+    ConfigVerificationResultDTO:
+      type: object
+      description: The Results of the verification
+      properties:
+        explanation:
+          type: string
+          description: An explanation of why the step was or was not successful
+        outcome:
+          type: string
+          description: The outcome of the verification
+          enum:
+          - SUCCESSFUL
+          - FAILED
+          - SKIPPED
+        subject:
+          type: string
+          description: The subject of the verification step
+        verificationStepName:
+          type: string
+          description: The name of the verification step
+      readOnly: true
+    ClearBulletinsRequestEntity:
+      type: object
+      properties:
+        fromTimestamp:
+          type: string
+          description: The timestamp from which to clear bulletins (inclusive). This field is required.
+      required:
+      - fromTimestamp
+      xml:
+        name: clearBulletinsRequestEntity
+    VerifyConfigRequestEntity:
+      type: object
+      properties:
+        request:
+          $ref: '#/components/schemas/VerifyConfigRequestDTO'
+      xml:
+        name: verifyConfigRequest
+    AllowableValueDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: A description for this allowable value.
+        displayName:
+          type: string
+          description: A human readable value that is allowed for the property descriptor.
+        value:
+          type: string
+          description: A value that is allowed for the property descriptor.
+    ReportingTaskRunStatusEntity:
+      type: object
+      properties:
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        state:
+          type: string
+          description: The run status of the ReportingTask.
+          enum:
+          - RUNNING
+          - STOPPED
+      xml:
+        name: entity
+    PropertyDescriptorEntity:
+      type: object
+      properties:
+        propertyDescriptor:
+          $ref: '#/components/schemas/PropertyDescriptorDTO'
+      xml:
+        name: propertyDescriptor
+    ClearBulletinsResultEntity:
+      type: object
+      properties:
+        bulletins:
+          type: array
+          description: The current bulletins for the component after clearing.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        bulletinsCleared:
+          type: integer
+          format: int32
+          description: The number of bulletins that were cleared.
+        componentId:
+          type: string
+          description: The id of the component for which bulletins were cleared.
+      xml:
+        name: clearBulletinsResultEntity
+    ComponentStateEntity:
+      type: object
+      properties:
+        componentState:
+          $ref: '#/components/schemas/ComponentStateDTO'
+      xml:
+        name: componentStateEntity
+    PropertyDependencyDTO:
+      type: object
+      description: A list of dependencies that must be met in order for this Property to be relevant. If any of these dependencies is not met, the property described by this Property Descriptor is not relevant.
+      properties:
+        dependentValues:
+          type: array
+          description: The values for the property that satisfies the dependency, or null if the dependency is satisfied by the presence of any value for the associated property name
+          items:
+            type: string
+            description: The values for the property that satisfies the dependency, or null if the dependency is satisfied by the presence of any value for the associated property name
+          uniqueItems: true
+        propertyName:
+          type: string
+          description: The name of the property that is being depended upon
+    ReportingTaskEntity:
+      type: object
+      properties:
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/ReportingTaskDTO'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        operatePermissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        status:
+          $ref: '#/components/schemas/ReportingTaskStatusDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      xml:
+        name: reportingTaskEntity
+    ComponentStateDTO:
+      type: object
+      description: The component state.
+      properties:
+        clusterState:
+          $ref: '#/components/schemas/StateMapDTO'
+        componentId:
+          type: string
+          description: The component identifier.
+        dropStateKeySupported:
+          type: boolean
+          description: Whether dropping state by key is supported for this component. Defaults to false when not specified by the component.
+        localState:
+          $ref: '#/components/schemas/StateMapDTO'
+        stateDescription:
+          type: string
+          description: Description of the state this component persists.
+    BulletinEntity:
+      type: object
+      description: The bulletins for this component.
+      properties:
+        bulletin:
+          $ref: '#/components/schemas/BulletinDTO'
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        groupId:
+          type: string
+        id:
+          type: integer
+          format: int64
+        nodeAddress:
+          type: string
+        sourceId:
+          type: string
+        timestamp:
+          type: string
+          description: When this bulletin was generated.
+        timestampIso:
+          type: string
+          description: When this bulletin was generated in ISO format with full date and milliseconds.
+      xml:
+        name: bulletinEntity
+    RevisionDTO:
+      type: object
+      description: The revision of the Process Group
+      properties:
+        clientId:
+          type: string
+          description: 'A client identifier used to make a request.
+
+            By including a client identifier, the API can allow multiple requests without needing the current revision.
+
+            Due to the asynchronous nature of requests/responses this was implemented to allow the client to make numerous requests without having to wait for the previous response to come back
+
+            '
+        lastModifier:
+          type: string
+          description: The user that last modified the flow.
+          readOnly: true
+        version:
+          type: integer
+          format: int64
+          description: 'NiFi employs an optimistic locking strategy where the client must include a revision in their request when performing an update.
+
+            In a response to a mutable flow request, this field represents the updated base version.
+
+            '
+    ConfigurationAnalysisDTO:
+      type: object
+      description: The configuration analysis
+      properties:
+        componentId:
+          type: string
+          description: The ID of the component
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The configured properties for the component
+          description: The configured properties for the component
+        referencedAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: The attributes that are referenced by the properties, mapped to recently used values
+          description: The attributes that are referenced by the properties, mapped to recently used values
+        supportsVerification:
+          type: boolean
+          description: Whether or not the component supports verification
+    VerifyConfigRequestDTO:
+      type: object
+      description: The request
+      properties:
+        attributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: FlowFile Attributes that should be used to evaluate Expression Language for resolving property values
+          description: FlowFile Attributes that should be used to evaluate Expression Language for resolving property values
+        complete:
+          type: boolean
+          description: Whether or not the request is completed
+          readOnly: true
+        componentId:
+          type: string
+          description: The ID of the component whose configuration was verified
+        failureReason:
+          type: string
+          description: The reason for the request failing, or null if the request has not failed
+          readOnly: true
+        lastUpdated:
+          type: string
+          format: date-time
+          description: The timestamp of when the request was last updated
+          readOnly: true
+        percentCompleted:
+          type: integer
+          format: int32
+          description: A value between 0 and 100 (inclusive) indicating how close the request is to completion
+          readOnly: true
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The configured component properties
+          description: The configured component properties
+        requestId:
+          type: string
+          description: The ID of the request
+          readOnly: true
+        results:
+          type: array
+          description: The Results of the verification
+          items:
+            $ref: '#/components/schemas/ConfigVerificationResultDTO'
+          readOnly: true
+        state:
+          type: string
+          description: A description of the current state of the request
+          readOnly: true
+        submissionTime:
+          type: string
+          format: date-time
+          description: The timestamp of when the request was submitted
+          readOnly: true
+        updateSteps:
+          type: array
+          description: The steps that are required in order to complete the request, along with the status of each
+          items:
+            $ref: '#/components/schemas/VerifyConfigUpdateStepDTO'
+          readOnly: true
+        uri:
+          type: string
+          description: The URI for the request
+          readOnly: true
+    BundleDTO:
+      type: object
+      description: If the property identifies a controller service this returns the bundle of the type, null otherwise.
+      properties:
+        artifact:
+          type: string
+          description: The artifact of the bundle.
+        group:
+          type: string
+          description: The group of the bundle.
+        version:
+          type: string
+          description: The version of the bundle.
+    StateEntryDTO:
+      type: object
+      description: The state.
+      properties:
+        clusterNodeAddress:
+          type: string
+          description: The label for the node where the state originated.
+        clusterNodeId:
+          type: string
+          description: The identifier for the node where the state originated.
+        key:
+          type: string
+          description: The key for this state.
+        value:
+          type: string
+          description: The value for this state.
+    PermissionsDTO:
+      type: object
+      description: The permissions for this component.
+      properties:
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        canWrite:
+          type: boolean
+          description: Indicates whether the user can write a given resource.
+          readOnly: true
+    LongParameter:
+      type: object
+      properties:
+        long:
+          type: integer
+          format: int64
+    BulletinDTO:
+      type: object
+      properties:
+        category:
+          type: string
+          description: The category of this bulletin.
+        groupId:
+          type: string
+          description: The group id of the source component.
+        id:
+          type: integer
+          format: int64
+          description: The id of the bulletin.
+        level:
+          type: string
+          description: The level of the bulletin.
+        message:
+          type: string
+          description: The bulletin message.
+        nodeAddress:
+          type: string
+          description: If clustered, the address of the node from which the bulletin originated.
+        sourceId:
+          type: string
+          description: The id of the source component.
+        sourceName:
+          type: string
+          description: The name of the source component.
+        sourceType:
+          type: string
+          description: The type of the source component
+        stackTrace:
+          type: string
+          description: The stack trace associated with the bulletin, if any.
+        timestamp:
+          type: string
+          description: When this bulletin was generated.
+        timestampIso:
+          type: string
+          description: When this bulletin was generated in ISO format with full date and milliseconds.
+    AllowableValueEntity:
+      type: object
+      description: Allowable values for the property. If empty then the allowed values are not constrained.
+      properties:
+        allowableValue:
+          $ref: '#/components/schemas/AllowableValueDTO'
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+      xml:
+        name: entity
+    ClientIdParameter:
+      type: object
+      properties:
+        clientId:
+          type: string
+    PositionDTO:
+      type: object
+      description: The position of this component in the UI if applicable.
+      properties:
+        x:
+          type: number
+          format: double
+          description: The x coordinate.
+        y:
+          type: number
+          format: double
+          description: The y coordinate.
+    ConfigurationAnalysisEntity:
+      type: object
+      properties:
+        configurationAnalysis:
+          $ref: '#/components/schemas/ConfigurationAnalysisDTO'
+      xml:
+        name: configurationAnalysis
+    VerifyConfigUpdateStepDTO:
+      type: object
+      description: The steps that are required in order to complete the request, along with the status of each
+      properties:
+        complete:
+          type: boolean
+          description: Whether or not this step has completed
+          readOnly: true
+        description:
+          type: string
+          description: Explanation of what happens in this step
+          readOnly: true
+        failureReason:
+          type: string
+          description: An explanation of why this step failed, or null if this step did not fail
+          readOnly: true
+      readOnly: true
+    ReportingTaskStatusDTO:
+      type: object
+      description: The status for this ReportingTask.
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The number of active threads for the component.
+        runStatus:
+          type: string
+          description: The run status of this ReportingTask
+          enum:
+          - RUNNING
+          - STOPPED
+          - DISABLED
+          readOnly: true
+        validationStatus:
+          type: string
+          description: Indicates whether the component is valid, invalid, or still in the process of validating (i.e., it is unknown whether or not the component is valid)
+          enum:
+          - VALID
+          - INVALID
+          - VALIDATING
+          readOnly: true
+      readOnly: true
+  securitySchemes:
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
+      bearerFormat: JWT
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http

@@ -1,0 +1,248 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST Site To Site API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
+tags:
+- name: SiteToSite
+paths:
+  /site-to-site:
+    get:
+      operationId: getSiteToSiteDetails
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControllerEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /site-to-site: []
+      summary: Returns the details about this NiFi necessary to communicate via site to site
+      tags:
+      - SiteToSite
+  /site-to-site/peers:
+    get:
+      operationId: getPeers
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeersEntity'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/PeersEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /site-to-site: []
+      summary: Returns the available Peers and its status of this NiFi
+      tags:
+      - SiteToSite
+components:
+  schemas:
+    ControllerEntity:
+      type: object
+      properties:
+        controller:
+          $ref: '#/components/schemas/ControllerDTO'
+      xml:
+        name: controllerEntity
+    PositionDTO:
+      type: object
+      description: The position of this component in the UI if applicable.
+      properties:
+        x:
+          type: number
+          format: double
+          description: The x coordinate.
+        y:
+          type: number
+          format: double
+          description: The y coordinate.
+    PortDTO:
+      type: object
+      description: The output ports available to received data from the NiFi.
+      properties:
+        allowRemoteAccess:
+          type: boolean
+          description: Whether this port can be accessed remotely via Site-to-Site protocol.
+        comments:
+          type: string
+          description: The comments for the port.
+        concurrentlySchedulableTaskCount:
+          type: integer
+          format: int32
+          description: The number of tasks that should be concurrently scheduled for the port.
+        id:
+          type: string
+          description: The id of the component.
+        name:
+          type: string
+          description: The name of the port.
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        portFunction:
+          type: string
+          description: Specifies how the Port functions
+          enum:
+          - STANDARD
+          - FAILURE
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        state:
+          type: string
+          description: The state of the port.
+          enum:
+          - RUNNING
+          - STOPPED
+          - DISABLED
+        transmitting:
+          type: boolean
+          description: Whether the port has incoming or output connections to a remote NiFi. This is only applicable when the port is allowed to be accessed remotely.
+        type:
+          type: string
+          description: The type of port.
+          enum:
+          - INPUT_PORT
+          - OUTPUT_PORT
+        validationErrors:
+          type: array
+          description: Gets the validation errors from this port. These validation errors represent the problems with the port that must be resolved before it can be started.
+          items:
+            type: string
+            description: Gets the validation errors from this port. These validation errors represent the problems with the port that must be resolved before it can be started.
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+    PeerDTO:
+      type: object
+      properties:
+        flowFileCount:
+          type: integer
+          format: int32
+          description: The number of flowFiles this peer holds.
+        hostname:
+          type: string
+          description: The hostname of this peer.
+        port:
+          type: integer
+          format: int32
+          description: The port number of this peer.
+        secure:
+          type: boolean
+          description: Returns if this peer connection is secure.
+    ControllerDTO:
+      type: object
+      properties:
+        activeRemotePortCount:
+          type: integer
+          format: int32
+          description: The number of active remote ports contained in the NiFi.
+        comments:
+          type: string
+          description: The comments for the NiFi.
+        disabledCount:
+          type: integer
+          format: int32
+          description: The number of disabled components in the NiFi.
+        id:
+          type: string
+          description: The id of the NiFi.
+        inactiveRemotePortCount:
+          type: integer
+          format: int32
+          description: The number of inactive remote ports contained in the NiFi.
+        inputPortCount:
+          type: integer
+          format: int32
+          description: The number of input ports contained in the NiFi.
+        inputPorts:
+          type: array
+          description: The input ports available to send data to for the NiFi.
+          items:
+            $ref: '#/components/schemas/PortDTO'
+          uniqueItems: true
+        instanceId:
+          type: string
+          description: If clustered, the id of the Cluster Manager, otherwise the id of the NiFi.
+        invalidCount:
+          type: integer
+          format: int32
+          description: The number of invalid components in the NiFi.
+        name:
+          type: string
+          description: The name of the NiFi.
+        outputPortCount:
+          type: integer
+          format: int32
+          description: The number of output ports in the NiFi.
+        outputPorts:
+          type: array
+          description: The output ports available to received data from the NiFi.
+          items:
+            $ref: '#/components/schemas/PortDTO'
+          uniqueItems: true
+        remoteSiteHttpListeningPort:
+          type: integer
+          format: int32
+          description: The HTTP(S) Port on which this instance is listening for Remote Transfers of FlowFiles. If this instance is not configured to receive FlowFiles from remote instances, this will be null.
+        remoteSiteListeningPort:
+          type: integer
+          format: int32
+          description: The Socket Port on which this instance is listening for Remote Transfers of FlowFiles. If this instance is not configured to receive FlowFiles from remote instances, this will be null.
+        runningCount:
+          type: integer
+          format: int32
+          description: The number of running components in the NiFi.
+        siteToSiteSecure:
+          type: boolean
+          description: Indicates whether or not Site-to-Site communications with this instance is secure (2-way authentication).
+        stoppedCount:
+          type: integer
+          format: int32
+          description: The number of stopped components in the NiFi.
+    PeersEntity:
+      type: object
+      properties:
+        peers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PeerDTO'
+      xml:
+        name: peersEntity
+  securitySchemes:
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
+      bearerFormat: JWT
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http

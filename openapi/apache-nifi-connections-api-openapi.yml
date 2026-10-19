@@ -1,135 +1,652 @@
 openapi: 3.2.0
 info:
-  title: Apache NiFi REST Connections API
-  version: 2.x
-  description: 'A best-effort OpenAPI 3.1 description of selected endpoints from the Apache
-
-    NiFi REST API. NiFi exposes a comprehensive JWT-authenticated REST API for
-
-    managing processors, connections, controller services, process groups,
-
-    reporting tasks, provenance, flow versions, system diagnostics, access
-
-    control, parameter contexts, and data transfer. The canonical machine
-
-    readable specification is published by the NiFi project as
-
-    `/nifi-docs/swagger.yaml`.'
   contact:
-    name: Apache NiFi
-    url: https://nifi.apache.org/
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
   license:
-    name: Apache-2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0
-servers:
-- url: http://{host}:{port}/nifi-api
-  description: Default NiFi REST API base URL
-  variables:
-    host:
-      default: localhost
-    port:
-      default: '8080'
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST Connections API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
 tags:
 - name: Connections
-  description: Manage connections between processors
 paths:
   /connections/{id}:
-    parameters:
-    - name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    get:
-      tags:
-      - Connections
-      summary: Retrieve a connection
-      operationId: getConnection
-      security:
-      - bearerAuth: []
+    delete:
+      operationId: deleteConnection
+      parameters:
+      - description: The revision is used to verify the client is working with the latest version of the flow.
+        in: query
+        name: version
+        schema:
+          $ref: '#/components/schemas/LongParameter'
+      - description: If the client id is not specified, new one will be generated. This value (whether specified or generated) is included in the response.
+        in: query
+        name: clientId
+        schema:
+          $ref: '#/components/schemas/ClientIdParameter'
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: The connection id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
-          description: Connection entity
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConnectionEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
         '404':
-          description: Connection not found
-    put:
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write Source - /{component-type}/{uuid}: []
+      - Write - Parent Process Group - /process-groups/{uuid}: []
+      - Write Destination - /{component-type}/{uuid}: []
+      summary: Deletes a connection
       tags:
       - Connections
-      summary: Update a connection
-      operationId: updateConnection
-      security:
-      - bearerAuth: []
-      requestBody:
+    get:
+      operationId: getConnection
+      parameters:
+      - description: The connection id.
+        in: path
+        name: id
         required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read Source - /{component-type}/{uuid}: []
+      - Read Destination - /{component-type}/{uuid}: []
+      summary: Gets a connection
+      tags:
+      - Connections
+    put:
+      operationId: updateConnection
+      parameters:
+      - description: The connection id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ConnectionEntity'
+        description: The connection configuration details.
+        required: true
       responses:
         '200':
-          description: Updated connection entity
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConnectionEntity'
-    delete:
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write Source - /{component-type}/{uuid}: []
+      - Write Destination - /{component-type}/{uuid}: []
+      - Write New Destination - /{component-type}/{uuid} - if updating Destination: []
+      - Write Process Group - /process-groups/{uuid} - if updating Destination: []
+      summary: Updates a connection
       tags:
       - Connections
-      summary: Delete a connection
-      operationId: deleteConnection
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: version
-        in: query
-        required: false
-        schema:
-          type: string
-        description: Revision version for optimistic locking
-      - name: clientId
-        in: query
-        required: false
-        schema:
-          type: string
-      - name: disconnectedNodeAcknowledged
-        in: query
-        required: false
-        schema:
-          type: boolean
-      responses:
-        '200':
-          description: Connection deleted
 components:
   schemas:
-    RevisionDTO:
+    ConnectionStatusDTO:
+      type: object
+      description: The status of the connection.
+      properties:
+        aggregateSnapshot:
+          $ref: '#/components/schemas/ConnectionStatusSnapshotDTO'
+        destinationId:
+          type: string
+          description: The ID of the destination component
+        destinationName:
+          type: string
+          description: The name of the destination component
+        groupId:
+          type: string
+          description: The ID of the Process Group that the connection belongs to
+        id:
+          type: string
+          description: The ID of the connection
+        name:
+          type: string
+          description: The name of the connection
+        nodeSnapshots:
+          type: array
+          description: A list of status snapshots for each node
+          items:
+            $ref: '#/components/schemas/NodeConnectionStatusSnapshotDTO'
+        sourceId:
+          type: string
+          description: The ID of the source component
+        sourceName:
+          type: string
+          description: The name of the source component
+        statsLastRefreshed:
+          type: string
+          description: The timestamp of when the stats were last refreshed
+    ConnectionEntity:
+      type: object
+      description: The connections in this flow.
+      properties:
+        bends:
+          type: array
+          description: The bend points on the connection.
+          items:
+            $ref: '#/components/schemas/PositionDTO'
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/ConnectionDTO'
+        destinationGroupId:
+          type: string
+          description: The identifier of the group of the destination of this connection.
+        destinationId:
+          type: string
+          description: The identifier of the destination of this connection.
+        destinationType:
+          type: string
+          description: The type of component the destination connectable is.
+          enum:
+          - PROCESSOR
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - FUNNEL
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        getzIndex:
+          type: integer
+          format: int64
+          description: The z index of the connection.
+        id:
+          type: string
+          description: The id of the component.
+        labelIndex:
+          type: integer
+          format: int32
+          description: The index of the bend point where to place the connection label.
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        sourceGroupId:
+          type: string
+          description: The identifier of the group of the source of this connection.
+        sourceId:
+          type: string
+          description: The identifier of the source of this connection.
+        sourceType:
+          type: string
+          description: The type of component the source connectable is.
+          enum:
+          - PROCESSOR
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - FUNNEL
+        status:
+          $ref: '#/components/schemas/ConnectionStatusDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      required:
+      - destinationType
+      - sourceType
+      xml:
+        name: connectionEntity
+    PermissionsDTO:
+      type: object
+      description: The permissions for this component.
+      properties:
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        canWrite:
+          type: boolean
+          description: Indicates whether the user can write a given resource.
+          readOnly: true
+    BulletinEntity:
+      type: object
+      description: The bulletins for this component.
+      properties:
+        bulletin:
+          $ref: '#/components/schemas/BulletinDTO'
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        groupId:
+          type: string
+        id:
+          type: integer
+          format: int64
+        nodeAddress:
+          type: string
+        sourceId:
+          type: string
+        timestamp:
+          type: string
+          description: When this bulletin was generated.
+        timestampIso:
+          type: string
+          description: When this bulletin was generated in ISO format with full date and milliseconds.
+      xml:
+        name: bulletinEntity
+    BulletinDTO:
+      type: object
+      properties:
+        category:
+          type: string
+          description: The category of this bulletin.
+        groupId:
+          type: string
+          description: The group id of the source component.
+        id:
+          type: integer
+          format: int64
+          description: The id of the bulletin.
+        level:
+          type: string
+          description: The level of the bulletin.
+        message:
+          type: string
+          description: The bulletin message.
+        nodeAddress:
+          type: string
+          description: If clustered, the address of the node from which the bulletin originated.
+        sourceId:
+          type: string
+          description: The id of the source component.
+        sourceName:
+          type: string
+          description: The name of the source component.
+        sourceType:
+          type: string
+          description: The type of the source component
+        stackTrace:
+          type: string
+          description: The stack trace associated with the bulletin, if any.
+        timestamp:
+          type: string
+          description: When this bulletin was generated.
+        timestampIso:
+          type: string
+          description: When this bulletin was generated in ISO format with full date and milliseconds.
+    ConnectionStatusSnapshotDTO:
+      type: object
+      properties:
+        bytesIn:
+          type: integer
+          format: int64
+          description: The size of the FlowFiles that have come into the connection in the last 5 minutes.
+        bytesOut:
+          type: integer
+          format: int64
+          description: The number of bytes that have left the connection in the last 5 minutes.
+        bytesQueued:
+          type: integer
+          format: int64
+          description: The size of the FlowFiles that are currently queued in the connection.
+        destinationId:
+          type: string
+          description: The id of the destination of the connection.
+        destinationName:
+          type: string
+          description: The name of the destination of the connection.
+        flowFileAvailability:
+          type: string
+          description: The availability of FlowFiles in this connection
+        flowFilesIn:
+          type: integer
+          format: int32
+          description: The number of FlowFiles that have come into the connection in the last 5 minutes.
+        flowFilesOut:
+          type: integer
+          format: int32
+          description: The number of FlowFiles that have left the connection in the last 5 minutes.
+        flowFilesQueued:
+          type: integer
+          format: int32
+          description: The number of FlowFiles that are currently queued in the connection.
+        groupId:
+          type: string
+          description: The id of the process group the connection belongs to.
+        id:
+          type: string
+          description: The id of the connection.
+        input:
+          type: string
+          description: The input count/size for the connection in the last 5 minutes, pretty printed.
+        loadBalanceStatus:
+          type: string
+          description: The load balance status of the connection
+          enum:
+          - LOAD_BALANCE_NOT_CONFIGURED
+          - LOAD_BALANCE_ACTIVE
+          - LOAD_BALANCE_INACTIVE
+        name:
+          type: string
+          description: The name of the connection.
+        output:
+          type: string
+          description: The output count/size for the connection in the last 5 minutes, pretty printed.
+        percentUseBytes:
+          type: integer
+          format: int32
+          description: Connection percent use regarding queued FlowFiles size and backpressure threshold if configured.
+        percentUseCount:
+          type: integer
+          format: int32
+          description: Connection percent use regarding queued FlowFiles count and backpressure threshold if configured.
+        predictions:
+          $ref: '#/components/schemas/ConnectionStatusPredictionsSnapshotDTO'
+        queued:
+          type: string
+          description: The total count and size of queued FlowFiles formatted.
+        queuedCount:
+          type: string
+          description: The number of FlowFiles that are queued, pretty printed.
+        queuedSize:
+          type: string
+          description: The total size of FlowFiles that are queued formatted.
+        sourceId:
+          type: string
+          description: The id of the source of the connection.
+        sourceName:
+          type: string
+          description: The name of the source of the connection.
+    LongParameter:
+      type: object
+      properties:
+        long:
+          type: integer
+          format: int64
+    ClientIdParameter:
       type: object
       properties:
         clientId:
           type: string
+    ConnectableDTO:
+      type: object
+      description: The destination of the connection.
+      properties:
+        comments:
+          type: string
+          description: The comments for the connectable component.
+        exists:
+          type: boolean
+          description: If the connectable component represents a remote port, indicates if the target exists.
+        groupId:
+          type: string
+          description: The id of the group that the connectable component resides in
+        id:
+          type: string
+          description: The id of the connectable component.
+        name:
+          type: string
+          description: The name of the connectable component
+        running:
+          type: boolean
+          description: Reflects the current state of the connectable component.
+        transmitting:
+          type: boolean
+          description: If the connectable component represents a remote port, indicates if the target is configured to transmit.
+        type:
+          type: string
+          description: The type of component the connectable is.
+          enum:
+          - PROCESSOR
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - FUNNEL
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+      required:
+      - groupId
+      - id
+      - type
+    PositionDTO:
+      type: object
+      description: The position of this component in the UI if applicable.
+      properties:
+        x:
+          type: number
+          format: double
+          description: The x coordinate.
+        y:
+          type: number
+          format: double
+          description: The y coordinate.
+    ConnectionDTO:
+      type: object
+      description: The connections in this flow snippet.
+      properties:
+        availableRelationships:
+          type: array
+          description: The relationships that the source of the connection currently supports.
+          items:
+            type: string
+            description: The relationships that the source of the connection currently supports.
+            readOnly: true
+          readOnly: true
+          uniqueItems: true
+        backPressureDataSizeThreshold:
+          type: string
+          description: The object data size threshold for determining when back pressure is applied. Updating this value is a passive change in the sense that it won't impact whether existing files over the limit are affected but it does help feeder processors to stop pushing too much into this work queue.
+        backPressureObjectThreshold:
+          type: integer
+          format: int64
+          description: The object count threshold for determining when back pressure is applied. Updating this value is a passive change in the sense that it won't impact whether existing files over the limit are affected but it does help feeder processors to stop pushing too much into this work queue.
+        bends:
+          type: array
+          description: The bend points on the connection.
+          items:
+            $ref: '#/components/schemas/PositionDTO'
+        destination:
+          $ref: '#/components/schemas/ConnectableDTO'
+        flowFileExpiration:
+          type: string
+          description: The amount of time a flow file may be in the flow before it will be automatically aged out of the flow. Once a flow file reaches this age it will be terminated from the flow the next time a processor attempts to start work on it.
+        getzIndex:
+          type: integer
+          format: int64
+          description: The z index of the connection.
+        id:
+          type: string
+          description: The id of the component.
+        labelIndex:
+          type: integer
+          format: int32
+          description: The index of the bend point where to place the connection label.
+        loadBalanceCompression:
+          type: string
+          description: 'Whether or not data should be compressed when being transferred between nodes in the cluster. Possible returned values: DO_NOT_COMPRESS, COMPRESS_ATTRIBUTES_ONLY, COMPRESS_ATTRIBUTES_AND_CONTENT. See LoadBalanceCompression.class for more details.'
+        loadBalancePartitionAttribute:
+          type: string
+          description: The FlowFile Attribute to use for determining which node a FlowFile will go to if the Load Balancing Strategy is set to PARTITION_BY_ATTRIBUTE
+        loadBalanceStatus:
+          type: string
+          description: 'The current status of the Connection''s Load Balancing Activities. Status can indicate that Load Balancing is not configured for the connection, that Load Balancing is configured but inactive (not currently transferring data to another node), or that Load Balancing is configured and actively transferring data to another node. Possible returned values: LOAD_BALANCE_NOT_CONFIGURED, LOAD_BALANCE_INACTIVE, LOAD_BALANCE_ACTIVE. See LoadBalanceStatus.class for more details.'
+          readOnly: true
+        loadBalanceStrategy:
+          type: string
+          description: 'How to load balance the data in this Connection across the nodes in the cluster. Possible returned values: DO_NOT_LOAD_BALANCE, PARTITION_BY_ATTRIBUTE, ROUND_ROBIN, SINGLE_NODE. See LoadBalanceStrategy.class for more details.'
+        name:
+          type: string
+          description: The name of the connection.
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        prioritizers:
+          type: array
+          description: The comparators used to prioritize the queue.
+          items:
+            type: string
+            description: The comparators used to prioritize the queue.
+        retriedRelationships:
+          type: array
+          description: The relationships from the source of the connection that are configured to be retried.
+          items:
+            type: string
+            description: The relationships from the source of the connection that are configured to be retried.
+            readOnly: true
+          readOnly: true
+          uniqueItems: true
+        selectedRelationships:
+          type: array
+          description: The selected relationship that comprise the connection.
+          items:
+            type: string
+            description: The selected relationship that comprise the connection.
+          uniqueItems: true
+        source:
+          $ref: '#/components/schemas/ConnectableDTO'
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+    RevisionDTO:
+      type: object
+      description: The revision of the Process Group
+      properties:
+        clientId:
+          type: string
+          description: 'A client identifier used to make a request.
+
+            By including a client identifier, the API can allow multiple requests without needing the current revision.
+
+            Due to the asynchronous nature of requests/responses this was implemented to allow the client to make numerous requests without having to wait for the previous response to come back
+
+            '
+        lastModifier:
+          type: string
+          description: The user that last modified the flow.
+          readOnly: true
         version:
           type: integer
           format: int64
-        lastModifier:
-          type: string
-    ConnectionEntity:
+          description: 'NiFi employs an optimistic locking strategy where the client must include a revision in their request when performing an update.
+
+            In a response to a mutable flow request, this field represents the updated base version.
+
+            '
+    NodeConnectionStatusSnapshotDTO:
       type: object
+      description: A list of status snapshots for each node
       properties:
-        id:
+        address:
           type: string
-        revision:
-          $ref: '#/components/schemas/RevisionDTO'
-        component:
-          type: object
-          description: Connection component (source, destination, selected relationships)
-        status:
-          type: object
+          description: The API address of the node
+        apiPort:
+          type: integer
+          format: int32
+          description: The API port used to communicate with the node
+        nodeId:
+          type: string
+          description: The unique ID that identifies the node
+        statusSnapshot:
+          $ref: '#/components/schemas/ConnectionStatusSnapshotDTO'
+    ConnectionStatusPredictionsSnapshotDTO:
+      type: object
+      description: Predictions, if available, for this connection (null if not available)
+      properties:
+        predictedBytesAtNextInterval:
+          type: integer
+          format: int64
+          description: The predicted total number of bytes in the queue at the next configured interval.
+        predictedCountAtNextInterval:
+          type: integer
+          format: int32
+          description: The predicted number of queued objects at the next configured interval.
+        predictedMillisUntilBytesBackpressure:
+          type: integer
+          format: int64
+          description: The predicted number of milliseconds before the connection will have backpressure applied, based on the total number of bytes in the queue.
+        predictedMillisUntilCountBackpressure:
+          type: integer
+          format: int64
+          description: The predicted number of milliseconds before the connection will have backpressure applied, based on the queued count.
+        predictedPercentBytes:
+          type: integer
+          format: int32
+          description: Predicted connection percent use regarding queued FlowFiles size and backpressure threshold if configured.
+        predictedPercentCount:
+          type: integer
+          format: int32
+          description: Predicted connection percent use regarding queued FlowFiles count and backpressure threshold if configured.
+        predictionIntervalSeconds:
+          type: integer
+          format: int32
+          description: The configured interval (in seconds) for predicting connection queue count and size (and percent usage).
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
       bearerFormat: JWT
-      description: JWT issued by POST /access/token
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http

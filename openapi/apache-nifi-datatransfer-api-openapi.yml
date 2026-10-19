@@ -1,0 +1,372 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST Data Transfer API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
+tags:
+- name: DataTransfer
+paths:
+  /data-transfer/input-ports/{portId}/transactions/{transactionId}:
+    delete:
+      operationId: commitInputPortTransaction
+      parameters:
+      - description: The response code. Available values are BAD_CHECKSUM(19), CONFIRM_TRANSACTION(12) or CANCEL_TRANSACTION(15).
+        in: query
+        name: responseCode
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - description: The input port id.
+        in: path
+        name: portId
+        required: true
+        schema:
+          type: string
+      - description: The transaction id.
+        in: path
+        name: transactionId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResultEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+        '503':
+          description: NiFi instance is not ready for serving request, or temporarily overloaded. Retrying the same request later may be successful
+      security:
+      - Write - /data-transfer/input-ports/{uuid}: []
+      summary: Commit or cancel the specified transaction
+      tags:
+      - DataTransfer
+    put:
+      operationId: extendInputPortTransactionTTL
+      parameters:
+      - description: The input port id.
+        in: path
+        name: portId
+        required: true
+        schema:
+          type: string
+      - description: The transaction id.
+        in: path
+        name: transactionId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResultEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /data-transfer/input-ports/{uuid}: []
+      summary: Extend transaction TTL
+      tags:
+      - DataTransfer
+  /data-transfer/input-ports/{portId}/transactions/{transactionId}/flow-files:
+    post:
+      operationId: receiveFlowFiles
+      parameters:
+      - description: The input port id.
+        in: path
+        name: portId
+        required: true
+        schema:
+          type: string
+      - description: The transaction id.
+        in: path
+        name: transactionId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: object
+      responses:
+        '202':
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+        '503':
+          description: NiFi instance is not ready for serving request, or temporarily overloaded. Retrying the same request later may be successful
+      security:
+      - Write - /data-transfer/input-ports/{uuid}: []
+      summary: Transfer FlowFiles to the input port
+      tags:
+      - DataTransfer
+  /data-transfer/output-ports/{portId}/transactions/{transactionId}:
+    delete:
+      operationId: commitOutputPortTransaction
+      parameters:
+      - description: The response code. Available values are CONFIRM_TRANSACTION(12) or CANCEL_TRANSACTION(15).
+        in: query
+        name: responseCode
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - description: A checksum calculated at client side using CRC32 to check flow file content integrity. It must match with the value calculated at server side.
+        in: query
+        name: checksum
+        required: true
+        schema:
+          type: string
+          default: ''
+      - description: The output port id.
+        in: path
+        name: portId
+        required: true
+        schema:
+          type: string
+      - description: The transaction id.
+        in: path
+        name: transactionId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResultEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+        '503':
+          description: NiFi instance is not ready for serving request, or temporarily overloaded. Retrying the same request later may be successful
+      security:
+      - Write - /data-transfer/output-ports/{uuid}: []
+      summary: Commit or cancel the specified transaction
+      tags:
+      - DataTransfer
+    put:
+      operationId: extendOutputPortTransactionTTL
+      parameters:
+      - description: The output port id.
+        in: path
+        name: portId
+        required: true
+        schema:
+          type: string
+      - description: The transaction id.
+        in: path
+        name: transactionId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResultEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+        '503':
+          description: NiFi instance is not ready for serving request, or temporarily overloaded. Retrying the same request later may be successful
+      security:
+      - Write - /data-transfer/output-ports/{uuid}: []
+      summary: Extend transaction TTL
+      tags:
+      - DataTransfer
+  /data-transfer/output-ports/{portId}/transactions/{transactionId}/flow-files:
+    get:
+      operationId: transferFlowFiles
+      parameters:
+      - description: The output port id.
+        in: path
+        name: portId
+        required: true
+        schema:
+          type: string
+      - description: The transaction id.
+        in: path
+        name: transactionId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: object
+      responses:
+        '200':
+          description: There is no flow file to return.
+        '202':
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/StreamingOutput'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+        '503':
+          description: NiFi instance is not ready for serving request, or temporarily overloaded. Retrying the same request later may be successful
+      security:
+      - Write - /data-transfer/output-ports/{uuid}: []
+      summary: Transfer FlowFiles from the output port
+      tags:
+      - DataTransfer
+  /data-transfer/{portType}/{portId}/transactions:
+    post:
+      operationId: createPortTransaction
+      parameters:
+      - description: The port type.
+        in: path
+        name: portType
+        required: true
+        schema:
+          type: string
+      - description: The input or output port id.
+        in: path
+        name: portId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResultEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+        '503':
+          description: NiFi instance is not ready for serving request, or temporarily overloaded. Retrying the same request later may be successful
+      security:
+      - Write - /data-transfer/{component-type}/{uuid}: []
+      summary: Create a transaction to the specified output port or input port
+      tags:
+      - DataTransfer
+components:
+  schemas:
+    TransactionResultEntity:
+      type: object
+      properties:
+        flowFileSent:
+          type: integer
+          format: int32
+        message:
+          type: string
+        responseCode:
+          type: integer
+          format: int32
+      xml:
+        name: transactionResultEntity
+    StreamingOutput:
+      type: object
+  securitySchemes:
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
+      bearerFormat: JWT
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http

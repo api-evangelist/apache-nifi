@@ -1,0 +1,281 @@
+openapi: 3.1.0
+info:
+  title: Apache NiFi REST API
+  version: "2.x"
+  description: |
+    A best-effort OpenAPI 3.1 description of selected endpoints from the Apache
+    NiFi REST API. NiFi exposes a comprehensive JWT-authenticated REST API for
+    managing processors, connections, controller services, process groups,
+    reporting tasks, provenance, flow versions, system diagnostics, access
+    control, parameter contexts, and data transfer. The canonical machine
+    readable specification is published by the NiFi project as
+    `/nifi-docs/swagger.yaml`.
+  contact:
+    name: Apache NiFi
+    url: https://nifi.apache.org/
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+  - url: http://{host}:{port}/nifi-api
+    description: Default NiFi REST API base URL
+    variables:
+      host:
+        default: localhost
+      port:
+        default: "8080"
+tags:
+  - name: Access
+    description: Authentication and access token management
+  - name: Connections
+    description: Manage connections between processors
+  - name: Controller Services
+    description: Manage shared controller services
+  - name: Flow
+    description: Read overall flow status and process group hierarchy
+paths:
+  /access/token:
+    post:
+      tags: [Access]
+      summary: Create an access token using username and password
+      operationId: createAccessToken
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+      responses:
+        "201":
+          description: JWT bearer token issued
+          content:
+            text/plain:
+              schema:
+                type: string
+        "401":
+          description: Invalid credentials
+  /access/logout:
+    delete:
+      tags: [Access]
+      summary: Log the current user out and invalidate the JWT
+      operationId: logout
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Logged out
+  /authentication/configuration:
+    get:
+      tags: [Access]
+      summary: Retrieve authentication configuration and status
+      operationId: getAuthenticationConfiguration
+      responses:
+        "200":
+          description: Authentication configuration
+          content:
+            application/json:
+              schema:
+                type: object
+  /connections/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Connections]
+      summary: Retrieve a connection
+      operationId: getConnection
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Connection entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionEntity"
+        "404":
+          description: Connection not found
+    put:
+      tags: [Connections]
+      summary: Update a connection
+      operationId: updateConnection
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConnectionEntity"
+      responses:
+        "200":
+          description: Updated connection entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionEntity"
+    delete:
+      tags: [Connections]
+      summary: Delete a connection
+      operationId: deleteConnection
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: version
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Revision version for optimistic locking
+        - name: clientId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: disconnectedNodeAcknowledged
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Connection deleted
+  /controller-services/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Controller Services]
+      summary: Retrieve a controller service
+      operationId: getControllerService
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Controller service entity
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      tags: [Controller Services]
+      summary: Update a controller service
+      operationId: updateControllerService
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Updated controller service
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      tags: [Controller Services]
+      summary: Delete a controller service
+      operationId: deleteControllerService
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: version
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: clientId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Controller service deleted
+  /flow/process-groups/{id}/controller-services:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags: [Flow, Controller Services]
+      summary: Create a controller service within a process group
+      operationId: createControllerService
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "201":
+          description: Controller service created
+          content:
+            application/json:
+              schema:
+                type: object
+  /flow/status:
+    get:
+      tags: [Flow]
+      summary: Retrieve overall flow status
+      operationId: getFlowStatus
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Flow status snapshot
+          content:
+            application/json:
+              schema:
+                type: object
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT issued by POST /access/token
+  schemas:
+    RevisionDTO:
+      type: object
+      properties:
+        clientId:
+          type: string
+        version:
+          type: integer
+          format: int64
+        lastModifier:
+          type: string
+    ConnectionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        revision:
+          $ref: "#/components/schemas/RevisionDTO"
+        component:
+          type: object
+          description: Connection component (source, destination, selected relationships)
+        status:
+          type: object

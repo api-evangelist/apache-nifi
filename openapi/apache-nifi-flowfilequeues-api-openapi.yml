@@ -1,0 +1,599 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST Flow File Queues API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
+tags:
+- name: FlowFileQueues
+paths:
+  /flowfile-queues/{id}/drop-requests:
+    post:
+      operationId: createDropRequest
+      parameters:
+      - description: The connection id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DropRequestEntity'
+          description: The request has been accepted. A HTTP response header will contain the URI where the response can be polled.
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write Source Data - /data/{component-type}/{uuid}: []
+      summary: Creates a request to drop the contents of the queue in this connection
+      tags:
+      - FlowFileQueues
+  /flowfile-queues/{id}/drop-requests/{drop-request-id}:
+    delete:
+      operationId: removeDropRequest
+      parameters:
+      - description: The connection id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The drop request id.
+        in: path
+        name: drop-request-id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DropRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write Source Data - /data/{component-type}/{uuid}: []
+      summary: Cancels and/or removes a request to drop the contents of this connection
+      tags:
+      - FlowFileQueues
+    get:
+      operationId: getDropRequest
+      parameters:
+      - description: The connection id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The drop request id.
+        in: path
+        name: drop-request-id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DropRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write Source Data - /data/{component-type}/{uuid}: []
+      summary: Gets the current status of a drop request for the specified connection
+      tags:
+      - FlowFileQueues
+  /flowfile-queues/{id}/flowfiles/{flowfile-uuid}:
+    get:
+      operationId: getFlowFile
+      parameters:
+      - description: The connection id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The FlowFile uuid.
+        in: path
+        name: flowfile-uuid
+        required: true
+        schema:
+          type: string
+      - description: The id of the node where the content exists if clustered.
+        in: query
+        name: clusterNodeId
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowFileEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read Source Data - /data/{component-type}/{uuid}: []
+      summary: Gets a FlowFile from a Connection
+      tags:
+      - FlowFileQueues
+  /flowfile-queues/{id}/flowfiles/{flowfile-uuid}/content:
+    get:
+      operationId: downloadFlowFileContent
+      parameters:
+      - description: Range of bytes requested
+        in: header
+        name: Range
+        schema:
+          type: string
+      - description: If the client id is not specified, new one will be generated. This value (whether specified or generated) is included in the response.
+        in: query
+        name: clientId
+        schema:
+          $ref: '#/components/schemas/ClientIdParameter'
+      - description: The connection id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The FlowFile uuid.
+        in: path
+        name: flowfile-uuid
+        required: true
+        schema:
+          type: string
+      - description: The id of the node where the content exists if clustered.
+        in: query
+        name: clusterNodeId
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StreamingOutput'
+        '206':
+          description: Partial Content with range of bytes requested
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+        '416':
+          description: Requested Range Not Satisfiable based on bytes requested
+      security:
+      - Read Source Data - /data/{component-type}/{uuid}: []
+      summary: Gets the content for a FlowFile in a Connection
+      tags:
+      - FlowFileQueues
+  /flowfile-queues/{id}/listing-requests:
+    post:
+      operationId: createFlowFileListing
+      parameters:
+      - description: The connection id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListingRequestEntity'
+          description: The request has been accepted. A HTTP response header will contain the URI where the response can be polled.
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read Source Data - /data/{component-type}/{uuid}: []
+      summary: Lists the contents of the queue in this connection
+      tags:
+      - FlowFileQueues
+  /flowfile-queues/{id}/listing-requests/{listing-request-id}:
+    delete:
+      operationId: deleteListingRequest
+      parameters:
+      - description: The connection id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The listing request id.
+        in: path
+        name: listing-request-id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListingRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read Source Data - /data/{component-type}/{uuid}: []
+      summary: Cancels and/or removes a request to list the contents of this connection
+      tags:
+      - FlowFileQueues
+    get:
+      operationId: getListingRequest
+      parameters:
+      - description: The connection id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The listing request id.
+        in: path
+        name: listing-request-id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListingRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read Source Data - /data/{component-type}/{uuid}: []
+      summary: Gets the current status of a listing request for the specified connection
+      tags:
+      - FlowFileQueues
+components:
+  schemas:
+    ListingRequestEntity:
+      type: object
+      properties:
+        listingRequest:
+          $ref: '#/components/schemas/ListingRequestDTO'
+      xml:
+        name: listingRequestEntity
+    DropRequestEntity:
+      type: object
+      properties:
+        dropRequest:
+          $ref: '#/components/schemas/DropRequestDTO'
+      xml:
+        name: dropRequestEntity
+    StreamingOutput:
+      type: object
+    QueueSizeDTO:
+      type: object
+      description: The size of the queue
+      properties:
+        byteCount:
+          type: integer
+          format: int64
+          description: The size of objects in a queue.
+        objectCount:
+          type: integer
+          format: int32
+          description: The count of objects in a queue.
+    DropRequestDTO:
+      type: object
+      properties:
+        current:
+          type: string
+          description: The count and size of FlowFiles currently queued.
+        currentCount:
+          type: integer
+          format: int32
+          description: The number of FlowFiles currently queued.
+        currentSize:
+          type: integer
+          format: int64
+          description: The size of FlowFiles currently queued in bytes.
+        dropped:
+          type: string
+          description: The count and size of FlowFiles that have been dropped thus far.
+        droppedCount:
+          type: integer
+          format: int32
+          description: The number of FlowFiles that have been dropped thus far.
+        droppedSize:
+          type: integer
+          format: int64
+          description: The size of FlowFiles that have been dropped thus far in bytes.
+        failureReason:
+          type: string
+          description: The reason, if any, that this drop request failed.
+        finished:
+          type: boolean
+          description: Whether the query has finished.
+        id:
+          type: string
+          description: The id for this drop request.
+        lastUpdated:
+          type: string
+          description: The last time this drop request was updated.
+        original:
+          type: string
+          description: The count and size of FlowFiles to be dropped as a result of this request.
+        originalCount:
+          type: integer
+          format: int32
+          description: The number of FlowFiles to be dropped as a result of this request.
+        originalSize:
+          type: integer
+          format: int64
+          description: The size of FlowFiles to be dropped as a result of this request in bytes.
+        percentCompleted:
+          type: integer
+          format: int32
+          description: The current percent complete.
+        state:
+          type: string
+          description: The current state of the drop request.
+        submissionTime:
+          type: string
+          description: The timestamp when the query was submitted.
+        uri:
+          type: string
+          description: The URI for future requests to this drop request.
+    ListingRequestDTO:
+      type: object
+      properties:
+        destinationRunning:
+          type: boolean
+          description: Whether the destination of the connection is running
+        failureReason:
+          type: string
+          description: The reason, if any, that this listing request failed.
+        finished:
+          type: boolean
+          description: Whether the query has finished.
+        flowFileSummaries:
+          type: array
+          description: The FlowFile summaries. The summaries will be populated once the request has completed.
+          items:
+            $ref: '#/components/schemas/FlowFileSummaryDTO'
+        id:
+          type: string
+          description: The id for this listing request.
+        lastUpdated:
+          type: string
+          description: The last time this listing request was updated.
+        maxResults:
+          type: integer
+          format: int32
+          description: The maximum number of FlowFileSummary objects to return
+        percentCompleted:
+          type: integer
+          format: int32
+          description: The current percent complete.
+        queueSize:
+          $ref: '#/components/schemas/QueueSizeDTO'
+        sourceRunning:
+          type: boolean
+          description: Whether the source of the connection is running
+        state:
+          type: string
+          description: The current state of the listing request.
+        submissionTime:
+          type: string
+          description: The timestamp when the query was submitted.
+        uri:
+          type: string
+          description: The URI for future requests to this listing request.
+    FlowFileDTO:
+      type: object
+      properties:
+        attributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: The FlowFile attributes.
+          description: The FlowFile attributes.
+        clusterNodeAddress:
+          type: string
+          description: The label for the node where this FlowFile resides.
+        clusterNodeId:
+          type: string
+          description: The id of the node where this FlowFile resides.
+        contentClaimContainer:
+          type: string
+          description: The container in which the content claim lives.
+        contentClaimFileSize:
+          type: string
+          description: The file size of the content claim formatted.
+        contentClaimFileSizeBytes:
+          type: integer
+          format: int64
+          description: The file size of the content claim in bytes.
+        contentClaimIdentifier:
+          type: string
+          description: The identifier of the content claim.
+        contentClaimOffset:
+          type: integer
+          format: int64
+          description: The offset into the content claim where the flowfile's content begins.
+        contentClaimSection:
+          type: string
+          description: The section in which the content claim lives.
+        filename:
+          type: string
+          description: The FlowFile filename.
+        lineageDuration:
+          type: integer
+          format: int64
+          description: Duration since the FlowFile's greatest ancestor entered the flow.
+        mimeType:
+          type: string
+          description: The FlowFile mime type.
+        penalized:
+          type: boolean
+          description: If the FlowFile is penalized.
+        penaltyExpiresIn:
+          type: integer
+          format: int64
+          description: How long in milliseconds until the FlowFile penalty expires.
+        position:
+          type: integer
+          format: int32
+          description: The FlowFile's position in the queue.
+        queuedDuration:
+          type: integer
+          format: int64
+          description: How long this FlowFile has been enqueued.
+        size:
+          type: integer
+          format: int64
+          description: The FlowFile file size.
+        uri:
+          type: string
+          description: The URI that can be used to access this FlowFile.
+        uuid:
+          type: string
+          description: The FlowFile UUID.
+    FlowFileSummaryDTO:
+      type: object
+      description: The FlowFile summaries. The summaries will be populated once the request has completed.
+      properties:
+        clusterNodeAddress:
+          type: string
+          description: The label for the node where this FlowFile resides.
+        clusterNodeId:
+          type: string
+          description: The id of the node where this FlowFile resides.
+        filename:
+          type: string
+          description: The FlowFile filename.
+        lineageDuration:
+          type: integer
+          format: int64
+          description: Duration since the FlowFile's greatest ancestor entered the flow.
+        mimeType:
+          type: string
+          description: The FlowFile mime type.
+        penalized:
+          type: boolean
+          description: If the FlowFile is penalized.
+        penaltyExpiresIn:
+          type: integer
+          format: int64
+          description: How long in milliseconds until the FlowFile penalty expires.
+        position:
+          type: integer
+          format: int32
+          description: The FlowFile's position in the queue.
+        queuedDuration:
+          type: integer
+          format: int64
+          description: How long this FlowFile has been enqueued.
+        size:
+          type: integer
+          format: int64
+          description: The FlowFile file size.
+        uri:
+          type: string
+          description: The URI that can be used to access this FlowFile.
+        uuid:
+          type: string
+          description: The FlowFile UUID.
+    ClientIdParameter:
+      type: object
+      properties:
+        clientId:
+          type: string
+    FlowFileEntity:
+      type: object
+      properties:
+        flowFile:
+          $ref: '#/components/schemas/FlowFileDTO'
+      xml:
+        name: flowFileEntity
+  securitySchemes:
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
+      bearerFormat: JWT
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http

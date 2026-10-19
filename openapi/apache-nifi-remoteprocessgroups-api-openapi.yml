@@ -1,0 +1,1036 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST Remote Process Groups API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
+tags:
+- name: RemoteProcessGroups
+paths:
+  /remote-process-groups/process-group/{id}/run-status:
+    put:
+      operationId: updateRemoteProcessGroupRunStatuses
+      parameters:
+      - description: The process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemotePortRunStatusEntity'
+        description: The remote process groups run status.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteProcessGroupEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /remote-process-groups/{uuid} or /operation/remote-process-groups/{uuid}: []
+      summary: Updates run status of all remote process groups in a process group (recursively)
+      tags:
+      - RemoteProcessGroups
+  /remote-process-groups/{id}:
+    delete:
+      operationId: removeRemoteProcessGroup
+      parameters:
+      - description: The revision is used to verify the client is working with the latest version of the flow.
+        in: query
+        name: version
+        schema:
+          $ref: '#/components/schemas/LongParameter'
+      - description: If the client id is not specified, new one will be generated. This value (whether specified or generated) is included in the response.
+        in: query
+        name: clientId
+        schema:
+          $ref: '#/components/schemas/ClientIdParameter'
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: The remote process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteProcessGroupEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /remote-process-groups/{uuid}: []
+      - Write - Parent Process Group - /process-groups/{uuid}: []
+      summary: Deletes a remote process group
+      tags:
+      - RemoteProcessGroups
+    get:
+      operationId: getRemoteProcessGroup
+      parameters:
+      - description: The remote process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteProcessGroupEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /remote-process-groups/{uuid}: []
+      summary: Gets a remote process group
+      tags:
+      - RemoteProcessGroups
+    put:
+      operationId: updateRemoteProcessGroup
+      parameters:
+      - description: The remote process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteProcessGroupEntity'
+        description: The remote process group configuration details.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteProcessGroupEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /remote-process-groups/{uuid}: []
+      summary: Updates a remote process group
+      tags:
+      - RemoteProcessGroups
+  /remote-process-groups/{id}/bulletins/clear-requests:
+    post:
+      operationId: clearBulletins_6
+      parameters:
+      - description: The remote process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClearBulletinsRequestEntity'
+        description: The clear bulletin request.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClearBulletinsResultEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /remote-process-groups/{uuid}: []
+      summary: Clears bulletins for a remote process group
+      tags:
+      - RemoteProcessGroups
+  /remote-process-groups/{id}/input-ports/{port-id}:
+    put:
+      description: 'Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: updateRemoteProcessGroupInputPort
+      parameters:
+      - description: The remote process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The remote process group port id.
+        in: path
+        name: port-id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteProcessGroupPortEntity'
+        description: The remote process group port configuration details.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteProcessGroupPortEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /remote-process-groups/{uuid}: []
+      summary: Updates a remote port
+      tags:
+      - RemoteProcessGroups
+  /remote-process-groups/{id}/input-ports/{port-id}/run-status:
+    put:
+      description: 'Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: updateRemoteProcessGroupInputPortRunStatus
+      parameters:
+      - description: The remote process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The remote process group port id.
+        in: path
+        name: port-id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemotePortRunStatusEntity'
+        description: The remote process group port run status details.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteProcessGroupPortEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /remote-process-groups/{uuid} or /operation/remote-process-groups/{uuid}: []
+      summary: Updates run status of a remote input port
+      tags:
+      - RemoteProcessGroups
+  /remote-process-groups/{id}/output-ports/{port-id}:
+    put:
+      description: 'Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: updateRemoteProcessGroupOutputPort
+      parameters:
+      - description: The remote process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The remote process group port id.
+        in: path
+        name: port-id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteProcessGroupPortEntity'
+        description: The remote process group port configuration details.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteProcessGroupPortEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /remote-process-groups/{uuid}: []
+      summary: Updates a remote port
+      tags:
+      - RemoteProcessGroups
+  /remote-process-groups/{id}/output-ports/{port-id}/run-status:
+    put:
+      description: 'Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: updateRemoteProcessGroupOutputPortRunStatus
+      parameters:
+      - description: The remote process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The remote process group port id.
+        in: path
+        name: port-id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemotePortRunStatusEntity'
+        description: The remote process group port run status details.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteProcessGroupPortEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /remote-process-groups/{uuid} or /operation/remote-process-groups/{uuid}: []
+      summary: Updates run status of a remote output port
+      tags:
+      - RemoteProcessGroups
+  /remote-process-groups/{id}/run-status:
+    put:
+      operationId: updateRemoteProcessGroupRunStatus
+      parameters:
+      - description: The remote process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemotePortRunStatusEntity'
+        description: The remote process group run status.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteProcessGroupEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /remote-process-groups/{uuid} or /operation/remote-process-groups/{uuid}: []
+      summary: Updates run status of a remote process group
+      tags:
+      - RemoteProcessGroups
+  /remote-process-groups/{id}/state:
+    get:
+      operationId: getState_3
+      parameters:
+      - description: The processor id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentStateEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /remote-process-groups/{uuid}: []
+      summary: Gets the state for a RemoteProcessGroup
+      tags:
+      - RemoteProcessGroups
+components:
+  schemas:
+    StateMapDTO:
+      type: object
+      description: The local state for this component.
+      properties:
+        scope:
+          type: string
+          description: The scope of this StateMap.
+        state:
+          type: array
+          description: The state.
+          items:
+            $ref: '#/components/schemas/StateEntryDTO'
+        totalEntryCount:
+          type: integer
+          format: int32
+          description: The total number of state entries. When the state map is lengthy, only of portion of the entries are returned.
+    ClearBulletinsRequestEntity:
+      type: object
+      properties:
+        fromTimestamp:
+          type: string
+          description: The timestamp from which to clear bulletins (inclusive). This field is required.
+      required:
+      - fromTimestamp
+      xml:
+        name: clearBulletinsRequestEntity
+    RemoteProcessGroupStatusDTO:
+      type: object
+      description: The status of the remote process group.
+      properties:
+        aggregateSnapshot:
+          $ref: '#/components/schemas/RemoteProcessGroupStatusSnapshotDTO'
+        groupId:
+          type: string
+          description: The unique ID of the process group that the Processor belongs to
+        id:
+          type: string
+          description: The unique ID of the Processor
+        name:
+          type: string
+          description: The name of the remote process group.
+        nodeSnapshots:
+          type: array
+          description: A status snapshot for each node in the cluster. If the NiFi instance is a standalone instance, rather than a cluster, this may be null.
+          items:
+            $ref: '#/components/schemas/NodeRemoteProcessGroupStatusSnapshotDTO'
+        statsLastRefreshed:
+          type: string
+          description: The time the status for the process group was last refreshed.
+        targetUri:
+          type: string
+          description: The URI of the target system.
+        transmissionStatus:
+          type: string
+          description: The transmission status of the remote process group.
+        validationStatus:
+          type: string
+          description: Indicates whether the component is valid, invalid, or still in the process of validating (i.e., it is unknown whether or not the component is valid)
+          enum:
+          - VALID
+          - INVALID
+          - VALIDATING
+          readOnly: true
+    RemoteProcessGroupEntity:
+      type: object
+      properties:
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/RemoteProcessGroupDTO'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        inputPortCount:
+          type: integer
+          format: int32
+          description: The number of remote input ports currently available on the target.
+        operatePermissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        outputPortCount:
+          type: integer
+          format: int32
+          description: The number of remote output ports currently available on the target.
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        status:
+          $ref: '#/components/schemas/RemoteProcessGroupStatusDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      xml:
+        name: remoteProcessGroupEntity
+    ComponentStateEntity:
+      type: object
+      properties:
+        componentState:
+          $ref: '#/components/schemas/ComponentStateDTO'
+      xml:
+        name: componentStateEntity
+    ClearBulletinsResultEntity:
+      type: object
+      properties:
+        bulletins:
+          type: array
+          description: The current bulletins for the component after clearing.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        bulletinsCleared:
+          type: integer
+          format: int32
+          description: The number of bulletins that were cleared.
+        componentId:
+          type: string
+          description: The id of the component for which bulletins were cleared.
+      xml:
+        name: clearBulletinsResultEntity
+    RemoteProcessGroupPortEntity:
+      type: object
+      properties:
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        operatePermissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        remoteProcessGroupPort:
+          $ref: '#/components/schemas/RemoteProcessGroupPortDTO'
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      xml:
+        name: remoteProcessGroupPortEntity
+    ComponentStateDTO:
+      type: object
+      description: The component state.
+      properties:
+        clusterState:
+          $ref: '#/components/schemas/StateMapDTO'
+        componentId:
+          type: string
+          description: The component identifier.
+        dropStateKeySupported:
+          type: boolean
+          description: Whether dropping state by key is supported for this component. Defaults to false when not specified by the component.
+        localState:
+          $ref: '#/components/schemas/StateMapDTO'
+        stateDescription:
+          type: string
+          description: Description of the state this component persists.
+    BulletinEntity:
+      type: object
+      description: The bulletins for this component.
+      properties:
+        bulletin:
+          $ref: '#/components/schemas/BulletinDTO'
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        groupId:
+          type: string
+        id:
+          type: integer
+          format: int64
+        nodeAddress:
+          type: string
+        sourceId:
+          type: string
+        timestamp:
+          type: string
+          description: When this bulletin was generated.
+        timestampIso:
+          type: string
+          description: When this bulletin was generated in ISO format with full date and milliseconds.
+      xml:
+        name: bulletinEntity
+    RemoteProcessGroupPortDTO:
+      type: object
+      description: The output ports from which data can be retrieved.
+      properties:
+        batchSettings:
+          $ref: '#/components/schemas/BatchSettingsDTO'
+        comments:
+          type: string
+          description: The comments as configured on the target port.
+        concurrentlySchedulableTaskCount:
+          type: integer
+          format: int32
+          description: The number of task that may transmit FlowFiles to the target port concurrently.
+        connected:
+          type: boolean
+          description: Whether the port has either an incoming or outgoing connection.
+        exists:
+          type: boolean
+          description: Whether the target port exists.
+        groupId:
+          type: string
+          description: The id of the remote process group that the port resides in.
+        id:
+          type: string
+          description: The id of the port.
+        name:
+          type: string
+          description: The name of the target port.
+        targetId:
+          type: string
+          description: The id of the target port.
+        targetRunning:
+          type: boolean
+          description: Whether the target port is running.
+        transmitting:
+          type: boolean
+          description: Whether the remote port is configured for transmission.
+        useCompression:
+          type: boolean
+          description: Whether the FlowFiles are compressed when sent to the target port.
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+    BatchSettingsDTO:
+      type: object
+      description: The batch settings for data transmission.
+      properties:
+        count:
+          type: integer
+          format: int32
+          description: Preferred number of FlowFiles to include in a transaction.
+        duration:
+          type: string
+          description: Preferred amount of time that a transaction should span.
+        size:
+          type: string
+          description: Preferred number of bytes to include in a transaction.
+    RemoteProcessGroupStatusSnapshotDTO:
+      type: object
+      description: The remote process group status snapshot from the node.
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The number of active threads for the remote process group.
+        bytesReceived:
+          type: integer
+          format: int64
+          description: The size of the FlowFiles received from the remote process group in the last 5 minutes.
+        bytesSent:
+          type: integer
+          format: int64
+          description: The size of the FlowFiles sent to the remote process group in the last 5 minutes.
+        flowFilesReceived:
+          type: integer
+          format: int32
+          description: The number of FlowFiles received from the remote process group in the last 5 minutes.
+        flowFilesSent:
+          type: integer
+          format: int32
+          description: The number of FlowFiles sent to the remote process group in the last 5 minutes.
+        groupId:
+          type: string
+          description: The id of the parent process group the remote process group resides in.
+        id:
+          type: string
+          description: The id of the remote process group.
+        name:
+          type: string
+          description: The name of the remote process group.
+        received:
+          type: string
+          description: The count/size of the FlowFiles received from the remote process group in the last 5 minutes.
+        sent:
+          type: string
+          description: The count/size of the FlowFiles sent to the remote process group in the last 5 minutes.
+        targetUri:
+          type: string
+          description: The URI of the target system.
+        transmissionStatus:
+          type: string
+          description: The transmission status of the remote process group.
+    RevisionDTO:
+      type: object
+      description: The revision of the Process Group
+      properties:
+        clientId:
+          type: string
+          description: 'A client identifier used to make a request.
+
+            By including a client identifier, the API can allow multiple requests without needing the current revision.
+
+            Due to the asynchronous nature of requests/responses this was implemented to allow the client to make numerous requests without having to wait for the previous response to come back
+
+            '
+        lastModifier:
+          type: string
+          description: The user that last modified the flow.
+          readOnly: true
+        version:
+          type: integer
+          format: int64
+          description: 'NiFi employs an optimistic locking strategy where the client must include a revision in their request when performing an update.
+
+            In a response to a mutable flow request, this field represents the updated base version.
+
+            '
+    NodeRemoteProcessGroupStatusSnapshotDTO:
+      type: object
+      description: A status snapshot for each node in the cluster. If the NiFi instance is a standalone instance, rather than a cluster, this may be null.
+      properties:
+        address:
+          type: string
+          description: The API address of the node
+        apiPort:
+          type: integer
+          format: int32
+          description: The API port used to communicate with the node
+        nodeId:
+          type: string
+          description: The unique ID that identifies the node
+        statusSnapshot:
+          $ref: '#/components/schemas/RemoteProcessGroupStatusSnapshotDTO'
+    StateEntryDTO:
+      type: object
+      description: The state.
+      properties:
+        clusterNodeAddress:
+          type: string
+          description: The label for the node where the state originated.
+        clusterNodeId:
+          type: string
+          description: The identifier for the node where the state originated.
+        key:
+          type: string
+          description: The key for this state.
+        value:
+          type: string
+          description: The value for this state.
+    PermissionsDTO:
+      type: object
+      description: The permissions for this component.
+      properties:
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        canWrite:
+          type: boolean
+          description: Indicates whether the user can write a given resource.
+          readOnly: true
+    LongParameter:
+      type: object
+      properties:
+        long:
+          type: integer
+          format: int64
+    BulletinDTO:
+      type: object
+      properties:
+        category:
+          type: string
+          description: The category of this bulletin.
+        groupId:
+          type: string
+          description: The group id of the source component.
+        id:
+          type: integer
+          format: int64
+          description: The id of the bulletin.
+        level:
+          type: string
+          description: The level of the bulletin.
+        message:
+          type: string
+          description: The bulletin message.
+        nodeAddress:
+          type: string
+          description: If clustered, the address of the node from which the bulletin originated.
+        sourceId:
+          type: string
+          description: The id of the source component.
+        sourceName:
+          type: string
+          description: The name of the source component.
+        sourceType:
+          type: string
+          description: The type of the source component
+        stackTrace:
+          type: string
+          description: The stack trace associated with the bulletin, if any.
+        timestamp:
+          type: string
+          description: When this bulletin was generated.
+        timestampIso:
+          type: string
+          description: When this bulletin was generated in ISO format with full date and milliseconds.
+    PositionDTO:
+      type: object
+      description: The position of this component in the UI if applicable.
+      properties:
+        x:
+          type: number
+          format: double
+          description: The x coordinate.
+        y:
+          type: number
+          format: double
+          description: The y coordinate.
+    ClientIdParameter:
+      type: object
+      properties:
+        clientId:
+          type: string
+    RemoteProcessGroupDTO:
+      type: object
+      properties:
+        activeRemoteInputPortCount:
+          type: integer
+          format: int32
+          description: The number of active remote input ports.
+        activeRemoteOutputPortCount:
+          type: integer
+          format: int32
+          description: The number of active remote output ports.
+        authorizationIssues:
+          type: array
+          description: Any remote authorization issues for the remote process group.
+          items:
+            type: string
+            description: Any remote authorization issues for the remote process group.
+        comments:
+          type: string
+          description: The comments for the remote process group.
+        communicationsTimeout:
+          type: string
+          description: The time period used for the timeout when communicating with the target.
+        contents:
+          $ref: '#/components/schemas/RemoteProcessGroupContentsDTO'
+        flowRefreshed:
+          type: string
+          description: The timestamp when this remote process group was last refreshed.
+        id:
+          type: string
+          description: The id of the component.
+        inactiveRemoteInputPortCount:
+          type: integer
+          format: int32
+          description: The number of inactive remote input ports.
+        inactiveRemoteOutputPortCount:
+          type: integer
+          format: int32
+          description: The number of inactive remote output ports.
+        inputPortCount:
+          type: integer
+          format: int32
+          description: The number of remote input ports currently available on the target.
+        localNetworkInterface:
+          type: string
+          description: The local network interface to send/receive data. If not specified, any local address is used. If clustered, all nodes must have an interface with this identifier.
+        name:
+          type: string
+          description: The name of the remote process group.
+        outputPortCount:
+          type: integer
+          format: int32
+          description: The number of remote output ports currently available on the target.
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        proxyHost:
+          type: string
+        proxyPassword:
+          type: string
+        proxyPort:
+          type: integer
+          format: int32
+        proxyUser:
+          type: string
+        targetSecure:
+          type: boolean
+          description: Whether the target is running securely.
+        targetUri:
+          type: string
+          description: The target URI of the remote process group. If target uri is not set, but uris are set, then returns the first url in the urls. If neither target uri nor uris are set, then returns null.
+        targetUris:
+          type: string
+          description: The target URI of the remote process group. If target uris is not set but target uri is set, then returns a collection containing the single target uri. If neither target uris nor uris are set, then returns null.
+        transmitting:
+          type: boolean
+          description: Whether the remote process group is actively transmitting.
+        transportProtocol:
+          type: string
+        validationErrors:
+          type: array
+          description: 'The validation errors for the remote process group.
+
+            These validation errors represent the problems with the remote process group that must be resolved before it can transmit.
+
+            '
+          items:
+            type: string
+            description: 'The validation errors for the remote process group.
+
+              These validation errors represent the problems with the remote process group that must be resolved before it can transmit.
+
+              '
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+        yieldDuration:
+          type: string
+          description: When yielding, this amount of time must elapse before the remote process group is scheduled again.
+    RemoteProcessGroupContentsDTO:
+      type: object
+      description: The contents of the remote process group. Will contain available input/output ports.
+      properties:
+        inputPorts:
+          type: array
+          description: The input ports to which data can be sent.
+          items:
+            $ref: '#/components/schemas/RemoteProcessGroupPortDTO'
+          uniqueItems: true
+        outputPorts:
+          type: array
+          description: The output ports from which data can be retrieved.
+          items:
+            $ref: '#/components/schemas/RemoteProcessGroupPortDTO'
+          uniqueItems: true
+    RemotePortRunStatusEntity:
+      type: object
+      properties:
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        state:
+          type: string
+          description: The run status of the RemotePort.
+          enum:
+          - TRANSMITTING
+          - STOPPED
+      xml:
+        name: entity
+  securitySchemes:
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
+      bearerFormat: JWT
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http

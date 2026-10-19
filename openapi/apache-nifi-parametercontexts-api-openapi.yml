@@ -1,0 +1,4334 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST Parameter Contexts API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
+tags:
+- name: ParameterContexts
+paths:
+  /parameter-contexts:
+    post:
+      operationId: createParameterContext
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParameterContextEntity'
+        description: The Parameter Context.
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterContextEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /parameter-contexts: []
+      - Read - for every inherited parameter context: []
+      summary: Create a Parameter Context
+      tags:
+      - ParameterContexts
+  /parameter-contexts/{contextId}/assets:
+    get:
+      operationId: getAssets_1
+      parameters:
+      - description: The ID of the Parameter Context
+        in: path
+        name: contextId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetsEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /parameter-contexts/{id}: []
+      summary: Lists the assets that belong to the Parameter Context with the given ID
+      tags:
+      - ParameterContexts
+    post:
+      description: This endpoint will create a new Asset in the given Parameter Context. The Asset will be created with the given name and the contents of the file that is uploaded. The Asset will be created in the given Parameter Context, and will be available for use by any component that references the Parameter Context.
+      operationId: createAsset_1
+      parameters:
+      - in: path
+        name: contextId
+        required: true
+        schema:
+          type: string
+      - in: header
+        name: Filename
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: object
+        description: The contents of the asset.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /parameter-contexts/{parameterContextId}: []
+      - Write - /parameter-contexts/{parameterContextId}: []
+      - Read - for every component that is affected by the update: []
+      - Write - for every component that is affected by the update: []
+      - Read - for every currently inherited parameter context: []
+      summary: Creates a new Asset in the given Parameter Context
+      tags:
+      - ParameterContexts
+  /parameter-contexts/{contextId}/assets/{assetId}:
+    delete:
+      description: This endpoint will create a new Asset in the given Parameter Context. The Asset will be created with the given name and the contents of the file that is uploaded. The Asset will be created in the given Parameter Context, and will be available for use by any component that references the Parameter Context.
+      operationId: deleteAsset
+      parameters:
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: The ID of the Parameter Context
+        in: path
+        name: contextId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the Asset
+        in: path
+        name: assetId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /parameter-contexts/{parameterContextId}: []
+      - Write - /parameter-contexts/{parameterContextId}: []
+      - Read - for every component that is affected by the update: []
+      - Write - for every component that is affected by the update: []
+      - Read - for every currently inherited parameter context: []
+      summary: Deletes an Asset from the given Parameter Context
+      tags:
+      - ParameterContexts
+    get:
+      operationId: getAssetContent_1
+      parameters:
+      - description: The ID of the Parameter Context
+        in: path
+        name: contextId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the Asset
+        in: path
+        name: assetId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: byte
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /parameter-contexts/{id}: []
+      summary: Retrieves the content of the asset with the given id
+      tags:
+      - ParameterContexts
+  /parameter-contexts/{contextId}/update-requests:
+    post:
+      description: This will initiate the process of updating a Parameter Context. Changing the value of a Parameter may require that one or more components be stopped and restarted, so this action may take significantly more time than many other REST API actions. As a result, this endpoint will immediately return a ParameterContextUpdateRequestEntity, and the process of updating the necessary components will occur asynchronously in the background. The client may then periodically poll the status of the request by issuing a GET request to /parameter-contexts/update-requests/{requestId}. Once the request is completed, the client is expected to issue a DELETE request to /parameter-contexts/update-requests/{requestId}.
+      operationId: submitParameterContextUpdate
+      parameters:
+      - in: path
+        name: contextId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParameterContextEntity'
+        description: The updated version of the parameter context.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterContextUpdateRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /parameter-contexts/{parameterContextId}: []
+      - Write - /parameter-contexts/{parameterContextId}: []
+      - Read - for every component that is affected by the update: []
+      - Write - for every component that is affected by the update: []
+      - Read - for every currently inherited parameter context: []
+      - Read - for any new inherited parameter context: []
+      summary: Initiate the Update Request of a Parameter Context
+      tags:
+      - ParameterContexts
+  /parameter-contexts/{contextId}/update-requests/{requestId}:
+    delete:
+      description: Deletes the Update Request with the given ID. After a request is created via a POST to /nifi-api/parameter-contexts/update-requests, it is expected that the client will properly clean up the request by DELETE'ing it, once the Update process has completed. If the request is deleted before the request completes, then the Update request will finish the step that it is currently performing and then will cancel any subsequent steps.
+      operationId: deleteUpdateRequest
+      parameters:
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: The ID of the ParameterContext
+        in: path
+        name: contextId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the Update Request
+        in: path
+        name: requestId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterContextUpdateRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can remove it: []
+      summary: Deletes the Update Request with the given ID
+      tags:
+      - ParameterContexts
+    get:
+      description: Returns the Update Request with the given ID. Once an Update Request has been created by performing a POST to /nifi-api/parameter-contexts, that request can subsequently be retrieved via this endpoint, and the request that is fetched will contain the updated state, such as percent complete, the current state of the request, and any failures.
+      operationId: getParameterContextUpdate
+      parameters:
+      - description: The ID of the Parameter Context
+        in: path
+        name: contextId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the Update Request
+        in: path
+        name: requestId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterContextUpdateRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can get it: []
+      summary: Returns the Update Request with the given ID
+      tags:
+      - ParameterContexts
+  /parameter-contexts/{contextId}/validation-requests:
+    post:
+      description: This will initiate the process of validating all components whose Process Group is bound to the specified Parameter Context. Performing validation against an arbitrary number of components may be expect and take significantly more time than many other REST API actions. As a result, this endpoint will immediately return a ParameterContextValidationRequestEntity, and the process of validating the necessary components will occur asynchronously in the background. The client may then periodically poll the status of the request by issuing a GET request to /parameter-contexts/validation-requests/{requestId}. Once the request is completed, the client is expected to issue a DELETE request to /parameter-contexts/validation-requests/{requestId}.
+      operationId: submitValidationRequest
+      parameters:
+      - description: The ID of the ParameterContext
+        in: path
+        name: contextId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParameterContextValidationRequestEntity'
+        description: The validation request
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterContextValidationRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /parameter-contexts/{parameterContextId}: []
+      - Write - /parameter-contexts/{parameterContextId}: []
+      summary: Initiate a Validation Request to determine how the validity of components will…
+      tags:
+      - ParameterContexts
+  /parameter-contexts/{contextId}/validation-requests/{id}:
+    delete:
+      description: Deletes the Validation Request with the given ID. After a request is created via a POST to /nifi-api/validation-contexts, it is expected that the client will properly clean up the request by DELETE'ing it, once the validation process has completed. If the request is deleted before the request completes, then the Validation request will finish the step that it is currently performing and then will cancel any subsequent steps.
+      operationId: deleteValidationRequest
+      parameters:
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: The ID of the Parameter Context
+        in: path
+        name: contextId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the Update Request
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterContextValidationRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can remove it: []
+      summary: Deletes the Validation Request with the given ID
+      tags:
+      - ParameterContexts
+    get:
+      description: Returns the Validation Request with the given ID. Once a Validation Request has been created by performing a POST to /nifi-api/validation-contexts, that request can subsequently be retrieved via this endpoint, and the request that is fetched will contain the updated state, such as percent complete, the current state of the request, and any failures.
+      operationId: getValidationRequest
+      parameters:
+      - description: The ID of the Parameter Context
+        in: path
+        name: contextId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the Validation Request
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterContextValidationRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can get it: []
+      summary: Returns the Validation Request with the given ID
+      tags:
+      - ParameterContexts
+  /parameter-contexts/{id}:
+    delete:
+      description: Deletes the Parameter Context with the given ID.
+      operationId: deleteParameterContext
+      parameters:
+      - description: The version is used to verify the client is working with the latest version of the flow.
+        in: query
+        name: version
+        schema:
+          $ref: '#/components/schemas/LongParameter'
+      - description: If the client id is not specified, a new one will be generated. This value (whether specified or generated) is included in the response.
+        in: query
+        name: clientId
+        schema:
+          $ref: '#/components/schemas/ClientIdParameter'
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: The Parameter Context ID.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterContextEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /parameter-contexts/{uuid}: []
+      - Write - /parameter-contexts/{uuid}: []
+      - Read - /process-groups/{uuid}, for any Process Group that is currently bound to the Parameter Context: []
+      - Write - /process-groups/{uuid}, for any Process Group that is currently bound to the Parameter Context: []
+      summary: Deletes the Parameter Context with the given ID
+      tags:
+      - ParameterContexts
+    get:
+      description: Returns the Parameter Context with the given ID.
+      operationId: getParameterContext
+      parameters:
+      - description: The ID of the Parameter Context
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include inherited parameters from other parameter contexts, and therefore also overridden values.  If true, the result will be the 'effective' parameter context.
+        in: query
+        name: includeInheritedParameters
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterContextEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /parameter-contexts/{id}: []
+      summary: Returns the Parameter Context with the given ID
+      tags:
+      - ParameterContexts
+    put:
+      description: This endpoint will update a Parameter Context to match the provided entity. However, this request will fail if any component is running and is referencing a Parameter in the Parameter Context. Generally, this endpoint is not called directly. Instead, an update request should be submitted by making a POST to the /parameter-contexts/update-requests endpoint. That endpoint will, in turn, call this endpoint.
+      operationId: updateParameterContext
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParameterContextEntity'
+        description: The updated Parameter Context
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterContextEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /parameter-contexts/{id}: []
+      - Write - /parameter-contexts/{id}: []
+      - Read - for every component that is affected by the update: []
+      - Write - for every component that is affected by the update: []
+      - Read - for every currently inherited parameter context: []
+      - Read - for any new inherited parameter context: []
+      summary: Modifies a Parameter Context
+      tags:
+      - ParameterContexts
+components:
+  schemas:
+    RegisteredFlowSnapshotMetadata:
+      type: object
+      properties:
+        author:
+          type: string
+        branch:
+          type: string
+        bucketIdentifier:
+          type: string
+        comments:
+          type: string
+        flowIdentifier:
+          type: string
+        flowName:
+          type: string
+        registryIdentifier:
+          type: string
+        registryName:
+          type: string
+        timestamp:
+          type: integer
+          format: int64
+        version:
+          type: string
+    PropertyDescriptorDTO:
+      type: object
+      description: The descriptors for the reporting tasks properties.
+      properties:
+        allowableValues:
+          type: array
+          description: Allowable values for the property. If empty then the allowed values are not constrained.
+          items:
+            $ref: '#/components/schemas/AllowableValueEntity'
+        defaultValue:
+          type: string
+          description: The default value for the property.
+        dependencies:
+          type: array
+          description: A list of dependencies that must be met in order for this Property to be relevant. If any of these dependencies is not met, the property described by this Property Descriptor is not relevant.
+          items:
+            $ref: '#/components/schemas/PropertyDependencyDTO'
+        description:
+          type: string
+          description: The description for the property. Used to relay additional details to a user or provide a mechanism of documenting intent.
+        displayName:
+          type: string
+          description: The human readable name for the property.
+        dynamic:
+          type: boolean
+          description: Whether the property is dynamic (user-defined).
+        expressionLanguageScope:
+          type: string
+          description: Scope of the Expression Language evaluation for the property.
+        identifiesControllerService:
+          type: string
+          description: If the property identifies a controller service this returns the fully qualified type.
+        identifiesControllerServiceBundle:
+          $ref: '#/components/schemas/BundleDTO'
+        name:
+          type: string
+          description: The name for the property.
+        required:
+          type: boolean
+          description: Whether the property is required.
+        sensitive:
+          type: boolean
+          description: Whether the property is sensitive and protected whenever stored or represented.
+        supportsEl:
+          type: boolean
+          description: Whether the property supports expression language.
+    ParameterContextUpdateRequestEntity:
+      type: object
+      properties:
+        parameterContextRevision:
+          $ref: '#/components/schemas/RevisionDTO'
+        request:
+          $ref: '#/components/schemas/ParameterContextUpdateRequestDTO'
+      xml:
+        name: parameterContextUpdateRequestEntity
+    ProcessorDTO:
+      type: object
+      properties:
+        bundle:
+          $ref: '#/components/schemas/BundleDTO'
+        config:
+          $ref: '#/components/schemas/ProcessorConfigDTO'
+        deprecated:
+          type: boolean
+          description: Whether the processor has been deprecated.
+        description:
+          type: string
+          description: The description of the processor.
+        executionNodeRestricted:
+          type: boolean
+          description: Indicates if the execution node of a processor is restricted to run only on the primary node
+        extensionMissing:
+          type: boolean
+          description: Whether the underlying extension is missing.
+        id:
+          type: string
+          description: The id of the component.
+        inputRequirement:
+          type: string
+          description: The input requirement for this processor.
+        multipleVersionsAvailable:
+          type: boolean
+          description: Whether the processor has multiple versions available.
+        name:
+          type: string
+          description: The name of the processor.
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        persistsState:
+          type: boolean
+          description: Whether the processor persists state.
+        physicalState:
+          type: string
+          description: The physical state of the processor, including transition states
+          enum:
+          - RUNNING
+          - STOPPED
+          - DISABLED
+          - STARTING
+          - STOPPING
+          - RUN_ONCE
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        relationships:
+          type: array
+          description: The available relationships that the processor currently supports.
+          items:
+            $ref: '#/components/schemas/RelationshipDTO'
+          readOnly: true
+        restricted:
+          type: boolean
+          description: Whether the processor requires elevated privileges.
+        state:
+          type: string
+          description: The state of the processor
+          enum:
+          - RUNNING
+          - STOPPED
+          - DISABLED
+          - RUN_ONCE
+        style:
+          type: object
+          additionalProperties:
+            type: string
+            description: 'Styles for the processor (background-color : #eee).'
+          description: 'Styles for the processor (background-color : #eee).'
+        supportsBacklogReporting:
+          type: boolean
+          description: Whether the processor implements BacklogReportingProcessor and can report a backlog.
+        supportsBatching:
+          type: boolean
+          description: Whether the processor supports batching. This makes the run duration settings available.
+        supportsParallelProcessing:
+          type: boolean
+          description: Whether the processor supports parallel processing.
+        supportsSensitiveDynamicProperties:
+          type: boolean
+          description: Whether the processor supports sensitive dynamic properties.
+        type:
+          type: string
+          description: The type of the processor.
+        validationErrors:
+          type: array
+          description: The validation errors for the processor. These validation errors represent the problems with the processor that must be resolved before it can be started.
+          items:
+            type: string
+            description: The validation errors for the processor. These validation errors represent the problems with the processor that must be resolved before it can be started.
+        validationStatus:
+          type: string
+          description: Indicates whether the Processor is valid, invalid, or still in the process of validating (i.e., it is unknown whether or not the Processor is valid)
+          enum:
+          - VALID
+          - INVALID
+          - VALIDATING
+          readOnly: true
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+    ParameterEntity:
+      type: object
+      description: The name of the Parameter
+      properties:
+        canWrite:
+          type: boolean
+          description: Indicates whether the user can write a given resource.
+          readOnly: true
+        parameter:
+          $ref: '#/components/schemas/ParameterDTO'
+      xml:
+        name: parameterEntity
+    ProcessGroupNameDTO:
+      type: object
+      description: The Process Group that the component belongs to
+      properties:
+        id:
+          type: string
+          description: The ID of the Process Group
+        name:
+          type: string
+          description: The name of the Process Group, or the ID of the Process Group if the user does not have the READ policy for the Process Group
+    RelationshipDTO:
+      type: object
+      description: The available relationships that the processor currently supports.
+      properties:
+        autoTerminate:
+          type: boolean
+          description: Whether or not FlowFiles sent to this relationship should auto terminate.
+        description:
+          type: string
+          description: The relationship description.
+        name:
+          type: string
+          description: The relationship name.
+        retry:
+          type: boolean
+          description: Whether or not FlowFiles sent to this relationship should retry.
+      readOnly: true
+    RegisteredFlowSnapshot:
+      type: object
+      properties:
+        bucket:
+          $ref: '#/components/schemas/FlowRegistryBucket'
+        externalControllerServices:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ExternalControllerServiceReference'
+        flow:
+          $ref: '#/components/schemas/RegisteredFlow'
+        flowContents:
+          $ref: '#/components/schemas/VersionedProcessGroup'
+        flowEncodingVersion:
+          type: string
+        latest:
+          type: boolean
+        parameterContexts:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/VersionedParameterContext'
+        parameterProviders:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ParameterProviderReference'
+        snapshotMetadata:
+          $ref: '#/components/schemas/RegisteredFlowSnapshotMetadata'
+    VersionedComponentState:
+      type: object
+      description: The state of the component, if exported with state
+      properties:
+        clusterState:
+          type: object
+          additionalProperties:
+            type: string
+            description: The cluster-scoped state of the component, or null if not exported
+          description: The cluster-scoped state of the component, or null if not exported
+        localNodeStates:
+          type: array
+          description: The local-scoped state of the component ordered by node ordinal index, or null if not exported
+          items:
+            $ref: '#/components/schemas/VersionedNodeState'
+    ParameterProviderConfigurationEntity:
+      type: object
+      description: Optional configuration for a Parameter Provider
+      properties:
+        component:
+          $ref: '#/components/schemas/ParameterProviderConfigurationDTO'
+        id:
+          type: string
+          description: The id of the component.
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+      xml:
+        name: parameterProviderConfigurationEntity
+    AllowableValueDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: A description for this allowable value.
+        displayName:
+          type: string
+          description: A human readable value that is allowed for the property descriptor.
+        value:
+          type: string
+          description: A value that is allowed for the property descriptor.
+    ExternalControllerServiceReference:
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: The identifier of the controller service
+        name:
+          type: string
+          description: The name of the controller service
+    VersionedProcessor:
+      type: object
+      description: The Processors
+      properties:
+        annotationData:
+          type: string
+          description: The annotation data for the processor used to relay configuration between a custom UI and the processor.
+        autoTerminatedRelationships:
+          type: array
+          description: The names of all relationships that cause a FlowFile to be terminated if the relationship is not connected elsewhere. This property differs from the 'isAutoTerminate' property of the RelationshipDTO in that the RelationshipDTO is meant to depict the current configuration, whereas this property can be set in a DTO when updating a Processor in order to change which Relationships should be auto-terminated.
+          items:
+            type: string
+            description: The names of all relationships that cause a FlowFile to be terminated if the relationship is not connected elsewhere. This property differs from the 'isAutoTerminate' property of the RelationshipDTO in that the RelationshipDTO is meant to depict the current configuration, whereas this property can be set in a DTO when updating a Processor in order to change which Relationships should be auto-terminated.
+          uniqueItems: true
+        backoffMechanism:
+          type: string
+          description: 'Determines whether the FlowFile should be penalized or the processor should be yielded between retries. Possible returned values: PENALIZE_FLOWFILE, YIELD_PROCESSOR.'
+        bulletinLevel:
+          type: string
+          description: The level at which the processor will report bulletins.
+        bundle:
+          $ref: '#/components/schemas/Bundle'
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentState:
+          $ref: '#/components/schemas/VersionedComponentState'
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        concurrentlySchedulableTaskCount:
+          type: integer
+          format: int32
+          description: The number of tasks that should be concurrently schedule for the processor. If the processor doesn't allow parallel processing then any positive input will be ignored.
+        executionNode:
+          type: string
+          description: Indicates the node where the process will execute.
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        maxBackoffPeriod:
+          type: string
+          description: Maximum amount of time to be waited during a retry period.
+        name:
+          type: string
+          description: The component's name
+        penaltyDuration:
+          type: string
+          description: The amount of time that is used when the process penalizes a FlowFile.
+        position:
+          $ref: '#/components/schemas/Position'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties for the component. Properties whose value is not set will only contain the property name.
+          description: The properties for the component. Properties whose value is not set will only contain the property name.
+        propertyDescriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/VersionedPropertyDescriptor'
+          description: The property descriptors for the component.
+        retriedRelationships:
+          type: array
+          description: All the relationships should be retried.
+          items:
+            type: string
+            description: All the relationships should be retried.
+          uniqueItems: true
+        retryCount:
+          type: integer
+          format: int32
+          description: Overall number of retries.
+        runDurationMillis:
+          type: integer
+          format: int64
+          description: The run duration for the processor in milliseconds.
+        scheduledState:
+          type: string
+          description: The scheduled state of the component
+          enum:
+          - ENABLED
+          - DISABLED
+          - RUNNING
+        schedulingPeriod:
+          type: string
+          description: The frequency with which to schedule the processor. The format of the value will depend on th value of schedulingStrategy.
+        schedulingStrategy:
+          type: string
+          description: Indicates how the processor should be scheduled to run.
+        style:
+          type: object
+          additionalProperties:
+            type: string
+            description: Stylistic data for rendering in a UI
+          description: Stylistic data for rendering in a UI
+        type:
+          type: string
+          description: The type of the extension component
+        yieldDuration:
+          type: string
+          description: The amount of time that must elapse before this processor is scheduled again after yielding.
+    VersionedControllerService:
+      type: object
+      description: The Controller Services
+      properties:
+        annotationData:
+          type: string
+          description: The annotation for the controller service. This is how the custom UI relays configuration to the controller service.
+        bulletinLevel:
+          type: string
+          description: The level at which the controller service will report bulletins.
+        bundle:
+          $ref: '#/components/schemas/Bundle'
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentState:
+          $ref: '#/components/schemas/VersionedComponentState'
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        controllerServiceApis:
+          type: array
+          description: Lists the APIs this Controller Service implements.
+          items:
+            $ref: '#/components/schemas/ControllerServiceAPI'
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        name:
+          type: string
+          description: The component's name
+        position:
+          $ref: '#/components/schemas/Position'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties for the component. Properties whose value is not set will only contain the property name.
+          description: The properties for the component. Properties whose value is not set will only contain the property name.
+        propertyDescriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/VersionedPropertyDescriptor'
+          description: The property descriptors for the component.
+        scheduledState:
+          type: string
+          description: The ScheduledState denoting whether the Controller Service is ENABLED or DISABLED
+          enum:
+          - ENABLED
+          - DISABLED
+          - RUNNING
+        type:
+          type: string
+          description: The type of the extension component
+    VersionedParameter:
+      type: object
+      description: The parameters in the context
+      properties:
+        description:
+          type: string
+          description: The description of the param
+        name:
+          type: string
+          description: The name of the parameter
+        provided:
+          type: boolean
+          description: Whether or not the parameter value is provided by a ParameterProvider
+        referencedAssets:
+          type: array
+          description: The assets that are referenced by this parameter
+          items:
+            $ref: '#/components/schemas/VersionedAsset'
+        sensitive:
+          type: boolean
+          description: Whether or not the parameter value is sensitive
+        value:
+          type: string
+          description: The value of the parameter
+    BulletinEntity:
+      type: object
+      description: The bulletins for this component.
+      properties:
+        bulletin:
+          $ref: '#/components/schemas/BulletinDTO'
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        groupId:
+          type: string
+        id:
+          type: integer
+          format: int64
+        nodeAddress:
+          type: string
+        sourceId:
+          type: string
+        timestamp:
+          type: string
+          description: When this bulletin was generated.
+        timestampIso:
+          type: string
+          description: When this bulletin was generated in ISO format with full date and milliseconds.
+      xml:
+        name: bulletinEntity
+    ProcessorStatusSnapshotDTO:
+      type: object
+      description: The processor status snapshot from the node.
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The number of threads currently executing in the processor.
+        bytesIn:
+          type: integer
+          format: int64
+          description: The size of the FlowFiles that have been accepted in the last 5 minutes
+        bytesOut:
+          type: integer
+          format: int64
+          description: The size of the FlowFiles transferred to a Connection in the last 5 minutes
+        bytesRead:
+          type: integer
+          format: int64
+          description: The number of bytes read by this Processor in the last 5 minutes
+        bytesWritten:
+          type: integer
+          format: int64
+          description: The number of bytes written by this Processor in the last 5 minutes
+        executionNode:
+          type: string
+          description: Indicates the node where the process will execute.
+          enum:
+          - ALL
+          - PRIMARY
+        flowFilesIn:
+          type: integer
+          format: int32
+          description: The number of FlowFiles that have been accepted in the last 5 minutes
+        flowFilesOut:
+          type: integer
+          format: int32
+          description: The number of FlowFiles transferred to a Connection in the last 5 minutes
+        groupId:
+          type: string
+          description: The id of the parent process group to which the processor belongs.
+        id:
+          type: string
+          description: The id of the processor.
+        input:
+          type: string
+          description: The count/size of FlowFiles that have been accepted in the last 5 minutes.
+        name:
+          type: string
+          description: The name of the processor.
+        output:
+          type: string
+          description: The count/size of FlowFiles that have been processed in the last 5 minutes.
+        processingPerformanceStatus:
+          $ref: '#/components/schemas/ProcessingPerformanceStatusDTO'
+        read:
+          type: string
+          description: The number of bytes read in the last 5 minutes.
+        runStatus:
+          type: string
+          description: The state of the processor.
+          enum:
+          - Running
+          - Stopped
+          - Validating
+          - Disabled
+          - Invalid
+        taskCount:
+          type: integer
+          format: int32
+          description: The number of times this Processor has run in the last 5 minutes
+        tasks:
+          type: string
+          description: The total number of task this connectable has completed over the last 5 minutes.
+        tasksDuration:
+          type: string
+          description: The total duration of all tasks for this connectable over the last 5 minutes.
+        tasksDurationNanos:
+          type: integer
+          format: int64
+          description: The number of nanoseconds that this Processor has spent running in the last 5 minutes
+        terminatedThreadCount:
+          type: integer
+          format: int32
+          description: The number of threads currently terminated for the processor.
+        type:
+          type: string
+          description: The type of the processor.
+        written:
+          type: string
+          description: The number of bytes written in the last 5 minutes.
+    AssetReferenceDTO:
+      type: object
+      description: A list of identifiers of the assets that are referenced by the parameter
+      properties:
+        id:
+          type: string
+          description: The identifier of the referenced asset.
+        missingContent:
+          type: boolean
+          description: Indicates if the content of the asset is missing.
+          readOnly: true
+        name:
+          type: string
+          description: The name of the referenced asset.
+          readOnly: true
+    ParameterContextUpdateStepDTO:
+      type: object
+      description: The steps that are required in order to complete the request, along with the status of each
+      properties:
+        complete:
+          type: boolean
+          description: Whether or not this step has completed
+          readOnly: true
+        description:
+          type: string
+          description: Explanation of what happens in this step
+          readOnly: true
+        failureReason:
+          type: string
+          description: An explanation of why this step failed, or null if this step did not fail
+          readOnly: true
+      readOnly: true
+    LabelDTO:
+      type: object
+      description: The labels in this flow snippet.
+      properties:
+        getzIndex:
+          type: integer
+          format: int64
+          description: The z index of the label.
+        height:
+          type: number
+          format: double
+          description: The height of the label in pixels when at a 1:1 scale.
+        id:
+          type: string
+          description: The id of the component.
+        label:
+          type: string
+          description: The text that appears in the label.
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        style:
+          type: object
+          additionalProperties:
+            type: string
+            description: 'The styles for this label (font-size : 12px, background-color : #eee, etc).'
+          description: 'The styles for this label (font-size : 12px, background-color : #eee, etc).'
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+        width:
+          type: number
+          format: double
+          description: The width of the label in pixels when at a 1:1 scale.
+    VersionedProcessGroup:
+      type: object
+      properties:
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        connections:
+          type: array
+          description: The Connections
+          items:
+            $ref: '#/components/schemas/VersionedConnection'
+          uniqueItems: true
+        controllerServices:
+          type: array
+          description: The Controller Services
+          items:
+            $ref: '#/components/schemas/VersionedControllerService'
+          uniqueItems: true
+        defaultBackPressureDataSizeThreshold:
+          type: string
+          description: Default value used in this Process Group for the maximum data size of objects that can be queued before back pressure is applied.
+        defaultBackPressureObjectThreshold:
+          type: integer
+          format: int64
+          description: Default value used in this Process Group for the maximum number of objects that can be queued before back pressure is applied.
+        defaultFlowFileExpiration:
+          type: string
+          description: The default FlowFile Expiration for this Process Group.
+        executionEngine:
+          type: string
+          description: The Execution Engine that should be used to run the components within the group.
+          enum:
+          - STANDARD
+          - STATELESS
+          - INHERITED
+        flowFileConcurrency:
+          type: string
+          description: The configured FlowFile Concurrency for the Process Group
+        flowFileOutboundPolicy:
+          type: string
+          description: The FlowFile Outbound Policy for the Process Group
+        funnels:
+          type: array
+          description: The Funnels
+          items:
+            $ref: '#/components/schemas/VersionedFunnel'
+          uniqueItems: true
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        inputPorts:
+          type: array
+          description: The Input Ports
+          items:
+            $ref: '#/components/schemas/VersionedPort'
+          uniqueItems: true
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        labels:
+          type: array
+          description: The Labels
+          items:
+            $ref: '#/components/schemas/VersionedLabel'
+          uniqueItems: true
+        logFileSuffix:
+          type: string
+          description: The log file suffix for this Process Group for dedicated logging.
+        maxConcurrentTasks:
+          type: integer
+          format: int32
+          description: The maximum number of concurrent tasks that should be scheduled for this Process Group when using the Stateless Engine
+        name:
+          type: string
+          description: The component's name
+        outputPorts:
+          type: array
+          description: The Output Ports
+          items:
+            $ref: '#/components/schemas/VersionedPort'
+          uniqueItems: true
+        parameterContextName:
+          type: string
+          description: The name of the parameter context used by this process group
+        position:
+          $ref: '#/components/schemas/Position'
+        processGroups:
+          type: array
+          description: The child Process Groups
+          items:
+            $ref: '#/components/schemas/VersionedProcessGroup'
+          uniqueItems: true
+        processors:
+          type: array
+          description: The Processors
+          items:
+            $ref: '#/components/schemas/VersionedProcessor'
+          uniqueItems: true
+        remoteProcessGroups:
+          type: array
+          description: The Remote Process Groups
+          items:
+            $ref: '#/components/schemas/VersionedRemoteProcessGroup'
+          uniqueItems: true
+        scheduledState:
+          type: string
+          description: The Scheduled State of the Process Group, if the group is configured to use the Stateless Execution Engine. Otherwise, this value has no relevance.
+          enum:
+          - ENABLED
+          - DISABLED
+          - RUNNING
+        statelessFlowTimeout:
+          type: string
+          description: The maximum amount of time that the flow is allows to run using the Stateless engine before it times out and is considered a failure
+        versionedFlowCoordinates:
+          $ref: '#/components/schemas/VersionedFlowCoordinates'
+    PermissionsDTO:
+      type: object
+      description: The permissions for this component.
+      properties:
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        canWrite:
+          type: boolean
+          description: Indicates whether the user can write a given resource.
+          readOnly: true
+    RegisteredFlow:
+      type: object
+      properties:
+        branch:
+          type: string
+        bucketIdentifier:
+          type: string
+        bucketName:
+          type: string
+        createdTimestamp:
+          type: integer
+          format: int64
+        description:
+          type: string
+        identifier:
+          type: string
+        lastModifiedTimestamp:
+          type: integer
+          format: int64
+        name:
+          type: string
+        permissions:
+          $ref: '#/components/schemas/FlowRegistryPermissions'
+        versionCount:
+          type: integer
+          format: int64
+        versionInfo:
+          $ref: '#/components/schemas/RegisteredFlowVersionInfo'
+    ControllerServiceAPI:
+      type: object
+      description: Lists the APIs this Controller Service implements.
+      properties:
+        bundle:
+          $ref: '#/components/schemas/Bundle'
+        type:
+          type: string
+          description: The fully qualified name of the service interface.
+    ParameterContextEntity:
+      type: object
+      properties:
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/ParameterContextDTO'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      xml:
+        name: parameterContextEntity
+    RegisteredFlowVersionInfo:
+      type: object
+      properties:
+        version:
+          type: integer
+          format: int64
+    ParameterProviderConfigurationDTO:
+      type: object
+      properties:
+        parameterGroupName:
+          type: string
+          description: The Parameter Group name that maps to the Parameter Context
+        parameterProviderId:
+          type: string
+          description: The ID of the Parameter Provider
+        parameterProviderName:
+          type: string
+          description: The name of the Parameter Provider
+        synchronized:
+          type: boolean
+          description: True if the Parameter Context should receive the parameters from the mapped Parameter Group
+    VersionedParameterContext:
+      type: object
+      properties:
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        description:
+          type: string
+          description: The description of the parameter context
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        inheritedParameterContexts:
+          type: array
+          description: The names of additional parameter contexts from which to inherit parameters
+          items:
+            type: string
+            description: The names of additional parameter contexts from which to inherit parameters
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        name:
+          type: string
+          description: The component's name
+        parameterGroupName:
+          type: string
+          description: The corresponding parameter group name fetched from the parameter provider, if applicable
+        parameterProvider:
+          type: string
+          description: The identifier of an optional parameter provider
+        parameters:
+          type: array
+          description: The parameters in the context
+          items:
+            $ref: '#/components/schemas/VersionedParameter'
+          uniqueItems: true
+        position:
+          $ref: '#/components/schemas/Position'
+        synchronized:
+          type: boolean
+          description: True if the parameter provider is set and the context should receive updates when its parameters are next fetched
+    AssetsEntity:
+      type: object
+      properties:
+        assets:
+          type: array
+          description: The asset entities
+          items:
+            $ref: '#/components/schemas/AssetEntity'
+      xml:
+        name: assetEntity
+    FlowRegistryPermissions:
+      type: object
+      properties:
+        canDelete:
+          type: boolean
+        canRead:
+          type: boolean
+        canWrite:
+          type: boolean
+    ParameterProviderReference:
+      type: object
+      properties:
+        bundle:
+          $ref: '#/components/schemas/Bundle'
+        identifier:
+          type: string
+          description: The identifier of the parameter provider
+        name:
+          type: string
+          description: The name of the parameter provider
+        type:
+          type: string
+          description: The fully qualified name of the parameter provider class.
+    ComponentValidationResultEntity:
+      type: object
+      description: A List of ComponentValidationResultEntity, one for each component that is validated
+      properties:
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/ComponentValidationResultDTO'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      xml:
+        name: componentValidationResultEntity
+    ComponentValidationResultsEntity:
+      type: object
+      description: The Validation Results that were calculated for each component. This value may not be set until the request completes.
+      properties:
+        validationResults:
+          type: array
+          description: A List of ComponentValidationResultEntity, one for each component that is validated
+          items:
+            $ref: '#/components/schemas/ComponentValidationResultEntity'
+      readOnly: true
+      xml:
+        name: componentValidationResults
+    VersionedAsset:
+      type: object
+      description: The assets that are referenced by this parameter
+      properties:
+        identifier:
+          type: string
+          description: The identifier of the asset
+        name:
+          type: string
+          description: The name of the asset
+    ProcessingPerformanceStatusDTO:
+      type: object
+      description: Represents the processor's processing performance.
+      properties:
+        contentReadDuration:
+          type: integer
+          format: int64
+          description: The number of nanoseconds has spent to read content in the last 5 minutes.
+        contentWriteDuration:
+          type: integer
+          format: int64
+          description: The number of nanoseconds has spent to write content in the last 5 minutes.
+        cpuDuration:
+          type: integer
+          format: int64
+          description: The number of nanoseconds has spent on CPU usage in the last 5 minutes.
+        garbageCollectionDuration:
+          type: integer
+          format: int64
+          description: The number of nanoseconds has spent running garbage collection in the last 5 minutes.
+        identifier:
+          type: string
+          description: The unique ID of the process group that the Processor belongs to
+        sessionCommitDuration:
+          type: integer
+          format: int64
+          description: The number of nanoseconds has spent running to commit sessions the last 5 minutes.
+    ConnectionStatusSnapshotEntity:
+      type: object
+      description: The status of all connections in the process group.
+      properties:
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        connectionStatusSnapshot:
+          $ref: '#/components/schemas/ConnectionStatusSnapshotDTO'
+        id:
+          type: string
+          description: The id of the connection.
+      xml:
+        name: entity
+    BatchSize:
+      type: object
+      description: The batch settings for data transmission.
+      properties:
+        count:
+          type: integer
+          format: int32
+          description: Preferred number of FlowFiles to include in a transaction.
+        duration:
+          type: string
+          description: Preferred amount of time that a transaction should span.
+        size:
+          type: string
+          description: Preferred number of bytes to include in a transaction.
+    AffectedComponentDTO:
+      type: object
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The number of active threads for the referencing component.
+        id:
+          type: string
+          description: The UUID of this component
+        name:
+          type: string
+          description: The name of this component.
+        processGroupId:
+          type: string
+          description: The UUID of the Process Group that this component is in
+        referenceType:
+          type: string
+          description: The type of this component
+          enum:
+          - PROCESSOR
+          - CONTROLLER_SERVICE
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - STATELESS_GROUP
+        state:
+          type: string
+          description: The scheduled state of a processor or reporting task referencing a controller service. If this component is another controller service, this field represents the controller service state.
+        validationErrors:
+          type: array
+          description: The validation errors for the component.
+          items:
+            type: string
+            description: The validation errors for the component.
+    ProcessGroupStatusDTO:
+      type: object
+      description: The status of the process group.
+      properties:
+        aggregateSnapshot:
+          $ref: '#/components/schemas/ProcessGroupStatusSnapshotDTO'
+        id:
+          type: string
+          description: The ID of the Process Group
+        name:
+          type: string
+          description: The name of the Process Group
+        nodeSnapshots:
+          type: array
+          description: The status reported by each node in the cluster. If the NiFi instance is a standalone instance, rather than a clustered instance, this value may be null.
+          items:
+            $ref: '#/components/schemas/NodeProcessGroupStatusSnapshotDTO'
+        statsLastRefreshed:
+          type: string
+          description: The time the status for the process group was last refreshed.
+    ConnectionStatusSnapshotDTO:
+      type: object
+      properties:
+        bytesIn:
+          type: integer
+          format: int64
+          description: The size of the FlowFiles that have come into the connection in the last 5 minutes.
+        bytesOut:
+          type: integer
+          format: int64
+          description: The number of bytes that have left the connection in the last 5 minutes.
+        bytesQueued:
+          type: integer
+          format: int64
+          description: The size of the FlowFiles that are currently queued in the connection.
+        destinationId:
+          type: string
+          description: The id of the destination of the connection.
+        destinationName:
+          type: string
+          description: The name of the destination of the connection.
+        flowFileAvailability:
+          type: string
+          description: The availability of FlowFiles in this connection
+        flowFilesIn:
+          type: integer
+          format: int32
+          description: The number of FlowFiles that have come into the connection in the last 5 minutes.
+        flowFilesOut:
+          type: integer
+          format: int32
+          description: The number of FlowFiles that have left the connection in the last 5 minutes.
+        flowFilesQueued:
+          type: integer
+          format: int32
+          description: The number of FlowFiles that are currently queued in the connection.
+        groupId:
+          type: string
+          description: The id of the process group the connection belongs to.
+        id:
+          type: string
+          description: The id of the connection.
+        input:
+          type: string
+          description: The input count/size for the connection in the last 5 minutes, pretty printed.
+        loadBalanceStatus:
+          type: string
+          description: The load balance status of the connection
+          enum:
+          - LOAD_BALANCE_NOT_CONFIGURED
+          - LOAD_BALANCE_ACTIVE
+          - LOAD_BALANCE_INACTIVE
+        name:
+          type: string
+          description: The name of the connection.
+        output:
+          type: string
+          description: The output count/size for the connection in the last 5 minutes, pretty printed.
+        percentUseBytes:
+          type: integer
+          format: int32
+          description: Connection percent use regarding queued FlowFiles size and backpressure threshold if configured.
+        percentUseCount:
+          type: integer
+          format: int32
+          description: Connection percent use regarding queued FlowFiles count and backpressure threshold if configured.
+        predictions:
+          $ref: '#/components/schemas/ConnectionStatusPredictionsSnapshotDTO'
+        queued:
+          type: string
+          description: The total count and size of queued FlowFiles formatted.
+        queuedCount:
+          type: string
+          description: The number of FlowFiles that are queued, pretty printed.
+        queuedSize:
+          type: string
+          description: The total size of FlowFiles that are queued formatted.
+        sourceId:
+          type: string
+          description: The id of the source of the connection.
+        sourceName:
+          type: string
+          description: The name of the source of the connection.
+    VersionedFunnel:
+      type: object
+      description: The Funnels
+      properties:
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        name:
+          type: string
+          description: The component's name
+        position:
+          $ref: '#/components/schemas/Position'
+    ComponentValidationResultDTO:
+      type: object
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The number of active threads for the referencing component.
+        currentlyValid:
+          type: boolean
+          description: Whether or not the component is currently valid
+        id:
+          type: string
+          description: The UUID of this component
+        name:
+          type: string
+          description: The name of this component.
+        processGroupId:
+          type: string
+          description: The UUID of the Process Group that this component is in
+        referenceType:
+          type: string
+          description: The type of this component
+          enum:
+          - PROCESSOR
+          - CONTROLLER_SERVICE
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - STATELESS_GROUP
+        resultantValidationErrors:
+          type: array
+          description: The validation errors that will apply to the component if the Parameter Context is changed
+          items:
+            type: string
+            description: The validation errors that will apply to the component if the Parameter Context is changed
+        resultsValid:
+          type: boolean
+          description: Whether or not the component will be valid if the Parameter Context is changed
+        state:
+          type: string
+          description: The scheduled state of a processor or reporting task referencing a controller service. If this component is another controller service, this field represents the controller service state.
+        validationErrors:
+          type: array
+          description: The validation errors for the component.
+          items:
+            type: string
+            description: The validation errors for the component.
+    ProcessorStatusSnapshotEntity:
+      type: object
+      description: The status of all processors in the process group.
+      properties:
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        id:
+          type: string
+          description: The id of the processor.
+        processorStatusSnapshot:
+          $ref: '#/components/schemas/ProcessorStatusSnapshotDTO'
+      xml:
+        name: entity
+    AssetEntity:
+      type: object
+      description: The asset entities
+      properties:
+        asset:
+          $ref: '#/components/schemas/AssetDTO'
+      xml:
+        name: assetEntity
+    VersionedConnection:
+      type: object
+      description: The Connections
+      properties:
+        backPressureDataSizeThreshold:
+          type: string
+          description: The object data size threshold for determining when back pressure is applied. Updating this value is a passive change in the sense that it won't impact whether existing files over the limit are affected but it does help feeder processors to stop pushing too much into this work queue.
+        backPressureObjectThreshold:
+          type: integer
+          format: int64
+          description: The object count threshold for determining when back pressure is applied. Updating this value is a passive change in the sense that it won't impact whether existing files over the limit are affected but it does help feeder processors to stop pushing too much into this work queue.
+        bends:
+          type: array
+          description: The bend points on the connection.
+          items:
+            $ref: '#/components/schemas/Position'
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        destination:
+          $ref: '#/components/schemas/ConnectableComponent'
+        flowFileExpiration:
+          type: string
+          description: The amount of time a FlowFile may be in the flow before it will be automatically aged out of the flow. Once a FlowFile reaches this age it will be terminated from the flow the next time a processor attempts to start work on it.
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        labelIndex:
+          type: integer
+          format: int32
+          description: The index of the bend point where to place the connection label.
+        loadBalanceCompression:
+          type: string
+          description: 'Whether or not compression should be used when transferring FlowFiles between nodes Possible returned values: DO_NOT_COMPRESS, COMPRESS_ATTRIBUTES_ONLY, COMPRESS_ATTRIBUTES_AND_CONTENT. See LoadBalanceCompression.class for more details.'
+        loadBalanceStrategy:
+          type: string
+          description: 'The Strategy to use for load balancing data across the cluster, or null, if no Load Balance Strategy has been specified. Possible returned values: DO_NOT_LOAD_BALANCE, PARTITION_BY_ATTRIBUTE, ROUND_ROBIN, SINGLE_NODE. See LoadBalanceStrategy.class for more details.'
+        name:
+          type: string
+          description: The component's name
+        partitioningAttribute:
+          type: string
+          description: The attribute to use for partitioning data as it is load balanced across the cluster. If the Load Balance Strategy is configured to use PARTITION_BY_ATTRIBUTE, the value returned by this method is the name of the FlowFile Attribute that will be used to determine which node in the cluster should receive a given FlowFile. If the Load Balance Strategy is unset or is set to any other value, the Partitioning Attribute has no effect.
+        position:
+          $ref: '#/components/schemas/Position'
+        prioritizers:
+          type: array
+          description: The comparators used to prioritize the queue.
+          items:
+            type: string
+            description: The comparators used to prioritize the queue.
+        selectedRelationships:
+          type: array
+          description: The selected relationship that comprise the connection.
+          items:
+            type: string
+            description: The selected relationship that comprise the connection.
+          uniqueItems: true
+        source:
+          $ref: '#/components/schemas/ConnectableComponent'
+        zIndex:
+          type: integer
+          format: int64
+          description: The z index of the connection.
+    VersionedPropertyDescriptor:
+      type: object
+      description: The property descriptors for the component.
+      properties:
+        displayName:
+          type: string
+          description: The display name of the property
+        dynamic:
+          type: boolean
+          description: Whether or not the property is user-defined
+        identifiesControllerService:
+          type: boolean
+          description: Whether or not the property provides the identifier of a Controller Service
+        listenPortDefinition:
+          $ref: '#/components/schemas/VersionedListenPortDefinition'
+        name:
+          type: string
+          description: The name of the property
+        resourceDefinition:
+          $ref: '#/components/schemas/VersionedResourceDefinition'
+        sensitive:
+          type: boolean
+          description: Whether or not the property is considered sensitive
+    ParameterContextReferenceDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the Parameter Context
+        name:
+          type: string
+          description: The name of the Parameter Context
+    AffectedComponentEntity:
+      type: object
+      description: The set of all components in the flow that are referencing this Parameter
+      properties:
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/AffectedComponentDTO'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        processGroup:
+          $ref: '#/components/schemas/ProcessGroupNameDTO'
+        referenceType:
+          type: string
+          description: The type of component referenced
+          enum:
+          - PROCESSOR
+          - CONTROLLER_SERVICE
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      xml:
+        name: affectedComponentEntity
+    VersionedLabel:
+      type: object
+      description: The Labels
+      properties:
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        height:
+          type: number
+          format: double
+          description: The height of the label in pixels when at a 1:1 scale.
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        label:
+          type: string
+          description: The text that appears in the label.
+        name:
+          type: string
+          description: The component's name
+        position:
+          $ref: '#/components/schemas/Position'
+        style:
+          type: object
+          additionalProperties:
+            type: string
+            description: 'The styles for this label (font-size : 12px, background-color : #eee, etc).'
+          description: 'The styles for this label (font-size : 12px, background-color : #eee, etc).'
+        width:
+          type: number
+          format: double
+          description: The width of the label in pixels when at a 1:1 scale.
+        zIndex:
+          type: integer
+          format: int64
+          description: The z index of the connection.
+    VersionedListenPortDefinition:
+      type: object
+      description: Returns the Listen Port Definition for the port this property specifies, if applicable
+      properties:
+        applicationProtocols:
+          type: array
+          description: The application protocol(s) that the listen port could support (if any)
+          items:
+            type: string
+            description: The application protocol(s) that the listen port could support (if any)
+        transportProtocol:
+          type: string
+          description: The transport protocol used by the listen port
+          enum:
+          - TCP
+          - UDP
+    LongParameter:
+      type: object
+      properties:
+        long:
+          type: integer
+          format: int64
+    BulletinDTO:
+      type: object
+      properties:
+        category:
+          type: string
+          description: The category of this bulletin.
+        groupId:
+          type: string
+          description: The group id of the source component.
+        id:
+          type: integer
+          format: int64
+          description: The id of the bulletin.
+        level:
+          type: string
+          description: The level of the bulletin.
+        message:
+          type: string
+          description: The bulletin message.
+        nodeAddress:
+          type: string
+          description: If clustered, the address of the node from which the bulletin originated.
+        sourceId:
+          type: string
+          description: The id of the source component.
+        sourceName:
+          type: string
+          description: The name of the source component.
+        sourceType:
+          type: string
+          description: The type of the source component
+        stackTrace:
+          type: string
+          description: The stack trace associated with the bulletin, if any.
+        timestamp:
+          type: string
+          description: When this bulletin was generated.
+        timestampIso:
+          type: string
+          description: When this bulletin was generated in ISO format with full date and milliseconds.
+    ParameterDTO:
+      type: object
+      description: The parameter information
+      properties:
+        description:
+          type: string
+          description: The description of the Parameter
+        inherited:
+          type: boolean
+          description: Whether or not the Parameter is inherited from another context
+          readOnly: true
+        name:
+          type: string
+          description: The name of the Parameter
+        parameterContext:
+          $ref: '#/components/schemas/ParameterContextReferenceEntity'
+        provided:
+          type: boolean
+          description: Whether or not the Parameter is provided by a ParameterProvider
+        referencedAssets:
+          type: array
+          description: A list of identifiers of the assets that are referenced by the parameter
+          items:
+            $ref: '#/components/schemas/AssetReferenceDTO'
+        referencingComponents:
+          type: array
+          description: The set of all components in the flow that are referencing this Parameter
+          items:
+            $ref: '#/components/schemas/AffectedComponentEntity'
+          uniqueItems: true
+        sensitive:
+          type: boolean
+          description: Whether or not the Parameter is sensitive
+        value:
+          type: string
+          description: The value of the Parameter
+        valueRemoved:
+          type: boolean
+          description: 'Whether or not the value of the Parameter was removed.
+
+            When a request is made to change a parameter, the value may be null.
+
+            The absence of the value may be used either to indicate that the value is not to be changed, or that the value is to be set to null (i.e., removed).
+
+            This denotes which of the two scenarios is being encountered.
+
+            '
+    FunnelDTO:
+      type: object
+      description: The funnels in this flow snippet.
+      properties:
+        id:
+          type: string
+          description: The id of the component.
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+    NodeProcessGroupStatusSnapshotDTO:
+      type: object
+      description: The status reported by each node in the cluster. If the NiFi instance is a standalone instance, rather than a clustered instance, this value may be null.
+      properties:
+        address:
+          type: string
+          description: The API address of the node
+        apiPort:
+          type: integer
+          format: int32
+          description: The API port used to communicate with the node
+        nodeId:
+          type: string
+          description: The unique ID that identifies the node
+        statusSnapshot:
+          $ref: '#/components/schemas/ProcessGroupStatusSnapshotDTO'
+    RemoteProcessGroupDTO:
+      type: object
+      properties:
+        activeRemoteInputPortCount:
+          type: integer
+          format: int32
+          description: The number of active remote input ports.
+        activeRemoteOutputPortCount:
+          type: integer
+          format: int32
+          description: The number of active remote output ports.
+        authorizationIssues:
+          type: array
+          description: Any remote authorization issues for the remote process group.
+          items:
+            type: string
+            description: Any remote authorization issues for the remote process group.
+        comments:
+          type: string
+          description: The comments for the remote process group.
+        communicationsTimeout:
+          type: string
+          description: The time period used for the timeout when communicating with the target.
+        contents:
+          $ref: '#/components/schemas/RemoteProcessGroupContentsDTO'
+        flowRefreshed:
+          type: string
+          description: The timestamp when this remote process group was last refreshed.
+        id:
+          type: string
+          description: The id of the component.
+        inactiveRemoteInputPortCount:
+          type: integer
+          format: int32
+          description: The number of inactive remote input ports.
+        inactiveRemoteOutputPortCount:
+          type: integer
+          format: int32
+          description: The number of inactive remote output ports.
+        inputPortCount:
+          type: integer
+          format: int32
+          description: The number of remote input ports currently available on the target.
+        localNetworkInterface:
+          type: string
+          description: The local network interface to send/receive data. If not specified, any local address is used. If clustered, all nodes must have an interface with this identifier.
+        name:
+          type: string
+          description: The name of the remote process group.
+        outputPortCount:
+          type: integer
+          format: int32
+          description: The number of remote output ports currently available on the target.
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        proxyHost:
+          type: string
+        proxyPassword:
+          type: string
+        proxyPort:
+          type: integer
+          format: int32
+        proxyUser:
+          type: string
+        targetSecure:
+          type: boolean
+          description: Whether the target is running securely.
+        targetUri:
+          type: string
+          description: The target URI of the remote process group. If target uri is not set, but uris are set, then returns the first url in the urls. If neither target uri nor uris are set, then returns null.
+        targetUris:
+          type: string
+          description: The target URI of the remote process group. If target uris is not set but target uri is set, then returns a collection containing the single target uri. If neither target uris nor uris are set, then returns null.
+        transmitting:
+          type: boolean
+          description: Whether the remote process group is actively transmitting.
+        transportProtocol:
+          type: string
+        validationErrors:
+          type: array
+          description: 'The validation errors for the remote process group.
+
+            These validation errors represent the problems with the remote process group that must be resolved before it can transmit.
+
+            '
+          items:
+            type: string
+            description: 'The validation errors for the remote process group.
+
+              These validation errors represent the problems with the remote process group that must be resolved before it can transmit.
+
+              '
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+        yieldDuration:
+          type: string
+          description: When yielding, this amount of time must elapse before the remote process group is scheduled again.
+    RemoteProcessGroupContentsDTO:
+      type: object
+      description: The contents of the remote process group. Will contain available input/output ports.
+      properties:
+        inputPorts:
+          type: array
+          description: The input ports to which data can be sent.
+          items:
+            $ref: '#/components/schemas/RemoteProcessGroupPortDTO'
+          uniqueItems: true
+        outputPorts:
+          type: array
+          description: The output ports from which data can be retrieved.
+          items:
+            $ref: '#/components/schemas/RemoteProcessGroupPortDTO'
+          uniqueItems: true
+    ConnectableComponent:
+      type: object
+      description: The destination of the connection.
+      properties:
+        comments:
+          type: string
+          description: The comments for the connectable component.
+        groupId:
+          type: string
+          description: The id of the group that the connectable component resides in
+        id:
+          type: string
+          description: The id of the connectable component.
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        name:
+          type: string
+          description: The name of the connectable component
+        type:
+          type: string
+          description: The type of component the connectable is.
+          enum:
+          - PROCESSOR
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - FUNNEL
+    FlowRegistryBucket:
+      type: object
+      properties:
+        createdTimestamp:
+          type: integer
+          format: int64
+        description:
+          type: string
+        identifier:
+          type: string
+        name:
+          type: string
+        permissions:
+          $ref: '#/components/schemas/FlowRegistryPermissions'
+    VersionedRemoteGroupPort:
+      type: object
+      description: A Set of Output Ports that can be connected to, in order to pull data from the remote NiFi instance
+      properties:
+        batchSize:
+          $ref: '#/components/schemas/BatchSize'
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        concurrentlySchedulableTaskCount:
+          type: integer
+          format: int32
+          description: The number of task that may transmit FlowFiles to the target port concurrently.
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        name:
+          type: string
+          description: The component's name
+        position:
+          $ref: '#/components/schemas/Position'
+        remoteGroupId:
+          type: string
+          description: The id of the remote process group that the port resides in.
+        scheduledState:
+          type: string
+          description: The scheduled state of the component
+          enum:
+          - ENABLED
+          - DISABLED
+          - RUNNING
+        targetId:
+          type: string
+          description: The ID of the port on the target NiFi instance
+        useCompression:
+          type: boolean
+          description: Whether the FlowFiles are compressed when sent to the target port.
+    ParameterContextDTO:
+      type: object
+      description: The Parameter Context that is being operated on. This may not be populated until the request has successfully completed.
+      properties:
+        boundProcessGroups:
+          type: array
+          description: The Process Groups that are bound to this Parameter Context
+          items:
+            $ref: '#/components/schemas/ProcessGroupEntity'
+          readOnly: true
+          uniqueItems: true
+        description:
+          type: string
+          description: The Description of the Parameter Context.
+        id:
+          type: string
+          description: The ID the Parameter Context.
+          readOnly: true
+        inheritedParameterContexts:
+          type: array
+          description: A list of references of Parameter Contexts from which this one inherits parameters
+          items:
+            $ref: '#/components/schemas/ParameterContextReferenceEntity'
+        name:
+          type: string
+          description: The Name of the Parameter Context.
+        parameterProviderConfiguration:
+          $ref: '#/components/schemas/ParameterProviderConfigurationEntity'
+        parameters:
+          type: array
+          description: The Parameters for the Parameter Context
+          items:
+            $ref: '#/components/schemas/ParameterEntity'
+          uniqueItems: true
+      readOnly: true
+    ControllerServiceReferencingComponentEntity:
+      type: object
+      description: All components referencing this controller service.
+      properties:
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/ControllerServiceReferencingComponentDTO'
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        operatePermissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+      xml:
+        name: controllerServiceReferencingComponentEntity
+    PortDTO:
+      type: object
+      description: The output ports available to received data from the NiFi.
+      properties:
+        allowRemoteAccess:
+          type: boolean
+          description: Whether this port can be accessed remotely via Site-to-Site protocol.
+        comments:
+          type: string
+          description: The comments for the port.
+        concurrentlySchedulableTaskCount:
+          type: integer
+          format: int32
+          description: The number of tasks that should be concurrently scheduled for the port.
+        id:
+          type: string
+          description: The id of the component.
+        name:
+          type: string
+          description: The name of the port.
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        portFunction:
+          type: string
+          description: Specifies how the Port functions
+          enum:
+          - STANDARD
+          - FAILURE
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        state:
+          type: string
+          description: The state of the port.
+          enum:
+          - RUNNING
+          - STOPPED
+          - DISABLED
+        transmitting:
+          type: boolean
+          description: Whether the port has incoming or output connections to a remote NiFi. This is only applicable when the port is allowed to be accessed remotely.
+        type:
+          type: string
+          description: The type of port.
+          enum:
+          - INPUT_PORT
+          - OUTPUT_PORT
+        validationErrors:
+          type: array
+          description: Gets the validation errors from this port. These validation errors represent the problems with the port that must be resolved before it can be started.
+          items:
+            type: string
+            description: Gets the validation errors from this port. These validation errors represent the problems with the port that must be resolved before it can be started.
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+    ProcessorConfigDTO:
+      type: object
+      description: The configuration details for the processor. These details will be included in a response if the verbose flag is included in a request.
+      properties:
+        annotationData:
+          type: string
+          description: The annotation data for the processor used to relay configuration between a custom UI and the processor.
+        autoTerminatedRelationships:
+          type: array
+          description: The names of all relationships that cause a flow file to be terminated if the relationship is not connected elsewhere. This property differs from the 'isAutoTerminate' property of the RelationshipDTO in that the RelationshipDTO is meant to depict the current configuration, whereas this property can be set in a DTO when updating a Processor in order to change which Relationships should be auto-terminated.
+          items:
+            type: string
+            description: The names of all relationships that cause a flow file to be terminated if the relationship is not connected elsewhere. This property differs from the 'isAutoTerminate' property of the RelationshipDTO in that the RelationshipDTO is meant to depict the current configuration, whereas this property can be set in a DTO when updating a Processor in order to change which Relationships should be auto-terminated.
+          uniqueItems: true
+        backoffMechanism:
+          type: string
+          description: 'Determines whether the FlowFile should be penalized or the processor should be yielded between retries. Possible returned values: PENALIZE_FLOWFILE, YIELD_PROCESSOR. See BackoffMechanism.class for more details.'
+        bulletinLevel:
+          type: string
+          description: The level at which the processor will report bulletins.
+        comments:
+          type: string
+          description: The comments for the processor.
+        concurrentlySchedulableTaskCount:
+          type: integer
+          format: int32
+          description: The number of tasks that should be concurrently schedule for the processor. If the processor doesn't allow parallel processing then any positive input will be ignored.
+        customUiUrl:
+          type: string
+          description: The URL for the processor's custom configuration UI if applicable.
+        defaultConcurrentTasks:
+          type: object
+          additionalProperties:
+            type: string
+            description: Maps default values for concurrent tasks for each applicable scheduling strategy.
+          description: Maps default values for concurrent tasks for each applicable scheduling strategy.
+        defaultSchedulingPeriod:
+          type: object
+          additionalProperties:
+            type: string
+            description: Maps default values for scheduling period for each applicable scheduling strategy.
+          description: Maps default values for scheduling period for each applicable scheduling strategy.
+        descriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PropertyDescriptorDTO'
+          description: Descriptors for the processor's properties.
+        executionNode:
+          type: string
+          description: Indicates the node where the process will execute.
+        lossTolerant:
+          type: boolean
+          description: Whether the processor is loss tolerant.
+        maxBackoffPeriod:
+          type: string
+          description: Maximum amount of time to be waited during a retry period.
+        penaltyDuration:
+          type: string
+          description: The amount of time that is used when the process penalizes a flowfile.
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties for the processor. Properties whose value is not set will only contain the property name.
+          description: The properties for the processor. Properties whose value is not set will only contain the property name.
+        retriedRelationships:
+          type: array
+          description: All the relationships should be retried.
+          items:
+            type: string
+            description: All the relationships should be retried.
+          uniqueItems: true
+        retryCount:
+          type: integer
+          format: int32
+          description: Overall number of retries.
+        runDurationMillis:
+          type: integer
+          format: int64
+          description: The run duration for the processor in milliseconds.
+        schedulingPeriod:
+          type: string
+          description: The frequency with which to schedule the processor. The format of the value will depend on th value of schedulingStrategy.
+        schedulingStrategy:
+          type: string
+          description: Indicates how the processor should be scheduled to run.
+        sensitiveDynamicPropertyNames:
+          type: array
+          description: Set of sensitive dynamic property names
+          items:
+            type: string
+            description: Set of sensitive dynamic property names
+          uniqueItems: true
+        yieldDuration:
+          type: string
+          description: The amount of time that must elapse before this processor is scheduled again after yielding.
+    ControllerServiceReferencingComponentDTO:
+      type: object
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The number of active threads for the referencing component.
+        descriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PropertyDescriptorDTO'
+          description: The descriptors for the component properties.
+        groupId:
+          type: string
+          description: The group id for the component referencing a controller service. If this component is another controller service or a reporting task, this field is blank.
+        id:
+          type: string
+          description: The id of the component referencing a controller service.
+        name:
+          type: string
+          description: The name of the component referencing a controller service.
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties for the component.
+          description: The properties for the component.
+        referenceCycle:
+          type: boolean
+          description: If the referencing component represents a controller service, this indicates whether it has already been represented in this hierarchy.
+        referenceType:
+          type: string
+          description: The type of reference this is.
+          enum:
+          - Processor
+          - ControllerService
+          - ReportingTask
+          - FlowRegistryClient
+          - ParameterProvider
+          - FlowAnalysisRule
+        referencingComponents:
+          type: array
+          description: If the referencing component represents a controller service, these are the components that reference it.
+          items:
+            $ref: '#/components/schemas/ControllerServiceReferencingComponentEntity'
+          uniqueItems: true
+        state:
+          type: string
+          description: The scheduled state of a processor or reporting task referencing a controller service. If this component is another controller service, this field represents the controller service state.
+        type:
+          type: string
+          description: The type of the component referencing a controller service in simple Java class name format without package name.
+        validationErrors:
+          type: array
+          description: The validation errors for the component.
+          items:
+            type: string
+            description: The validation errors for the component.
+    PortStatusSnapshotEntity:
+      type: object
+      description: The status of all output ports in the process group.
+      properties:
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        id:
+          type: string
+          description: The id of the port.
+        portStatusSnapshot:
+          $ref: '#/components/schemas/PortStatusSnapshotDTO'
+      xml:
+        name: entity
+    ConnectableDTO:
+      type: object
+      description: The destination of the connection.
+      properties:
+        comments:
+          type: string
+          description: The comments for the connectable component.
+        exists:
+          type: boolean
+          description: If the connectable component represents a remote port, indicates if the target exists.
+        groupId:
+          type: string
+          description: The id of the group that the connectable component resides in
+        id:
+          type: string
+          description: The id of the connectable component.
+        name:
+          type: string
+          description: The name of the connectable component
+        running:
+          type: boolean
+          description: Reflects the current state of the connectable component.
+        transmitting:
+          type: boolean
+          description: If the connectable component represents a remote port, indicates if the target is configured to transmit.
+        type:
+          type: string
+          description: The type of component the connectable is.
+          enum:
+          - PROCESSOR
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - FUNNEL
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+      required:
+      - groupId
+      - id
+      - type
+    PortStatusSnapshotDTO:
+      type: object
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The active thread count for the port.
+        bytesIn:
+          type: integer
+          format: int64
+          description: The size of hte FlowFiles that have been accepted in the last 5 minutes.
+        bytesOut:
+          type: integer
+          format: int64
+          description: The number of bytes that have been processed in the last 5 minutes.
+        flowFilesIn:
+          type: integer
+          format: int32
+          description: The number of FlowFiles that have been accepted in the last 5 minutes.
+        flowFilesOut:
+          type: integer
+          format: int32
+          description: The number of FlowFiles that have been processed in the last 5 minutes.
+        groupId:
+          type: string
+          description: The id of the parent process group of the port.
+        id:
+          type: string
+          description: The id of the port.
+        input:
+          type: string
+          description: The count/size of FlowFiles that have been accepted in the last 5 minutes.
+        name:
+          type: string
+          description: The name of the port.
+        output:
+          type: string
+          description: The count/size of FlowFiles that have been processed in the last 5 minutes.
+        runStatus:
+          type: string
+          description: The run status of the port.
+          enum:
+          - Running
+          - Stopped
+          - Validating
+          - Disabled
+          - Invalid
+        transmitting:
+          type: boolean
+          description: Whether the port has incoming or outgoing connections to a remote NiFi.
+    ProcessGroupStatusSnapshotDTO:
+      type: object
+      description: The process group status snapshot from the node.
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The active thread count for this process group.
+        bytesIn:
+          type: integer
+          format: int64
+          description: The number of bytes that have come into this ProcessGroup in the last 5 minutes
+        bytesOut:
+          type: integer
+          format: int64
+          description: The number of bytes transferred out of this ProcessGroup in the last 5 minutes
+        bytesQueued:
+          type: integer
+          format: int64
+          description: The number of bytes that are queued up in this ProcessGroup right now
+        bytesRead:
+          type: integer
+          format: int64
+          description: The number of bytes read by components in this ProcessGroup in the last 5 minutes
+        bytesReceived:
+          type: integer
+          format: int64
+          description: The number of bytes received from external sources by components within this ProcessGroup in the last 5 minutes
+        bytesSent:
+          type: integer
+          format: int64
+          description: The number of bytes sent to an external sink by components within this ProcessGroup in the last 5 minutes
+        bytesTransferred:
+          type: integer
+          format: int64
+          description: The number of bytes transferred in this ProcessGroup in the last 5 minutes
+        bytesWritten:
+          type: integer
+          format: int64
+          description: The number of bytes written by components in this ProcessGroup in the last 5 minutes
+        connectionStatusSnapshots:
+          type: array
+          description: The status of all connections in the process group.
+          items:
+            $ref: '#/components/schemas/ConnectionStatusSnapshotEntity'
+        flowFilesIn:
+          type: integer
+          format: int32
+          description: The number of FlowFiles that have come into this ProcessGroup in the last 5 minutes
+        flowFilesOut:
+          type: integer
+          format: int32
+          description: The number of FlowFiles transferred out of this ProcessGroup in the last 5 minutes
+        flowFilesQueued:
+          type: integer
+          format: int32
+          description: The number of FlowFiles that are queued up in this ProcessGroup right now
+        flowFilesReceived:
+          type: integer
+          format: int32
+          description: The number of FlowFiles received from external sources by components within this ProcessGroup in the last 5 minutes
+        flowFilesSent:
+          type: integer
+          format: int32
+          description: The number of FlowFiles sent to an external sink by components within this ProcessGroup in the last 5 minutes
+        flowFilesTransferred:
+          type: integer
+          format: int32
+          description: The number of FlowFiles transferred in this ProcessGroup in the last 5 minutes
+        id:
+          type: string
+          description: The id of the process group.
+        input:
+          type: string
+          description: The input count/size for the process group in the last 5 minutes (pretty printed).
+        inputPortStatusSnapshots:
+          type: array
+          description: The status of all input ports in the process group.
+          items:
+            $ref: '#/components/schemas/PortStatusSnapshotEntity'
+        name:
+          type: string
+          description: The name of this process group.
+        output:
+          type: string
+          description: The output count/size for the process group in the last 5 minutes.
+        outputPortStatusSnapshots:
+          type: array
+          description: The status of all output ports in the process group.
+          items:
+            $ref: '#/components/schemas/PortStatusSnapshotEntity'
+        processGroupStatusSnapshots:
+          type: array
+          description: The status of all process groups in the process group.
+          items:
+            $ref: '#/components/schemas/ProcessGroupStatusSnapshotEntity'
+        processingNanos:
+          type: integer
+          format: int64
+        processingPerformanceStatus:
+          $ref: '#/components/schemas/ProcessingPerformanceStatusDTO'
+        processorStatusSnapshots:
+          type: array
+          description: The status of all processors in the process group.
+          items:
+            $ref: '#/components/schemas/ProcessorStatusSnapshotEntity'
+        queued:
+          type: string
+          description: The count/size that is queued in the the process group.
+        queuedCount:
+          type: string
+          description: The count that is queued for the process group.
+        queuedSize:
+          type: string
+          description: The size that is queued for the process group.
+        read:
+          type: string
+          description: The number of bytes read in the last 5 minutes.
+        received:
+          type: string
+          description: The count/size sent to the process group in the last 5 minutes.
+        remoteProcessGroupStatusSnapshots:
+          type: array
+          description: The status of all remote process groups in the process group.
+          items:
+            $ref: '#/components/schemas/RemoteProcessGroupStatusSnapshotEntity'
+        sent:
+          type: string
+          description: The count/size sent from this process group in the last 5 minutes.
+        statelessActiveThreadCount:
+          type: integer
+          format: int32
+          description: The current number of active threads for the Process Group, when running in Stateless mode.
+          readOnly: true
+        terminatedThreadCount:
+          type: integer
+          format: int32
+          description: The number of threads currently terminated for the process group.
+        transferred:
+          type: string
+          description: The count/size transferred to/from queues in the process group in the last 5 minutes.
+        versionedFlowState:
+          type: string
+          description: The current state of the Process Group, as it relates to the Versioned Flow
+          enum:
+          - LOCALLY_MODIFIED
+          - STALE
+          - LOCALLY_MODIFIED_AND_STALE
+          - UP_TO_DATE
+          - SYNC_FAILURE
+          readOnly: true
+        written:
+          type: string
+          description: The number of bytes written in the last 5 minutes.
+    Bundle:
+      type: object
+      description: The details of the artifact that bundled this parameter provider.
+      properties:
+        artifact:
+          type: string
+          description: The artifact of the bundle
+        group:
+          type: string
+          description: The group of the bundle
+        version:
+          type: string
+          description: The version of the bundle
+    BatchSettingsDTO:
+      type: object
+      description: The batch settings for data transmission.
+      properties:
+        count:
+          type: integer
+          format: int32
+          description: Preferred number of FlowFiles to include in a transaction.
+        duration:
+          type: string
+          description: Preferred amount of time that a transaction should span.
+        size:
+          type: string
+          description: Preferred number of bytes to include in a transaction.
+    RevisionDTO:
+      type: object
+      description: The revision of the Process Group
+      properties:
+        clientId:
+          type: string
+          description: 'A client identifier used to make a request.
+
+            By including a client identifier, the API can allow multiple requests without needing the current revision.
+
+            Due to the asynchronous nature of requests/responses this was implemented to allow the client to make numerous requests without having to wait for the previous response to come back
+
+            '
+        lastModifier:
+          type: string
+          description: The user that last modified the flow.
+          readOnly: true
+        version:
+          type: integer
+          format: int64
+          description: 'NiFi employs an optimistic locking strategy where the client must include a revision in their request when performing an update.
+
+            In a response to a mutable flow request, this field represents the updated base version.
+
+            '
+    FlowSnippetDTO:
+      type: object
+      description: The contents of this process group.
+      properties:
+        connections:
+          type: array
+          description: The connections in this flow snippet.
+          items:
+            $ref: '#/components/schemas/ConnectionDTO'
+          uniqueItems: true
+        controllerServices:
+          type: array
+          description: The controller services in this flow snippet.
+          items:
+            $ref: '#/components/schemas/ControllerServiceDTO'
+          uniqueItems: true
+        funnels:
+          type: array
+          description: The funnels in this flow snippet.
+          items:
+            $ref: '#/components/schemas/FunnelDTO'
+          uniqueItems: true
+        inputPorts:
+          type: array
+          description: The input ports in this flow snippet.
+          items:
+            $ref: '#/components/schemas/PortDTO'
+          uniqueItems: true
+        labels:
+          type: array
+          description: The labels in this flow snippet.
+          items:
+            $ref: '#/components/schemas/LabelDTO'
+          uniqueItems: true
+        outputPorts:
+          type: array
+          description: The output ports in this flow snippet.
+          items:
+            $ref: '#/components/schemas/PortDTO'
+          uniqueItems: true
+        processGroups:
+          type: array
+          description: The process groups in this flow snippet.
+          items:
+            $ref: '#/components/schemas/ProcessGroupDTO'
+          uniqueItems: true
+        processors:
+          type: array
+          description: The processors in this flow snippet.
+          items:
+            $ref: '#/components/schemas/ProcessorDTO'
+          uniqueItems: true
+        remoteProcessGroups:
+          type: array
+          description: The remote process groups in this flow snippet.
+          items:
+            $ref: '#/components/schemas/RemoteProcessGroupDTO'
+          uniqueItems: true
+    ProcessGroupEntity:
+      type: object
+      properties:
+        activeRemotePortCount:
+          type: integer
+          format: int32
+          description: The number of active remote ports in the process group.
+        bulletins:
+          type: array
+          description: The bulletins for this component.
+          items:
+            $ref: '#/components/schemas/BulletinEntity'
+        component:
+          $ref: '#/components/schemas/ProcessGroupDTO'
+        disabledCount:
+          type: integer
+          format: int32
+          description: The number of disabled components in the process group.
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        id:
+          type: string
+          description: The id of the component.
+        inactiveRemotePortCount:
+          type: integer
+          format: int32
+          description: The number of inactive remote ports in the process group.
+        inputPortCount:
+          type: integer
+          format: int32
+          description: The number of input ports in the process group.
+          readOnly: true
+        invalidCount:
+          type: integer
+          format: int32
+          description: The number of invalid components in the process group.
+        localInputPortCount:
+          type: integer
+          format: int32
+          description: The number of local input ports in the process group.
+        localOutputPortCount:
+          type: integer
+          format: int32
+          description: The number of local output ports in the process group.
+        locallyModifiedAndStaleCount:
+          type: integer
+          format: int32
+          description: The number of locally modified and stale versioned process groups in the process group.
+        locallyModifiedCount:
+          type: integer
+          format: int32
+          description: The number of locally modified versioned process groups in the process group.
+        outputPortCount:
+          type: integer
+          format: int32
+          description: The number of output ports in the process group.
+          readOnly: true
+        parameterContext:
+          $ref: '#/components/schemas/ParameterContextReferenceEntity'
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        processGroupUpdateStrategy:
+          type: string
+          description: Determines the process group update strategy
+          enum:
+          - CURRENT_GROUP
+          - CURRENT_GROUP_WITH_CHILDREN
+        publicInputPortCount:
+          type: integer
+          format: int32
+          description: The number of public input ports in the process group.
+        publicOutputPortCount:
+          type: integer
+          format: int32
+          description: The number of public output ports in the process group.
+        revision:
+          $ref: '#/components/schemas/RevisionDTO'
+        runningCount:
+          type: integer
+          format: int32
+          description: The number of running components in this process group.
+        staleCount:
+          type: integer
+          format: int32
+          description: The number of stale versioned process groups in the process group.
+        status:
+          $ref: '#/components/schemas/ProcessGroupStatusDTO'
+        stoppedCount:
+          type: integer
+          format: int32
+          description: The number of stopped components in the process group.
+        syncFailureCount:
+          type: integer
+          format: int32
+          description: The number of versioned process groups in the process group that are unable to sync to a registry.
+        upToDateCount:
+          type: integer
+          format: int32
+          description: The number of up to date versioned process groups in the process group.
+        uri:
+          type: string
+          description: The URI for futures requests to the component.
+        versionedFlowSnapshot:
+          $ref: '#/components/schemas/RegisteredFlowSnapshot'
+        versionedFlowState:
+          type: string
+          description: The current state of the Process Group, as it relates to the Versioned Flow
+          enum:
+          - LOCALLY_MODIFIED
+          - STALE
+          - LOCALLY_MODIFIED_AND_STALE
+          - UP_TO_DATE
+          - SYNC_FAILURE
+          readOnly: true
+      xml:
+        name: processGroupEntity
+    ProcessGroupStatusSnapshotEntity:
+      type: object
+      description: The status of all process groups in the process group.
+      properties:
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        id:
+          type: string
+          description: The id of the process group.
+        processGroupStatusSnapshot:
+          $ref: '#/components/schemas/ProcessGroupStatusSnapshotDTO'
+      xml:
+        name: entity
+    BundleDTO:
+      type: object
+      description: If the property identifies a controller service this returns the bundle of the type, null otherwise.
+      properties:
+        artifact:
+          type: string
+          description: The artifact of the bundle.
+        group:
+          type: string
+          description: The group of the bundle.
+        version:
+          type: string
+          description: The version of the bundle.
+    VersionControlInformationDTO:
+      type: object
+      description: The Version Control information
+      properties:
+        branch:
+          type: string
+          description: The ID of the branch that the flow is stored in
+        bucketId:
+          type: string
+          description: The ID of the bucket that the flow is stored in
+        bucketName:
+          type: string
+          description: The name of the bucket that the flow is stored in
+          readOnly: true
+        flowDescription:
+          type: string
+          description: The description of the flow
+        flowId:
+          type: string
+          description: The ID of the flow
+        flowName:
+          type: string
+          description: The name of the flow
+        groupId:
+          type: string
+          description: The ID of the Process Group that is under version control
+        registryId:
+          type: string
+          description: The ID of the registry that the flow is stored in
+        registryName:
+          type: string
+          description: The name of the registry that the flow is stored in
+          readOnly: true
+        state:
+          type: string
+          description: The current state of the Process Group, as it relates to the Versioned Flow
+          enum:
+          - LOCALLY_MODIFIED
+          - STALE
+          - LOCALLY_MODIFIED_AND_STALE
+          - UP_TO_DATE
+          - SYNC_FAILURE
+          readOnly: true
+        stateExplanation:
+          type: string
+          description: Explanation of why the group is in the specified state
+          readOnly: true
+        storageLocation:
+          type: string
+          description: The storage location
+        version:
+          type: string
+          description: The version of the flow
+    ConnectionDTO:
+      type: object
+      description: The connections in this flow snippet.
+      properties:
+        availableRelationships:
+          type: array
+          description: The relationships that the source of the connection currently supports.
+          items:
+            type: string
+            description: The relationships that the source of the connection currently supports.
+            readOnly: true
+          readOnly: true
+          uniqueItems: true
+        backPressureDataSizeThreshold:
+          type: string
+          description: The object data size threshold for determining when back pressure is applied. Updating this value is a passive change in the sense that it won't impact whether existing files over the limit are affected but it does help feeder processors to stop pushing too much into this work queue.
+        backPressureObjectThreshold:
+          type: integer
+          format: int64
+          description: The object count threshold for determining when back pressure is applied. Updating this value is a passive change in the sense that it won't impact whether existing files over the limit are affected but it does help feeder processors to stop pushing too much into this work queue.
+        bends:
+          type: array
+          description: The bend points on the connection.
+          items:
+            $ref: '#/components/schemas/PositionDTO'
+        destination:
+          $ref: '#/components/schemas/ConnectableDTO'
+        flowFileExpiration:
+          type: string
+          description: The amount of time a flow file may be in the flow before it will be automatically aged out of the flow. Once a flow file reaches this age it will be terminated from the flow the next time a processor attempts to start work on it.
+        getzIndex:
+          type: integer
+          format: int64
+          description: The z index of the connection.
+        id:
+          type: string
+          description: The id of the component.
+        labelIndex:
+          type: integer
+          format: int32
+          description: The index of the bend point where to place the connection label.
+        loadBalanceCompression:
+          type: string
+          description: 'Whether or not data should be compressed when being transferred between nodes in the cluster. Possible returned values: DO_NOT_COMPRESS, COMPRESS_ATTRIBUTES_ONLY, COMPRESS_ATTRIBUTES_AND_CONTENT. See LoadBalanceCompression.class for more details.'
+        loadBalancePartitionAttribute:
+          type: string
+          description: The FlowFile Attribute to use for determining which node a FlowFile will go to if the Load Balancing Strategy is set to PARTITION_BY_ATTRIBUTE
+        loadBalanceStatus:
+          type: string
+          description: 'The current status of the Connection''s Load Balancing Activities. Status can indicate that Load Balancing is not configured for the connection, that Load Balancing is configured but inactive (not currently transferring data to another node), or that Load Balancing is configured and actively transferring data to another node. Possible returned values: LOAD_BALANCE_NOT_CONFIGURED, LOAD_BALANCE_INACTIVE, LOAD_BALANCE_ACTIVE. See LoadBalanceStatus.class for more details.'
+          readOnly: true
+        loadBalanceStrategy:
+          type: string
+          description: 'How to load balance the data in this Connection across the nodes in the cluster. Possible returned values: DO_NOT_LOAD_BALANCE, PARTITION_BY_ATTRIBUTE, ROUND_ROBIN, SINGLE_NODE. See LoadBalanceStrategy.class for more details.'
+        name:
+          type: string
+          description: The name of the connection.
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        prioritizers:
+          type: array
+          description: The comparators used to prioritize the queue.
+          items:
+            type: string
+            description: The comparators used to prioritize the queue.
+        retriedRelationships:
+          type: array
+          description: The relationships from the source of the connection that are configured to be retried.
+          items:
+            type: string
+            description: The relationships from the source of the connection that are configured to be retried.
+            readOnly: true
+          readOnly: true
+          uniqueItems: true
+        selectedRelationships:
+          type: array
+          description: The selected relationship that comprise the connection.
+          items:
+            type: string
+            description: The selected relationship that comprise the connection.
+          uniqueItems: true
+        source:
+          $ref: '#/components/schemas/ConnectableDTO'
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+    VersionedPort:
+      type: object
+      description: The Output Ports
+      properties:
+        allowRemoteAccess:
+          type: boolean
+          description: Whether or not this port allows remote access for site-to-site
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        concurrentlySchedulableTaskCount:
+          type: integer
+          format: int32
+          description: The number of tasks that should be concurrently scheduled for the port.
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        name:
+          type: string
+          description: The component's name
+        portFunction:
+          type: string
+          description: Specifies how the Port should function
+          enum:
+          - STANDARD
+          - FAILURE
+        position:
+          $ref: '#/components/schemas/Position'
+        scheduledState:
+          type: string
+          description: The scheduled state of the component
+          enum:
+          - ENABLED
+          - DISABLED
+          - RUNNING
+        type:
+          type: string
+          description: The type of port.
+          enum:
+          - INPUT_PORT
+          - OUTPUT_PORT
+    ConnectionStatusPredictionsSnapshotDTO:
+      type: object
+      description: Predictions, if available, for this connection (null if not available)
+      properties:
+        predictedBytesAtNextInterval:
+          type: integer
+          format: int64
+          description: The predicted total number of bytes in the queue at the next configured interval.
+        predictedCountAtNextInterval:
+          type: integer
+          format: int32
+          description: The predicted number of queued objects at the next configured interval.
+        predictedMillisUntilBytesBackpressure:
+          type: integer
+          format: int64
+          description: The predicted number of milliseconds before the connection will have backpressure applied, based on the total number of bytes in the queue.
+        predictedMillisUntilCountBackpressure:
+          type: integer
+          format: int64
+          description: The predicted number of milliseconds before the connection will have backpressure applied, based on the queued count.
+        predictedPercentBytes:
+          type: integer
+          format: int32
+          description: Predicted connection percent use regarding queued FlowFiles size and backpressure threshold if configured.
+        predictedPercentCount:
+          type: integer
+          format: int32
+          description: Predicted connection percent use regarding queued FlowFiles count and backpressure threshold if configured.
+        predictionIntervalSeconds:
+          type: integer
+          format: int32
+          description: The configured interval (in seconds) for predicting connection queue count and size (and percent usage).
+    ProcessGroupDTO:
+      type: object
+      properties:
+        activeRemotePortCount:
+          type: integer
+          format: int32
+          description: The number of active remote ports in the process group.
+        comments:
+          type: string
+          description: The comments for the process group.
+        contents:
+          $ref: '#/components/schemas/FlowSnippetDTO'
+        defaultBackPressureDataSizeThreshold:
+          type: string
+          description: Default value used in this Process Group for the maximum data size of objects that can be queued before back pressure is applied.
+        defaultBackPressureObjectThreshold:
+          type: integer
+          format: int64
+          description: Default value used in this Process Group for the maximum number of objects that can be queued before back pressure is applied.
+        defaultFlowFileExpiration:
+          type: string
+          description: The default FlowFile Expiration for this Process Group.
+        disabledCount:
+          type: integer
+          format: int32
+          description: The number of disabled components in the process group.
+        executionEngine:
+          type: string
+          description: The Execution Engine that should be used to run the flow represented by this Process Group.
+          enum:
+          - STATELESS
+          - STANDARD
+          - INHERITED
+        flowfileConcurrency:
+          type: string
+          description: The FlowFile Concurrency for this Process Group.
+          enum:
+          - UNBOUNDED
+          - SINGLE_FLOWFILE_PER_NODE
+          - SINGLE_BATCH_PER_NODE
+        flowfileOutboundPolicy:
+          type: string
+          description: The Outbound Policy that is used for determining how FlowFiles should be transferred out of the Process Group.
+          enum:
+          - STREAM_WHEN_AVAILABLE
+          - BATCH_OUTPUT
+        id:
+          type: string
+          description: The id of the component.
+        inactiveRemotePortCount:
+          type: integer
+          format: int32
+          description: The number of inactive remote ports in the process group.
+        inputPortCount:
+          type: integer
+          format: int32
+          description: The number of input ports in the process group.
+          readOnly: true
+        invalidCount:
+          type: integer
+          format: int32
+          description: The number of invalid components in the process group.
+        localInputPortCount:
+          type: integer
+          format: int32
+          description: The number of local input ports in the process group.
+        localOutputPortCount:
+          type: integer
+          format: int32
+          description: The number of local output ports in the process group.
+        locallyModifiedAndStaleCount:
+          type: integer
+          format: int32
+          description: The number of locally modified and stale versioned process groups in the process group.
+        locallyModifiedCount:
+          type: integer
+          format: int32
+          description: The number of locally modified versioned process groups in the process group.
+        logFileSuffix:
+          type: string
+          description: The log file suffix for this Process Group for dedicated logging.
+        maxConcurrentTasks:
+          type: integer
+          format: int32
+          description: The maximum number of concurrent tasks to use when running the flow using the Stateless Engine
+        name:
+          type: string
+          description: The name of the process group.
+        outputPortCount:
+          type: integer
+          format: int32
+          description: The number of output ports in the process group.
+          readOnly: true
+        parameterContext:
+          $ref: '#/components/schemas/ParameterContextReferenceEntity'
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        publicInputPortCount:
+          type: integer
+          format: int32
+          description: The number of public input ports in the process group.
+        publicOutputPortCount:
+          type: integer
+          format: int32
+          description: The number of public output ports in the process group.
+        runningCount:
+          type: integer
+          format: int32
+          description: The number of running components in this process group.
+        staleCount:
+          type: integer
+          format: int32
+          description: The number of stale versioned process groups in the process group.
+        statelessFlowTimeout:
+          type: string
+          description: The maximum amount of time that the flow can be run using the Stateless Engine before the flow times out
+        statelessGroupScheduledState:
+          type: string
+          description: If the Process Group is configured to run in using the Stateless Engine, represents the current state. Otherwise, will be STOPPED.
+          enum:
+          - STOPPED
+          - RUNNING
+        stoppedCount:
+          type: integer
+          format: int32
+          description: The number of stopped components in the process group.
+        syncFailureCount:
+          type: integer
+          format: int32
+          description: The number of versioned process groups in the process group that are unable to sync to a registry.
+        upToDateCount:
+          type: integer
+          format: int32
+          description: The number of up to date versioned process groups in the process group.
+        versionControlInformation:
+          $ref: '#/components/schemas/VersionControlInformationDTO'
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+    Position:
+      type: object
+      description: The position of a component on the graph
+      properties:
+        x:
+          type: number
+          format: double
+          description: The x coordinate.
+        y:
+          type: number
+          format: double
+          description: The y coordinate.
+    ControllerServiceDTO:
+      type: object
+      description: The controller services in this flow snippet.
+      properties:
+        annotationData:
+          type: string
+          description: The annotation for the controller service. This is how the custom UI relays configuration to the controller service.
+        bulletinLevel:
+          type: string
+          description: The level at which the controller service will report bulletins.
+        bundle:
+          $ref: '#/components/schemas/BundleDTO'
+        comments:
+          type: string
+          description: The comments for the controller service.
+        controllerServiceApis:
+          type: array
+          description: Lists the APIs this Controller Service implements.
+          items:
+            $ref: '#/components/schemas/ControllerServiceApiDTO'
+        customUiUrl:
+          type: string
+          description: The URL for the controller services custom configuration UI if applicable.
+        deprecated:
+          type: boolean
+          description: Whether the controller service has been deprecated.
+        descriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PropertyDescriptorDTO'
+          description: The descriptors for the controller service properties.
+        extensionMissing:
+          type: boolean
+          description: Whether the underlying extension is missing.
+        id:
+          type: string
+          description: The id of the component.
+        multipleVersionsAvailable:
+          type: boolean
+          description: Whether the controller service has multiple versions available.
+        name:
+          type: string
+          description: The name of the controller service.
+        parentGroupId:
+          type: string
+          description: The id of parent process group of this component if applicable.
+        persistsState:
+          type: boolean
+          description: Whether the controller service persists state.
+        position:
+          $ref: '#/components/schemas/PositionDTO'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties of the controller service.
+          description: The properties of the controller service.
+        referencingComponents:
+          type: array
+          description: All components referencing this controller service.
+          items:
+            $ref: '#/components/schemas/ControllerServiceReferencingComponentEntity'
+          uniqueItems: true
+        restricted:
+          type: boolean
+          description: Whether the controller service requires elevated privileges.
+        sensitiveDynamicPropertyNames:
+          type: array
+          description: Set of sensitive dynamic property names
+          items:
+            type: string
+            description: Set of sensitive dynamic property names
+          uniqueItems: true
+        state:
+          type: string
+          description: The state of the controller service.
+          enum:
+          - ENABLED
+          - ENABLING
+          - DISABLED
+          - DISABLING
+        supportsSensitiveDynamicProperties:
+          type: boolean
+          description: Whether the controller service supports sensitive dynamic properties.
+        type:
+          type: string
+          description: The type of the controller service.
+        validationErrors:
+          type: array
+          description: 'The validation errors from the controller service.
+
+            These validation errors represent the problems with the controller service that must be resolved before it can be enabled.
+
+            '
+          items:
+            type: string
+            description: 'The validation errors from the controller service.
+
+              These validation errors represent the problems with the controller service that must be resolved before it can be enabled.
+
+              '
+        validationStatus:
+          type: string
+          description: Indicates whether the ControllerService is valid, invalid, or still in the process of validating (i.e., it is unknown whether or not the ControllerService is valid)
+          enum:
+          - VALID
+          - INVALID
+          - VALIDATING
+          readOnly: true
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+    ParameterContextValidationRequestDTO:
+      type: object
+      description: The Update Request
+      properties:
+        complete:
+          type: boolean
+          description: Whether or not the request is completed
+          readOnly: true
+        componentValidationResults:
+          $ref: '#/components/schemas/ComponentValidationResultsEntity'
+        failureReason:
+          type: string
+          description: The reason for the request failing, or null if the request has not failed
+          readOnly: true
+        lastUpdated:
+          type: string
+          format: date-time
+          description: The timestamp of when the request was last updated
+          readOnly: true
+        parameterContext:
+          $ref: '#/components/schemas/ParameterContextDTO'
+        percentCompleted:
+          type: integer
+          format: int32
+          description: A value between 0 and 100 (inclusive) indicating how close the request is to completion
+          readOnly: true
+        requestId:
+          type: string
+          description: The ID of the request
+          readOnly: true
+        state:
+          type: string
+          description: A description of the current state of the request
+          readOnly: true
+        submissionTime:
+          type: string
+          format: date-time
+          description: The timestamp of when the request was submitted
+          readOnly: true
+        updateSteps:
+          type: array
+          description: The steps that are required in order to complete the request, along with the status of each
+          items:
+            $ref: '#/components/schemas/ParameterContextValidationStepDTO'
+          readOnly: true
+        uri:
+          type: string
+          description: The URI for the request
+          readOnly: true
+    ParameterContextValidationStepDTO:
+      type: object
+      description: The steps that are required in order to complete the request, along with the status of each
+      properties:
+        complete:
+          type: boolean
+          description: Whether or not this step has completed
+          readOnly: true
+        description:
+          type: string
+          description: Explanation of what happens in this step
+          readOnly: true
+        failureReason:
+          type: string
+          description: An explanation of why this step failed, or null if this step did not fail
+          readOnly: true
+      readOnly: true
+    VersionedNodeState:
+      type: object
+      description: The state entries for a single node
+      properties:
+        state:
+          type: object
+          additionalProperties:
+            type: string
+            description: The state key-value pairs for this node
+          description: The state key-value pairs for this node
+    PropertyDependencyDTO:
+      type: object
+      description: A list of dependencies that must be met in order for this Property to be relevant. If any of these dependencies is not met, the property described by this Property Descriptor is not relevant.
+      properties:
+        dependentValues:
+          type: array
+          description: The values for the property that satisfies the dependency, or null if the dependency is satisfied by the presence of any value for the associated property name
+          items:
+            type: string
+            description: The values for the property that satisfies the dependency, or null if the dependency is satisfied by the presence of any value for the associated property name
+          uniqueItems: true
+        propertyName:
+          type: string
+          description: The name of the property that is being depended upon
+    AssetDTO:
+      type: object
+      description: The Asset.
+      properties:
+        digest:
+          type: string
+          description: The digest of the asset, will be null if the asset content is missing.
+        id:
+          type: string
+          description: The identifier of the asset.
+        missingContent:
+          type: boolean
+          description: Indicates if the content of the asset is missing.
+        name:
+          type: string
+          description: The name of the asset.
+      readOnly: true
+    RemoteProcessGroupStatusSnapshotEntity:
+      type: object
+      description: The status of all remote process groups in the process group.
+      properties:
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+        id:
+          type: string
+          description: The id of the remote process group.
+        remoteProcessGroupStatusSnapshot:
+          $ref: '#/components/schemas/RemoteProcessGroupStatusSnapshotDTO'
+      xml:
+        name: entity
+    VersionedFlowCoordinates:
+      type: object
+      description: The coordinates where the remote flow is stored, or null if the Process Group is not directly under Version Control
+      properties:
+        branch:
+          type: string
+          description: The name of the branch that the flow resides in
+        bucketId:
+          type: string
+          description: The UUID of the bucket that the flow resides in
+        flowId:
+          type: string
+          description: The UUID of the flow
+        latest:
+          type: boolean
+          description: Whether or not these coordinates point to the latest version of the flow
+        registryId:
+          type: string
+          description: The identifier of the Flow Registry that contains the flow
+        storageLocation:
+          type: string
+          description: The location of the Flow Registry that stores the flow
+        version:
+          type: string
+          description: The version of the flow
+    ParameterContextValidationRequestEntity:
+      type: object
+      properties:
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        request:
+          $ref: '#/components/schemas/ParameterContextValidationRequestDTO'
+      xml:
+        name: parameterContextValidationRequestEntity
+    RemoteProcessGroupPortDTO:
+      type: object
+      description: The output ports from which data can be retrieved.
+      properties:
+        batchSettings:
+          $ref: '#/components/schemas/BatchSettingsDTO'
+        comments:
+          type: string
+          description: The comments as configured on the target port.
+        concurrentlySchedulableTaskCount:
+          type: integer
+          format: int32
+          description: The number of task that may transmit FlowFiles to the target port concurrently.
+        connected:
+          type: boolean
+          description: Whether the port has either an incoming or outgoing connection.
+        exists:
+          type: boolean
+          description: Whether the target port exists.
+        groupId:
+          type: string
+          description: The id of the remote process group that the port resides in.
+        id:
+          type: string
+          description: The id of the port.
+        name:
+          type: string
+          description: The name of the target port.
+        targetId:
+          type: string
+          description: The id of the target port.
+        targetRunning:
+          type: boolean
+          description: Whether the target port is running.
+        transmitting:
+          type: boolean
+          description: Whether the remote port is configured for transmission.
+        useCompression:
+          type: boolean
+          description: Whether the FlowFiles are compressed when sent to the target port.
+        versionedComponentId:
+          type: string
+          description: The ID of the corresponding component that is under version control
+    RemoteProcessGroupStatusSnapshotDTO:
+      type: object
+      description: The remote process group status snapshot from the node.
+      properties:
+        activeThreadCount:
+          type: integer
+          format: int32
+          description: The number of active threads for the remote process group.
+        bytesReceived:
+          type: integer
+          format: int64
+          description: The size of the FlowFiles received from the remote process group in the last 5 minutes.
+        bytesSent:
+          type: integer
+          format: int64
+          description: The size of the FlowFiles sent to the remote process group in the last 5 minutes.
+        flowFilesReceived:
+          type: integer
+          format: int32
+          description: The number of FlowFiles received from the remote process group in the last 5 minutes.
+        flowFilesSent:
+          type: integer
+          format: int32
+          description: The number of FlowFiles sent to the remote process group in the last 5 minutes.
+        groupId:
+          type: string
+          description: The id of the parent process group the remote process group resides in.
+        id:
+          type: string
+          description: The id of the remote process group.
+        name:
+          type: string
+          description: The name of the remote process group.
+        received:
+          type: string
+          description: The count/size of the FlowFiles received from the remote process group in the last 5 minutes.
+        sent:
+          type: string
+          description: The count/size of the FlowFiles sent to the remote process group in the last 5 minutes.
+        targetUri:
+          type: string
+          description: The URI of the target system.
+        transmissionStatus:
+          type: string
+          description: The transmission status of the remote process group.
+    ParameterContextReferenceEntity:
+      type: object
+      description: The Parameter Context, or null if no Parameter Context has been bound to the Process Group
+      properties:
+        component:
+          $ref: '#/components/schemas/ParameterContextReferenceDTO'
+        id:
+          type: string
+          description: The id of the component.
+        permissions:
+          $ref: '#/components/schemas/PermissionsDTO'
+      xml:
+        name: parameterContextReferenceEntity
+    VersionedResourceDefinition:
+      type: object
+      description: Returns the Resource Definition that defines which type(s) of resource(s) this property references, if any
+      properties:
+        cardinality:
+          type: string
+          description: The cardinality of the resource
+          enum:
+          - SINGLE
+          - MULTIPLE
+        resourceTypes:
+          type: array
+          description: The types of resource that the Property Descriptor is allowed to reference
+          items:
+            type: string
+            description: The types of resource that the Property Descriptor is allowed to reference
+            enum:
+            - FILE
+            - DIRECTORY
+            - TEXT
+            - URL
+          uniqueItems: true
+    ParameterContextUpdateRequestDTO:
+      type: object
+      description: The Update Request
+      properties:
+        complete:
+          type: boolean
+          description: Whether or not the request is completed
+          readOnly: true
+        failureReason:
+          type: string
+          description: The reason for the request failing, or null if the request has not failed
+          readOnly: true
+        lastUpdated:
+          type: string
+          format: date-time
+          description: The timestamp of when the request was last updated
+          readOnly: true
+        parameterContext:
+          $ref: '#/components/schemas/ParameterContextDTO'
+        percentCompleted:
+          type: integer
+          format: int32
+          description: A value between 0 and 100 (inclusive) indicating how close the request is to completion
+          readOnly: true
+        referencingComponents:
+          type: array
+          description: The components that are referenced by the update.
+          items:
+            $ref: '#/components/schemas/AffectedComponentEntity'
+          readOnly: true
+          uniqueItems: true
+        requestId:
+          type: string
+          description: The ID of the request
+          readOnly: true
+        state:
+          type: string
+          description: A description of the current state of the request
+          readOnly: true
+        submissionTime:
+          type: string
+          format: date-time
+          description: The timestamp of when the request was submitted
+          readOnly: true
+        updateSteps:
+          type: array
+          description: The steps that are required in order to complete the request, along with the status of each
+          items:
+            $ref: '#/components/schemas/ParameterContextUpdateStepDTO'
+          readOnly: true
+        uri:
+          type: string
+          description: The URI for the request
+          readOnly: true
+    AllowableValueEntity:
+      type: object
+      description: Allowable values for the property. If empty then the allowed values are not constrained.
+      properties:
+        allowableValue:
+          $ref: '#/components/schemas/AllowableValueDTO'
+        canRead:
+          type: boolean
+          description: Indicates whether the user can read a given resource.
+          readOnly: true
+      xml:
+        name: entity
+    ControllerServiceApiDTO:
+      type: object
+      description: Lists the APIs this Controller Service implements.
+      properties:
+        bundle:
+          $ref: '#/components/schemas/BundleDTO'
+        type:
+          type: string
+          description: The fully qualified name of the service interface.
+    ClientIdParameter:
+      type: object
+      properties:
+        clientId:
+          type: string
+    PositionDTO:
+      type: object
+      description: The position of this component in the UI if applicable.
+      properties:
+        x:
+          type: number
+          format: double
+          description: The x coordinate.
+        y:
+          type: number
+          format: double
+          description: The y coordinate.
+    VersionedRemoteProcessGroup:
+      type: object
+      description: The Remote Process Groups
+      properties:
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        communicationsTimeout:
+          type: string
+          description: The time period used for the timeout when communicating with the target.
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        inputPorts:
+          type: array
+          description: A Set of Input Ports that can be connected to, in order to send data to the remote NiFi instance
+          items:
+            $ref: '#/components/schemas/VersionedRemoteGroupPort'
+          uniqueItems: true
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        localNetworkInterface:
+          type: string
+          description: The local network interface to send/receive data. If not specified, any local address is used. If clustered, all nodes must have an interface with this identifier.
+        name:
+          type: string
+          description: The component's name
+        outputPorts:
+          type: array
+          description: A Set of Output Ports that can be connected to, in order to pull data from the remote NiFi instance
+          items:
+            $ref: '#/components/schemas/VersionedRemoteGroupPort'
+          uniqueItems: true
+        position:
+          $ref: '#/components/schemas/Position'
+        proxyHost:
+          type: string
+        proxyPassword:
+          type: string
+        proxyPort:
+          type: integer
+          format: int32
+        proxyUser:
+          type: string
+        targetUris:
+          type: string
+          description: The target URIs of the remote process group. If target uris is not set but target uri is set, then returns the single target uri. If neither target uris nor target uri is set, then returns null.
+        transportProtocol:
+          type: string
+          description: 'The Transport Protocol that is used for Site-to-Site communications. Possible returned values: RAW, HTTP.'
+        yieldDuration:
+          type: string
+          description: When yielding, this amount of time must elapse before the remote process group is scheduled again.
+  securitySchemes:
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
+      bearerFormat: JWT
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http

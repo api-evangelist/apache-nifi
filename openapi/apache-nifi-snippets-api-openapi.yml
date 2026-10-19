@@ -1,0 +1,234 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST Snippets API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
+tags:
+- name: Snippets
+paths:
+  /snippets:
+    post:
+      operationId: createSnippet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SnippetEntity'
+        description: The snippet configuration details.
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnippetEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - ? Read or Write - /{component-type}/{uuid} - For every component (all Read or all Write) in the Snippet and their descendant components
+        : []
+      summary: Creates a snippet.
+      tags:
+      - Snippets
+  /snippets/{id}:
+    delete:
+      operationId: deleteSnippet
+      parameters:
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: The snippet id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnippetEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /{component-type}/{uuid} - For each component in the Snippet and their descendant components: []
+      - Write - Parent Process Group - /process-groups/{uuid}: []
+      summary: Deletes the components in a snippet and discards the snippet
+      tags:
+      - Snippets
+    put:
+      operationId: updateSnippet
+      parameters:
+      - description: The snippet id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SnippetEntity'
+        description: The snippet configuration details.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnippetEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write Process Group - /process-groups/{uuid}: []
+      - Write - /{component-type}/{uuid} - For each component in the Snippet and their descendant components: []
+      summary: Move's the components in this Snippet into a new Process Group and discards the…
+      tags:
+      - Snippets
+components:
+  schemas:
+    SnippetEntity:
+      type: object
+      properties:
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        snippet:
+          $ref: '#/components/schemas/SnippetDTO'
+      xml:
+        name: snippetEntity
+    SnippetDTO:
+      type: object
+      description: The snippet.
+      properties:
+        connections:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RevisionDTO'
+          description: The ids of the connections in this snippet. These ids will be populated within each response. They can be specified when creating a snippet. However, once a snippet has been created its contents cannot be modified (these ids are ignored during update requests).
+        funnels:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RevisionDTO'
+          description: The ids of the funnels in this snippet. These ids will be populated within each response. They can be specified when creating a snippet. However, once a snippet has been created its contents cannot be modified (these ids are ignored during update requests).
+        id:
+          type: string
+          description: The id of the snippet.
+        inputPorts:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RevisionDTO'
+          description: The ids of the input ports in this snippet. These ids will be populated within each response. They can be specified when creating a snippet. However, once a snippet has been created its contents cannot be modified (these ids are ignored during update requests).
+        labels:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RevisionDTO'
+          description: The ids of the labels in this snippet. These ids will be populated within each response. They can be specified when creating a snippet. However, once a snippet has been created its contents cannot be modified (these ids are ignored during update requests).
+        outputPorts:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RevisionDTO'
+          description: The ids of the output ports in this snippet. These ids will be populated within each response. They can be specified when creating a snippet. However, once a snippet has been created its contents cannot be modified (these ids are ignored during update requests).
+        parentGroupId:
+          type: string
+          description: The group id for the components in the snippet.
+        processGroups:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RevisionDTO'
+          description: The ids of the process groups in this snippet. These ids will be populated within each response. They can be specified when creating a snippet. However, once a snippet has been created its contents cannot be modified (these ids are ignored during update requests).
+        processors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RevisionDTO'
+          description: The ids of the processors in this snippet. These ids will be populated within each response. They can be specified when creating a snippet. However, once a snippet has been created its contents cannot be modified (these ids are ignored during update requests).
+        remoteProcessGroups:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RevisionDTO'
+          description: 'The ids of the remote process groups in this snippet.
+
+            These ids will be populated within each response.
+
+            They can be specified when creating a snippet.
+
+            However, once a snippet has been created its contents cannot be modified (these ids are ignored during update requests).
+
+            '
+        uri:
+          type: string
+          description: The URI of the snippet.
+    RevisionDTO:
+      type: object
+      description: The revision of the Process Group
+      properties:
+        clientId:
+          type: string
+          description: 'A client identifier used to make a request.
+
+            By including a client identifier, the API can allow multiple requests without needing the current revision.
+
+            Due to the asynchronous nature of requests/responses this was implemented to allow the client to make numerous requests without having to wait for the previous response to come back
+
+            '
+        lastModifier:
+          type: string
+          description: The user that last modified the flow.
+          readOnly: true
+        version:
+          type: integer
+          format: int64
+          description: 'NiFi employs an optimistic locking strategy where the client must include a revision in their request when performing an update.
+
+            In a response to a mutable flow request, this field represents the updated base version.
+
+            '
+  securitySchemes:
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
+      bearerFormat: JWT
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http

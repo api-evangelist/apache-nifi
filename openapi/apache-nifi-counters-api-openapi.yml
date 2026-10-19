@@ -1,0 +1,190 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST Counters API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
+tags:
+- name: Counters
+paths:
+  /counters:
+    get:
+      description: 'Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: getCounters
+      parameters:
+      - description: Whether or not to include the breakdown per node. Optional, defaults to false
+        in: query
+        name: nodewise
+        schema:
+          type: boolean
+          default: false
+      - description: The id of the node where to get the status.
+        in: query
+        name: clusterNodeId
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountersEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /counters: []
+      summary: Gets the current counters for this NiFi
+      tags:
+      - Counters
+    put:
+      description: 'Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: updateAllCounters
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountersEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /counters: []
+      summary: Updates all counters. This will reset all counter values to 0
+      tags:
+      - Counters
+  /counters/{id}:
+    put:
+      description: 'Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: updateCounter
+      parameters:
+      - description: The id of the counter.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CounterEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /counters: []
+      summary: Updates the specified counter. This will reset the counter value to 0
+      tags:
+      - Counters
+components:
+  schemas:
+    NodeCountersSnapshotDTO:
+      type: object
+      description: A Counters snapshot for each node in the cluster. If the NiFi instance is a standalone instance, rather than a cluster, this may be null.
+      properties:
+        address:
+          type: string
+          description: The API address of the node
+        apiPort:
+          type: integer
+          format: int32
+          description: The API port used to communicate with the node
+        nodeId:
+          type: string
+          description: The unique ID that identifies the node
+        snapshot:
+          $ref: '#/components/schemas/CountersSnapshotDTO'
+    CountersSnapshotDTO:
+      type: object
+      description: The counters from the node.
+      properties:
+        counters:
+          type: array
+          description: All counters in the NiFi.
+          items:
+            $ref: '#/components/schemas/CounterDTO'
+        generated:
+          type: string
+          description: The timestamp when the report was generated.
+    CountersDTO:
+      type: object
+      properties:
+        aggregateSnapshot:
+          $ref: '#/components/schemas/CountersSnapshotDTO'
+        nodeSnapshots:
+          type: array
+          description: A Counters snapshot for each node in the cluster. If the NiFi instance is a standalone instance, rather than a cluster, this may be null.
+          items:
+            $ref: '#/components/schemas/NodeCountersSnapshotDTO'
+    CountersEntity:
+      type: object
+      properties:
+        counters:
+          $ref: '#/components/schemas/CountersDTO'
+      xml:
+        name: countersEntity
+    CounterDTO:
+      type: object
+      properties:
+        context:
+          type: string
+          description: The context of the counter.
+        id:
+          type: string
+          description: The id of the counter.
+        name:
+          type: string
+          description: The name of the counter.
+        value:
+          type: string
+          description: The value of the counter.
+        valueCount:
+          type: integer
+          format: int64
+          description: The value count.
+    CounterEntity:
+      type: object
+      properties:
+        counter:
+          $ref: '#/components/schemas/CounterDTO'
+      xml:
+        name: counterEntity
+  securitySchemes:
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
+      bearerFormat: JWT
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http

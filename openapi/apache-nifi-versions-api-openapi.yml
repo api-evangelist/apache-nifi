@@ -1,0 +1,2318 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: dev@nifi.apache.org
+    url: https://nifi.apache.org
+  description: REST API definition for Apache NiFi web services
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Apache NiFi REST Versions API
+  version: 2.12.0
+security:
+- HTTPBearerJWT: []
+- CookieSecureAuthorizationBearer: []
+tags:
+- name: Versions
+paths:
+  /versions/active-requests:
+    post:
+      description: 'Creates a request so that a Process Group can be placed under Version Control or have its Version Control configuration changed. Creating this request will prevent any other threads from simultaneously saving local changes to Version Control. It will not, however, actually save the local flow to the Flow Registry. A POST to /versions/process-groups/{id} should be used to initiate saving of the local flow to the Flow Registry. Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: createVersionControlRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateActiveRequestEntity'
+        description: The versioned flow details.
+        required: true
+      responses:
+        '200':
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Write - /process-groups/{uuid}: []
+      summary: Create a version control request
+      tags:
+      - Versions
+  /versions/active-requests/{id}:
+    delete:
+      description: 'Deletes the Version Control Request with the given ID. This will allow other threads to save flows to the Flow Registry. See also the documentation for POSTing to /versions/active-requests for information regarding why this is done. Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: deleteVersionControlRequest
+      parameters:
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: The request ID.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can remove it: []
+      summary: Deletes the version control request with the given ID
+      tags:
+      - Versions
+    put:
+      description: 'Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: updateVersionControlRequest
+      parameters:
+      - description: The request ID.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionControlComponentMappingEntity'
+        description: The version control component mapping.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionControlInformationEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can update it: []
+      summary: Updates the request with the given ID
+      tags:
+      - Versions
+  /versions/process-groups/{id}:
+    delete:
+      description: 'Stops version controlling the Process Group with the given ID. The Process Group will no longer track to any Versioned Flow. Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: stopVersionControl
+      parameters:
+      - description: The version is used to verify the client is working with the latest version of the flow.
+        in: query
+        name: version
+        schema:
+          $ref: '#/components/schemas/LongParameter'
+      - description: If the client id is not specified, a new one will be generated. This value (whether specified or generated) is included in the response.
+        in: query
+        name: clientId
+        schema:
+          $ref: '#/components/schemas/ClientIdParameter'
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: The process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionControlInformationEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /process-groups/{uuid}: []
+      - Write - /process-groups/{uuid}: []
+      summary: Stops version controlling the Process Group with the given ID
+      tags:
+      - Versions
+    get:
+      description: 'Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: getVersionInformation
+      parameters:
+      - description: The process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionControlInformationEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /process-groups/{uuid}: []
+      summary: Gets the Version Control information for a process group
+      tags:
+      - Versions
+    post:
+      description: 'Begins version controlling the Process Group with the given ID or commits changes to the Versioned Flow, depending on if the provided VersionControlInformation includes a flowId. Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: saveToFlowRegistry
+      parameters:
+      - description: The process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartVersionControlRequestEntity'
+        description: The versioned flow details.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionControlInformationEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /process-groups/{uuid}: []
+      - Write - /process-groups/{uuid}: []
+      - Read - /{component-type}/{uuid} - For all encapsulated components: []
+      - Read - any referenced Controller Services by any encapsulated components - /controller-services/{uuid}: []
+      summary: Save the Process Group with the given ID
+      tags:
+      - Versions
+    put:
+      description: 'For a Process Group that is already under Version Control, this will update the version of the flow to a different version. This endpoint expects that the given snapshot will not modify any Processor that is currently running or any Controller Service that is enabled. Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: updateFlowVersion
+      parameters:
+      - description: The process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionedFlowSnapshotEntity'
+        description: The controller service configuration details.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionControlInformationEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /process-groups/{uuid}: []
+      - Write - /process-groups/{uuid}: []
+      - Read - /{component-type}/{uuid} - For all encapsulated components: []
+      - Write - /{component-type}/{uuid} - For all encapsulated components: []
+      - ? Read - /parameter-contexts/{uuid} - For any Parameter Context that is referenced by a Property that is changed, added, or removed
+        : []
+      summary: Update the version of a Process Group with the given ID
+      tags:
+      - Versions
+  /versions/process-groups/{id}/branches:
+    post:
+      description: 'Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: createFlowBranch
+      parameters:
+      - description: The process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFlowBranchRequestEntity'
+        description: The branch creation request.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionControlInformationEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /process-groups/{uuid}: []
+      - Write - /process-groups/{uuid}: []
+      summary: Creates a new branch for a version controlled Process Group
+      tags:
+      - Versions
+  /versions/process-groups/{id}/download:
+    get:
+      operationId: exportFlowVersion
+      parameters:
+      - description: The process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /process-groups/{uuid}: []
+      summary: Gets the latest version of a Process Group for download
+      tags:
+      - Versions
+  /versions/process-groups/{id}/rebase:
+    put:
+      description: 'This endpoint is used internally to apply a rebase to a Process Group on each node of a cluster. It synchronizes the flow to the supplied merged snapshot and then resets the Version Control Information to the clean target version so that the preserved local changes are detected as local modifications. Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: applyRebasedFlowVersion
+      parameters:
+      - description: The process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionedFlowSnapshotEntity'
+        description: The rebased versioned flow snapshot.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionControlInformationEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /process-groups/{uuid}: []
+      - Write - /process-groups/{uuid}: []
+      - Read - /{component-type}/{uuid} - For all encapsulated components: []
+      - Write - /{component-type}/{uuid} - For all encapsulated components: []
+      - ? Read - /parameter-contexts/{uuid} - For any Parameter Context that is referenced by a Property that is changed, added, or removed
+        : []
+      summary: Applies a rebased flow to a Process Group with the given ID on this node
+      tags:
+      - Versions
+  /versions/rebase-analysis/process-groups/{id}:
+    get:
+      description: For a Process Group that is under Version Control, this will perform a rebase analysis by comparing local modifications against upstream changes between the current version and the specified target version. The analysis determines whether a rebase is allowed or if there are conflicts.
+      operationId: getRebaseAnalysis
+      parameters:
+      - description: The process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The target version to rebase to.
+        in: query
+        name: targetVersion
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RebaseAnalysisEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /process-groups/{uuid}: []
+      summary: Gets a Rebase Analysis for a Process Group
+      tags:
+      - Versions
+  /versions/rebase-requests/process-groups/{id}:
+    post:
+      description: 'For a Process Group that is already under Version Control, this will initiate the action of rebasing the flow to a different version while preserving compatible local changes. This can be a lengthy process, as it will stop any Processors and disable any Controller Services necessary to perform the action and then restart them. As a result, the endpoint will immediately return a VersionedFlowUpdateRequestEntity, and the process of rebasing the flow will occur asynchronously in the background. The client may then periodically poll the status of the request by issuing a GET request to /versions/rebase-requests/{requestId}. Once the request is completed, the client is expected to issue a DELETE request to /versions/rebase-requests/{requestId}. Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: initiateRebase
+      parameters:
+      - description: The process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RebaseRequestEntity'
+        description: The rebase request details.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionedFlowUpdateRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /process-groups/{uuid}: []
+      - Write - /process-groups/{uuid}: []
+      - Read - /{component-type}/{uuid} - For all encapsulated components: []
+      - Write - /{component-type}/{uuid} - For all encapsulated components: []
+      - ? Read - /parameter-contexts/{uuid} - For any Parameter Context that is referenced by a Property that is changed, added, or removed
+        : []
+      summary: Initiate a Rebase Request for a Process Group with the given ID
+      tags:
+      - Versions
+  /versions/rebase-requests/{id}:
+    delete:
+      description: 'Deletes the Rebase Request with the given ID. After a request is created via a POST to /versions/rebase-requests/process-groups/{id}, it is expected that the client will properly clean up the request by DELETE''ing it, once the Rebase process has completed. If the request is deleted before the request completes, then the Rebase request will finish the step that it is currently performing and then will cancel any subsequent steps. Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: deleteRebaseRequest
+      parameters:
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: The ID of the Rebase Request
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionedFlowUpdateRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can remove it: []
+      summary: Deletes the Rebase Request with the given ID
+      tags:
+      - Versions
+    get:
+      description: 'Returns the Rebase Request with the given ID. Once a Rebase Request has been created by performing a POST to /versions/rebase-requests/process-groups/{id}, that request can subsequently be retrieved via this endpoint, and the request that is fetched will contain the updated state, such as percent complete, the current state of the request, and any failures. Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: getRebaseRequest
+      parameters:
+      - description: The ID of the Rebase Request
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionedFlowUpdateRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can get it: []
+      summary: Returns the Rebase Request with the given ID
+      tags:
+      - Versions
+  /versions/revert-requests/process-groups/{id}:
+    post:
+      description: 'For a Process Group that is already under Version Control, this will initiate the action of reverting any local changes that have been made to the Process Group since it was last synchronized with the Flow Registry. This will result in the flow matching the Versioned Flow that exists in the Flow Registry. This can be a lengthy process, as it will stop any Processors and disable any Controller Services necessary to perform the action and then restart them. As a result, the endpoint will immediately return a VersionedFlowUpdateRequestEntity, and the process of updating the flow will occur asynchronously in the background. The client may then periodically poll the status of the request by issuing a GET request to /versions/revert-requests/{requestId}. Once the request is completed, the client is expected to issue a DELETE request to /versions/revert-requests/{requestId}. Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: initiateRevertFlowVersion
+      parameters:
+      - description: The process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionControlInformationEntity'
+        description: The Version Control Information to revert to.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionedFlowUpdateRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /process-groups/{uuid}: []
+      - Write - /process-groups/{uuid}: []
+      - Read - /{component-type}/{uuid} - For all encapsulated components: []
+      - Write - /{component-type}/{uuid} - For all encapsulated components: []
+      - ? Read - /parameter-contexts/{uuid} - For any Parameter Context that is referenced by a Property that is changed, added, or removed
+        : []
+      summary: Initiate the Revert Request of a Process Group with the given ID
+      tags:
+      - Versions
+  /versions/revert-requests/{id}:
+    delete:
+      description: 'Deletes the Revert Request with the given ID. After a request is created via a POST to /versions/revert-requests/process-groups/{id}, it is expected that the client will properly clean up the request by DELETE''ing it, once the Revert process has completed. If the request is deleted before the request completes, then the Revert request will finish the step that it is currently performing and then will cancel any subsequent steps. Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: deleteRevertRequest
+      parameters:
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: The ID of the Revert Request
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionedFlowUpdateRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can remove it: []
+      summary: Deletes the Revert Request with the given ID
+      tags:
+      - Versions
+    get:
+      description: 'Returns the Revert Request with the given ID. Once a Revert Request has been created by performing a POST to /versions/revert-requests/process-groups/{id}, that request can subsequently be retrieved via this endpoint, and the request that is fetched will contain the updated state, such as percent complete, the current state of the request, and any failures. Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: getRevertRequest
+      parameters:
+      - description: The ID of the Revert Request
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionedFlowUpdateRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can get it: []
+      summary: Returns the Revert Request with the given ID
+      tags:
+      - Versions
+  /versions/update-requests/process-groups/{id}:
+    post:
+      description: 'For a Process Group that is already under Version Control, this will initiate the action of changing from a specific version of the flow in the Flow Registry to a different version of the flow. This can be a lengthy process, as it will stop any Processors and disable any Controller Services necessary to perform the action and then restart them. As a result, the endpoint will immediately return a VersionedFlowUpdateRequestEntity, and the process of updating the flow will occur asynchronously in the background. The client may then periodically poll the status of the request by issuing a GET request to /versions/update-requests/{requestId}. Once the request is completed, the client is expected to issue a DELETE request to /versions/update-requests/{requestId}. Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: initiateVersionControlUpdate
+      parameters:
+      - description: The process group id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionControlInformationEntity'
+        description: The controller service configuration details.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionedFlowUpdateRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Read - /process-groups/{uuid}: []
+      - Write - /process-groups/{uuid}: []
+      - Read - /{component-type}/{uuid} - For all encapsulated components: []
+      - Write - /{component-type}/{uuid} - For all encapsulated components: []
+      - ? Read - /parameter-contexts/{uuid} - For any Parameter Context that is referenced by a Property that is changed, added, or removed
+        : []
+      summary: Initiate the Update Request of a Process Group with the given ID
+      tags:
+      - Versions
+  /versions/update-requests/{id}:
+    delete:
+      description: 'Deletes the Update Request with the given ID. After a request is created via a POST to /versions/update-requests/process-groups/{id}, it is expected that the client will properly clean up the request by DELETE''ing it, once the Update process has completed. If the request is deleted before the request completes, then the Update request will finish the step that it is currently performing and then will cancel any subsequent steps. Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: deleteUpdateRequest_1
+      parameters:
+      - description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        in: query
+        name: disconnectedNodeAcknowledged
+        schema:
+          type: boolean
+          default: false
+      - description: The ID of the Update Request
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionedFlowUpdateRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can remove it: []
+      summary: Deletes the Update Request with the given ID
+      tags:
+      - Versions
+    get:
+      description: 'Returns the Update Request with the given ID. Once an Update Request has been created by performing a POST to /versions/update-requests/process-groups/{id}, that request can subsequently be retrieved via this endpoint, and the request that is fetched will contain the updated state, such as percent complete, the current state of the request, and any failures. Note: This endpoint is subject to change as NiFi and it''s REST API evolve.'
+      operationId: getUpdateRequest
+      parameters:
+      - description: The ID of the Update Request
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionedFlowUpdateRequestEntity'
+        '400':
+          description: NiFi was unable to complete the request because it was invalid. The request should not be retried without modification.
+        '401':
+          description: Client could not be authenticated.
+        '403':
+          description: Client is not authorized to make this request.
+        '404':
+          description: The specified resource could not be found.
+        '409':
+          description: The request was valid but NiFi was not in the appropriate state to process it.
+      security:
+      - Only the user that submitted the request can get it: []
+      summary: Returns the Update Request with the given ID
+      tags:
+      - Versions
+components:
+  schemas:
+    VersionedParameterContext:
+      type: object
+      properties:
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        description:
+          type: string
+          description: The description of the parameter context
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        inheritedParameterContexts:
+          type: array
+          description: The names of additional parameter contexts from which to inherit parameters
+          items:
+            type: string
+            description: The names of additional parameter contexts from which to inherit parameters
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        name:
+          type: string
+          description: The component's name
+        parameterGroupName:
+          type: string
+          description: The corresponding parameter group name fetched from the parameter provider, if applicable
+        parameterProvider:
+          type: string
+          description: The identifier of an optional parameter provider
+        parameters:
+          type: array
+          description: The parameters in the context
+          items:
+            $ref: '#/components/schemas/VersionedParameter'
+          uniqueItems: true
+        position:
+          $ref: '#/components/schemas/Position'
+        synchronized:
+          type: boolean
+          description: True if the parameter provider is set and the context should receive updates when its parameters are next fetched
+    CreateFlowBranchRequestEntity:
+      type: object
+      properties:
+        branch:
+          type: string
+          description: The name of the new branch to create
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        processGroupRevision:
+          $ref: '#/components/schemas/RevisionDTO'
+        sourceBranch:
+          type: string
+          description: The name of the source branch to create the new branch from. Defaults to the branch currently tracking in NiFi.
+        sourceVersion:
+          type: string
+          description: The version on the source branch to use when creating the new branch. Defaults to the version currently tracked by NiFi.
+      xml:
+        name: createFlowBranchRequestEntity
+    FlowRegistryPermissions:
+      type: object
+      properties:
+        canDelete:
+          type: boolean
+        canRead:
+          type: boolean
+        canWrite:
+          type: boolean
+    ParameterProviderReference:
+      type: object
+      properties:
+        bundle:
+          $ref: '#/components/schemas/Bundle'
+        identifier:
+          type: string
+          description: The identifier of the parameter provider
+        name:
+          type: string
+          description: The name of the parameter provider
+        type:
+          type: string
+          description: The fully qualified name of the parameter provider class.
+    RegisteredFlowSnapshotMetadata:
+      type: object
+      properties:
+        author:
+          type: string
+        branch:
+          type: string
+        bucketIdentifier:
+          type: string
+        comments:
+          type: string
+        flowIdentifier:
+          type: string
+        flowName:
+          type: string
+        registryIdentifier:
+          type: string
+        registryName:
+          type: string
+        timestamp:
+          type: integer
+          format: int64
+        version:
+          type: string
+    VersionedAsset:
+      type: object
+      description: The assets that are referenced by this parameter
+      properties:
+        identifier:
+          type: string
+          description: The identifier of the asset
+        name:
+          type: string
+          description: The name of the asset
+    DifferenceDTO:
+      type: object
+      description: The differences in the component between the two flows
+      properties:
+        difference:
+          type: string
+          description: Description of the difference
+        differenceType:
+          type: string
+          description: The type of difference
+        environmental:
+          type: boolean
+          description: Whether this difference is environmental (e.g., bundle version change due to NiFi upgrade) rather than a user-initiated change. Environmental changes are typically not reverted when reverting local changes.
+    CreateActiveRequestEntity:
+      type: object
+      properties:
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        processGroupId:
+          type: string
+          description: The Process Group ID that this active request will update
+      xml:
+        name: createActiveRequestEntity
+    VersionedFlowSnapshotEntity:
+      type: object
+      properties:
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        processGroupRevision:
+          $ref: '#/components/schemas/RevisionDTO'
+        registryId:
+          type: string
+          description: The ID of the Registry that this flow belongs to
+        updateDescendantVersionedFlows:
+          type: boolean
+          description: If the Process Group to be updated has a child or descendant Process Group that is also under Version Control, this specifies whether or not the contents of that child/descendant Process Group should be updated.
+        versionedFlow:
+          $ref: '#/components/schemas/RegisteredFlowSnapshot'
+        versionedFlowSnapshot:
+          $ref: '#/components/schemas/RegisteredFlowSnapshot'
+      xml:
+        name: versionedFlowSnapshotEntity
+    VersionControlInformationDTO:
+      type: object
+      description: The Version Control information
+      properties:
+        branch:
+          type: string
+          description: The ID of the branch that the flow is stored in
+        bucketId:
+          type: string
+          description: The ID of the bucket that the flow is stored in
+        bucketName:
+          type: string
+          description: The name of the bucket that the flow is stored in
+          readOnly: true
+        flowDescription:
+          type: string
+          description: The description of the flow
+        flowId:
+          type: string
+          description: The ID of the flow
+        flowName:
+          type: string
+          description: The name of the flow
+        groupId:
+          type: string
+          description: The ID of the Process Group that is under version control
+        registryId:
+          type: string
+          description: The ID of the registry that the flow is stored in
+        registryName:
+          type: string
+          description: The name of the registry that the flow is stored in
+          readOnly: true
+        state:
+          type: string
+          description: The current state of the Process Group, as it relates to the Versioned Flow
+          enum:
+          - LOCALLY_MODIFIED
+          - STALE
+          - LOCALLY_MODIFIED_AND_STALE
+          - UP_TO_DATE
+          - SYNC_FAILURE
+          readOnly: true
+        stateExplanation:
+          type: string
+          description: Explanation of why the group is in the specified state
+          readOnly: true
+        storageLocation:
+          type: string
+          description: The storage location
+        version:
+          type: string
+          description: The version of the flow
+    VersionedPort:
+      type: object
+      description: The Output Ports
+      properties:
+        allowRemoteAccess:
+          type: boolean
+          description: Whether or not this port allows remote access for site-to-site
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        concurrentlySchedulableTaskCount:
+          type: integer
+          format: int32
+          description: The number of tasks that should be concurrently scheduled for the port.
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        name:
+          type: string
+          description: The component's name
+        portFunction:
+          type: string
+          description: Specifies how the Port should function
+          enum:
+          - STANDARD
+          - FAILURE
+        position:
+          $ref: '#/components/schemas/Position'
+        scheduledState:
+          type: string
+          description: The scheduled state of the component
+          enum:
+          - ENABLED
+          - DISABLED
+          - RUNNING
+        type:
+          type: string
+          description: The type of port.
+          enum:
+          - INPUT_PORT
+          - OUTPUT_PORT
+    VersionedFlowDTO:
+      type: object
+      description: The versioned flow
+      properties:
+        action:
+          type: string
+          description: The action being performed
+          enum:
+          - COMMIT
+          - FORCE_COMMIT
+        branch:
+          type: string
+          description: The branch where the flow is stored
+        bucketId:
+          type: string
+          description: The ID of the bucket where the flow is stored
+        comments:
+          type: string
+          description: Comments for the changeset
+        description:
+          type: string
+          description: A description of the flow
+        flowId:
+          type: string
+          description: The ID of the flow
+        flowName:
+          type: string
+          description: The name of the flow
+        registryId:
+          type: string
+          description: The ID of the registry that the flow is tracked to
+    BatchSize:
+      type: object
+      description: The batch settings for data transmission.
+      properties:
+        count:
+          type: integer
+          format: int32
+          description: Preferred number of FlowFiles to include in a transaction.
+        duration:
+          type: string
+          description: Preferred amount of time that a transaction should span.
+        size:
+          type: string
+          description: Preferred number of bytes to include in a transaction.
+    RebaseChangeDTO:
+      type: object
+      description: The list of local changes that were made to the flow since the last version control operation
+      properties:
+        classification:
+          type: string
+          description: 'The classification of this change: COMPATIBLE, CONFLICTING, or UNSUPPORTED'
+        componentId:
+          type: string
+          description: The ID of the component that was changed
+        componentName:
+          type: string
+          description: The name of the component that was changed
+        componentType:
+          type: string
+          description: The type of the component that was changed
+        conflictCode:
+          type: string
+          description: A code identifying the type of conflict, or null if the change is not conflicting
+        conflictDetail:
+          type: string
+          description: A detailed description of the conflict, or null if the change is not conflicting
+        differenceType:
+          type: string
+          description: The type of difference detected for this change
+        fieldName:
+          type: string
+          description: The name of the field that was changed, or null if not applicable
+        localValue:
+          type: string
+          description: The local value of the field, or null if not applicable
+        registryValue:
+          type: string
+          description: The registry value of the field, or null if not applicable
+    RegisteredFlowSnapshot:
+      type: object
+      properties:
+        bucket:
+          $ref: '#/components/schemas/FlowRegistryBucket'
+        externalControllerServices:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ExternalControllerServiceReference'
+        flow:
+          $ref: '#/components/schemas/RegisteredFlow'
+        flowContents:
+          $ref: '#/components/schemas/VersionedProcessGroup'
+        flowEncodingVersion:
+          type: string
+        latest:
+          type: boolean
+        parameterContexts:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/VersionedParameterContext'
+        parameterProviders:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ParameterProviderReference'
+        snapshotMetadata:
+          $ref: '#/components/schemas/RegisteredFlowSnapshotMetadata'
+    Position:
+      type: object
+      description: The position of a component on the graph
+      properties:
+        x:
+          type: number
+          format: double
+          description: The x coordinate.
+        y:
+          type: number
+          format: double
+          description: The y coordinate.
+    VersionedComponentState:
+      type: object
+      description: The state of the component, if exported with state
+      properties:
+        clusterState:
+          type: object
+          additionalProperties:
+            type: string
+            description: The cluster-scoped state of the component, or null if not exported
+          description: The cluster-scoped state of the component, or null if not exported
+        localNodeStates:
+          type: array
+          description: The local-scoped state of the component ordered by node ordinal index, or null if not exported
+          items:
+            $ref: '#/components/schemas/VersionedNodeState'
+    ExternalControllerServiceReference:
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: The identifier of the controller service
+        name:
+          type: string
+          description: The name of the controller service
+    VersionedFunnel:
+      type: object
+      description: The Funnels
+      properties:
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        name:
+          type: string
+          description: The component's name
+        position:
+          $ref: '#/components/schemas/Position'
+    VersionedNodeState:
+      type: object
+      description: The state entries for a single node
+      properties:
+        state:
+          type: object
+          additionalProperties:
+            type: string
+            description: The state key-value pairs for this node
+          description: The state key-value pairs for this node
+    VersionedProcessor:
+      type: object
+      description: The Processors
+      properties:
+        annotationData:
+          type: string
+          description: The annotation data for the processor used to relay configuration between a custom UI and the processor.
+        autoTerminatedRelationships:
+          type: array
+          description: The names of all relationships that cause a FlowFile to be terminated if the relationship is not connected elsewhere. This property differs from the 'isAutoTerminate' property of the RelationshipDTO in that the RelationshipDTO is meant to depict the current configuration, whereas this property can be set in a DTO when updating a Processor in order to change which Relationships should be auto-terminated.
+          items:
+            type: string
+            description: The names of all relationships that cause a FlowFile to be terminated if the relationship is not connected elsewhere. This property differs from the 'isAutoTerminate' property of the RelationshipDTO in that the RelationshipDTO is meant to depict the current configuration, whereas this property can be set in a DTO when updating a Processor in order to change which Relationships should be auto-terminated.
+          uniqueItems: true
+        backoffMechanism:
+          type: string
+          description: 'Determines whether the FlowFile should be penalized or the processor should be yielded between retries. Possible returned values: PENALIZE_FLOWFILE, YIELD_PROCESSOR.'
+        bulletinLevel:
+          type: string
+          description: The level at which the processor will report bulletins.
+        bundle:
+          $ref: '#/components/schemas/Bundle'
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentState:
+          $ref: '#/components/schemas/VersionedComponentState'
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        concurrentlySchedulableTaskCount:
+          type: integer
+          format: int32
+          description: The number of tasks that should be concurrently schedule for the processor. If the processor doesn't allow parallel processing then any positive input will be ignored.
+        executionNode:
+          type: string
+          description: Indicates the node where the process will execute.
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        maxBackoffPeriod:
+          type: string
+          description: Maximum amount of time to be waited during a retry period.
+        name:
+          type: string
+          description: The component's name
+        penaltyDuration:
+          type: string
+          description: The amount of time that is used when the process penalizes a FlowFile.
+        position:
+          $ref: '#/components/schemas/Position'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties for the component. Properties whose value is not set will only contain the property name.
+          description: The properties for the component. Properties whose value is not set will only contain the property name.
+        propertyDescriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/VersionedPropertyDescriptor'
+          description: The property descriptors for the component.
+        retriedRelationships:
+          type: array
+          description: All the relationships should be retried.
+          items:
+            type: string
+            description: All the relationships should be retried.
+          uniqueItems: true
+        retryCount:
+          type: integer
+          format: int32
+          description: Overall number of retries.
+        runDurationMillis:
+          type: integer
+          format: int64
+          description: The run duration for the processor in milliseconds.
+        scheduledState:
+          type: string
+          description: The scheduled state of the component
+          enum:
+          - ENABLED
+          - DISABLED
+          - RUNNING
+        schedulingPeriod:
+          type: string
+          description: The frequency with which to schedule the processor. The format of the value will depend on th value of schedulingStrategy.
+        schedulingStrategy:
+          type: string
+          description: Indicates how the processor should be scheduled to run.
+        style:
+          type: object
+          additionalProperties:
+            type: string
+            description: Stylistic data for rendering in a UI
+          description: Stylistic data for rendering in a UI
+        type:
+          type: string
+          description: The type of the extension component
+        yieldDuration:
+          type: string
+          description: The amount of time that must elapse before this processor is scheduled again after yielding.
+    VersionedControllerService:
+      type: object
+      description: The Controller Services
+      properties:
+        annotationData:
+          type: string
+          description: The annotation for the controller service. This is how the custom UI relays configuration to the controller service.
+        bulletinLevel:
+          type: string
+          description: The level at which the controller service will report bulletins.
+        bundle:
+          $ref: '#/components/schemas/Bundle'
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentState:
+          $ref: '#/components/schemas/VersionedComponentState'
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        controllerServiceApis:
+          type: array
+          description: Lists the APIs this Controller Service implements.
+          items:
+            $ref: '#/components/schemas/ControllerServiceAPI'
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        name:
+          type: string
+          description: The component's name
+        position:
+          $ref: '#/components/schemas/Position'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The properties for the component. Properties whose value is not set will only contain the property name.
+          description: The properties for the component. Properties whose value is not set will only contain the property name.
+        propertyDescriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/VersionedPropertyDescriptor'
+          description: The property descriptors for the component.
+        scheduledState:
+          type: string
+          description: The ScheduledState denoting whether the Controller Service is ENABLED or DISABLED
+          enum:
+          - ENABLED
+          - DISABLED
+          - RUNNING
+        type:
+          type: string
+          description: The type of the extension component
+    VersionedFlowUpdateRequestDTO:
+      type: object
+      description: The Flow Update Request
+      properties:
+        complete:
+          type: boolean
+          description: Whether or not this request has completed
+          readOnly: true
+        failureReason:
+          type: string
+          description: An explanation of why this request failed, or null if this request has not failed
+          readOnly: true
+        lastUpdated:
+          type: string
+          description: The last time this request was updated.
+          readOnly: true
+        percentCompleted:
+          type: integer
+          format: int32
+          description: The percentage complete for the request, between 0 and 100
+          readOnly: true
+        processGroupId:
+          type: string
+          description: The unique ID of the Process Group being updated
+        requestId:
+          type: string
+          description: The unique ID of this request.
+          readOnly: true
+        state:
+          type: string
+          description: The state of the request
+          readOnly: true
+        uri:
+          type: string
+          description: The URI for future requests to this drop request.
+          readOnly: true
+        versionControlInformation:
+          $ref: '#/components/schemas/VersionControlInformationDTO'
+    ComponentDifferenceDTO:
+      type: object
+      description: The set of upstream changes between the current version and the target version in the flow registry
+      properties:
+        componentId:
+          type: string
+          description: The ID of the component
+        componentName:
+          type: string
+          description: The name of the component
+        componentType:
+          type: string
+          description: The type of component
+        differences:
+          type: array
+          description: The differences in the component between the two flows
+          items:
+            $ref: '#/components/schemas/DifferenceDTO'
+        processGroupId:
+          type: string
+          description: The ID of the Process Group that the component belongs to
+    VersionControlInformationEntity:
+      type: object
+      properties:
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        processGroupRevision:
+          $ref: '#/components/schemas/RevisionDTO'
+        versionControlInformation:
+          $ref: '#/components/schemas/VersionControlInformationDTO'
+      xml:
+        name: versionControlInformationEntity
+    VersionedConnection:
+      type: object
+      description: The Connections
+      properties:
+        backPressureDataSizeThreshold:
+          type: string
+          description: The object data size threshold for determining when back pressure is applied. Updating this value is a passive change in the sense that it won't impact whether existing files over the limit are affected but it does help feeder processors to stop pushing too much into this work queue.
+        backPressureObjectThreshold:
+          type: integer
+          format: int64
+          description: The object count threshold for determining when back pressure is applied. Updating this value is a passive change in the sense that it won't impact whether existing files over the limit are affected but it does help feeder processors to stop pushing too much into this work queue.
+        bends:
+          type: array
+          description: The bend points on the connection.
+          items:
+            $ref: '#/components/schemas/Position'
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        destination:
+          $ref: '#/components/schemas/ConnectableComponent'
+        flowFileExpiration:
+          type: string
+          description: The amount of time a FlowFile may be in the flow before it will be automatically aged out of the flow. Once a FlowFile reaches this age it will be terminated from the flow the next time a processor attempts to start work on it.
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        labelIndex:
+          type: integer
+          format: int32
+          description: The index of the bend point where to place the connection label.
+        loadBalanceCompression:
+          type: string
+          description: 'Whether or not compression should be used when transferring FlowFiles between nodes Possible returned values: DO_NOT_COMPRESS, COMPRESS_ATTRIBUTES_ONLY, COMPRESS_ATTRIBUTES_AND_CONTENT. See LoadBalanceCompression.class for more details.'
+        loadBalanceStrategy:
+          type: string
+          description: 'The Strategy to use for load balancing data across the cluster, or null, if no Load Balance Strategy has been specified. Possible returned values: DO_NOT_LOAD_BALANCE, PARTITION_BY_ATTRIBUTE, ROUND_ROBIN, SINGLE_NODE. See LoadBalanceStrategy.class for more details.'
+        name:
+          type: string
+          description: The component's name
+        partitioningAttribute:
+          type: string
+          description: The attribute to use for partitioning data as it is load balanced across the cluster. If the Load Balance Strategy is configured to use PARTITION_BY_ATTRIBUTE, the value returned by this method is the name of the FlowFile Attribute that will be used to determine which node in the cluster should receive a given FlowFile. If the Load Balance Strategy is unset or is set to any other value, the Partitioning Attribute has no effect.
+        position:
+          $ref: '#/components/schemas/Position'
+        prioritizers:
+          type: array
+          description: The comparators used to prioritize the queue.
+          items:
+            type: string
+            description: The comparators used to prioritize the queue.
+        selectedRelationships:
+          type: array
+          description: The selected relationship that comprise the connection.
+          items:
+            type: string
+            description: The selected relationship that comprise the connection.
+          uniqueItems: true
+        source:
+          $ref: '#/components/schemas/ConnectableComponent'
+        zIndex:
+          type: integer
+          format: int64
+          description: The z index of the connection.
+    VersionedParameter:
+      type: object
+      description: The parameters in the context
+      properties:
+        description:
+          type: string
+          description: The description of the param
+        name:
+          type: string
+          description: The name of the parameter
+        provided:
+          type: boolean
+          description: Whether or not the parameter value is provided by a ParameterProvider
+        referencedAssets:
+          type: array
+          description: The assets that are referenced by this parameter
+          items:
+            $ref: '#/components/schemas/VersionedAsset'
+        sensitive:
+          type: boolean
+          description: Whether or not the parameter value is sensitive
+        value:
+          type: string
+          description: The value of the parameter
+    Bundle:
+      type: object
+      description: The details of the artifact that bundled this parameter provider.
+      properties:
+        artifact:
+          type: string
+          description: The artifact of the bundle
+        group:
+          type: string
+          description: The group of the bundle
+        version:
+          type: string
+          description: The version of the bundle
+    VersionedFlowCoordinates:
+      type: object
+      description: The coordinates where the remote flow is stored, or null if the Process Group is not directly under Version Control
+      properties:
+        branch:
+          type: string
+          description: The name of the branch that the flow resides in
+        bucketId:
+          type: string
+          description: The UUID of the bucket that the flow resides in
+        flowId:
+          type: string
+          description: The UUID of the flow
+        latest:
+          type: boolean
+          description: Whether or not these coordinates point to the latest version of the flow
+        registryId:
+          type: string
+          description: The identifier of the Flow Registry that contains the flow
+        storageLocation:
+          type: string
+          description: The location of the Flow Registry that stores the flow
+        version:
+          type: string
+          description: The version of the flow
+    VersionedPropertyDescriptor:
+      type: object
+      description: The property descriptors for the component.
+      properties:
+        displayName:
+          type: string
+          description: The display name of the property
+        dynamic:
+          type: boolean
+          description: Whether or not the property is user-defined
+        identifiesControllerService:
+          type: boolean
+          description: Whether or not the property provides the identifier of a Controller Service
+        listenPortDefinition:
+          $ref: '#/components/schemas/VersionedListenPortDefinition'
+        name:
+          type: string
+          description: The name of the property
+        resourceDefinition:
+          $ref: '#/components/schemas/VersionedResourceDefinition'
+        sensitive:
+          type: boolean
+          description: Whether or not the property is considered sensitive
+    RebaseRequestEntity:
+      type: object
+      properties:
+        analysisFingerprint:
+          type: string
+          description: The fingerprint of the rebase analysis, used to verify the analysis is still valid when executing the rebase
+        versionControlInformationEntity:
+          $ref: '#/components/schemas/VersionControlInformationEntity'
+      xml:
+        name: rebaseRequestEntity
+    RevisionDTO:
+      type: object
+      description: The revision of the Process Group
+      properties:
+        clientId:
+          type: string
+          description: 'A client identifier used to make a request.
+
+            By including a client identifier, the API can allow multiple requests without needing the current revision.
+
+            Due to the asynchronous nature of requests/responses this was implemented to allow the client to make numerous requests without having to wait for the previous response to come back
+
+            '
+        lastModifier:
+          type: string
+          description: The user that last modified the flow.
+          readOnly: true
+        version:
+          type: integer
+          format: int64
+          description: 'NiFi employs an optimistic locking strategy where the client must include a revision in their request when performing an update.
+
+            In a response to a mutable flow request, this field represents the updated base version.
+
+            '
+    StartVersionControlRequestEntity:
+      type: object
+      properties:
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        processGroupRevision:
+          $ref: '#/components/schemas/RevisionDTO'
+        versionedFlow:
+          $ref: '#/components/schemas/VersionedFlowDTO'
+      xml:
+        name: startVersionControlRequestEntity
+    VersionedLabel:
+      type: object
+      description: The Labels
+      properties:
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        height:
+          type: number
+          format: double
+          description: The height of the label in pixels when at a 1:1 scale.
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        label:
+          type: string
+          description: The text that appears in the label.
+        name:
+          type: string
+          description: The component's name
+        position:
+          $ref: '#/components/schemas/Position'
+        style:
+          type: object
+          additionalProperties:
+            type: string
+            description: 'The styles for this label (font-size : 12px, background-color : #eee, etc).'
+          description: 'The styles for this label (font-size : 12px, background-color : #eee, etc).'
+        width:
+          type: number
+          format: double
+          description: The width of the label in pixels when at a 1:1 scale.
+        zIndex:
+          type: integer
+          format: int64
+          description: The z index of the connection.
+    VersionedResourceDefinition:
+      type: object
+      description: Returns the Resource Definition that defines which type(s) of resource(s) this property references, if any
+      properties:
+        cardinality:
+          type: string
+          description: The cardinality of the resource
+          enum:
+          - SINGLE
+          - MULTIPLE
+        resourceTypes:
+          type: array
+          description: The types of resource that the Property Descriptor is allowed to reference
+          items:
+            type: string
+            description: The types of resource that the Property Descriptor is allowed to reference
+            enum:
+            - FILE
+            - DIRECTORY
+            - TEXT
+            - URL
+          uniqueItems: true
+    VersionedProcessGroup:
+      type: object
+      properties:
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        connections:
+          type: array
+          description: The Connections
+          items:
+            $ref: '#/components/schemas/VersionedConnection'
+          uniqueItems: true
+        controllerServices:
+          type: array
+          description: The Controller Services
+          items:
+            $ref: '#/components/schemas/VersionedControllerService'
+          uniqueItems: true
+        defaultBackPressureDataSizeThreshold:
+          type: string
+          description: Default value used in this Process Group for the maximum data size of objects that can be queued before back pressure is applied.
+        defaultBackPressureObjectThreshold:
+          type: integer
+          format: int64
+          description: Default value used in this Process Group for the maximum number of objects that can be queued before back pressure is applied.
+        defaultFlowFileExpiration:
+          type: string
+          description: The default FlowFile Expiration for this Process Group.
+        executionEngine:
+          type: string
+          description: The Execution Engine that should be used to run the components within the group.
+          enum:
+          - STANDARD
+          - STATELESS
+          - INHERITED
+        flowFileConcurrency:
+          type: string
+          description: The configured FlowFile Concurrency for the Process Group
+        flowFileOutboundPolicy:
+          type: string
+          description: The FlowFile Outbound Policy for the Process Group
+        funnels:
+          type: array
+          description: The Funnels
+          items:
+            $ref: '#/components/schemas/VersionedFunnel'
+          uniqueItems: true
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        inputPorts:
+          type: array
+          description: The Input Ports
+          items:
+            $ref: '#/components/schemas/VersionedPort'
+          uniqueItems: true
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        labels:
+          type: array
+          description: The Labels
+          items:
+            $ref: '#/components/schemas/VersionedLabel'
+          uniqueItems: true
+        logFileSuffix:
+          type: string
+          description: The log file suffix for this Process Group for dedicated logging.
+        maxConcurrentTasks:
+          type: integer
+          format: int32
+          description: The maximum number of concurrent tasks that should be scheduled for this Process Group when using the Stateless Engine
+        name:
+          type: string
+          description: The component's name
+        outputPorts:
+          type: array
+          description: The Output Ports
+          items:
+            $ref: '#/components/schemas/VersionedPort'
+          uniqueItems: true
+        parameterContextName:
+          type: string
+          description: The name of the parameter context used by this process group
+        position:
+          $ref: '#/components/schemas/Position'
+        processGroups:
+          type: array
+          description: The child Process Groups
+          items:
+            $ref: '#/components/schemas/VersionedProcessGroup'
+          uniqueItems: true
+        processors:
+          type: array
+          description: The Processors
+          items:
+            $ref: '#/components/schemas/VersionedProcessor'
+          uniqueItems: true
+        remoteProcessGroups:
+          type: array
+          description: The Remote Process Groups
+          items:
+            $ref: '#/components/schemas/VersionedRemoteProcessGroup'
+          uniqueItems: true
+        scheduledState:
+          type: string
+          description: The Scheduled State of the Process Group, if the group is configured to use the Stateless Execution Engine. Otherwise, this value has no relevance.
+          enum:
+          - ENABLED
+          - DISABLED
+          - RUNNING
+        statelessFlowTimeout:
+          type: string
+          description: The maximum amount of time that the flow is allows to run using the Stateless engine before it times out and is considered a failure
+        versionedFlowCoordinates:
+          $ref: '#/components/schemas/VersionedFlowCoordinates'
+    RegisteredFlow:
+      type: object
+      properties:
+        branch:
+          type: string
+        bucketIdentifier:
+          type: string
+        bucketName:
+          type: string
+        createdTimestamp:
+          type: integer
+          format: int64
+        description:
+          type: string
+        identifier:
+          type: string
+        lastModifiedTimestamp:
+          type: integer
+          format: int64
+        name:
+          type: string
+        permissions:
+          $ref: '#/components/schemas/FlowRegistryPermissions'
+        versionCount:
+          type: integer
+          format: int64
+        versionInfo:
+          $ref: '#/components/schemas/RegisteredFlowVersionInfo'
+    ControllerServiceAPI:
+      type: object
+      description: Lists the APIs this Controller Service implements.
+      properties:
+        bundle:
+          $ref: '#/components/schemas/Bundle'
+        type:
+          type: string
+          description: The fully qualified name of the service interface.
+    VersionedListenPortDefinition:
+      type: object
+      description: Returns the Listen Port Definition for the port this property specifies, if applicable
+      properties:
+        applicationProtocols:
+          type: array
+          description: The application protocol(s) that the listen port could support (if any)
+          items:
+            type: string
+            description: The application protocol(s) that the listen port could support (if any)
+        transportProtocol:
+          type: string
+          description: The transport protocol used by the listen port
+          enum:
+          - TCP
+          - UDP
+    LongParameter:
+      type: object
+      properties:
+        long:
+          type: integer
+          format: int64
+    VersionControlComponentMappingEntity:
+      type: object
+      properties:
+        disconnectedNodeAcknowledged:
+          type: boolean
+          description: Acknowledges that this node is disconnected to allow for mutable requests to proceed.
+        processGroupRevision:
+          $ref: '#/components/schemas/RevisionDTO'
+        versionControlComponentMapping:
+          type: object
+          additionalProperties:
+            type: string
+            description: The mapping of Versioned Component Identifiers to instance ID's
+          description: The mapping of Versioned Component Identifiers to instance ID's
+        versionControlInformation:
+          $ref: '#/components/schemas/VersionControlInformationDTO'
+      xml:
+        name: versionControlComponentMappingEntity
+    RegisteredFlowVersionInfo:
+      type: object
+      properties:
+        version:
+          type: integer
+          format: int64
+    ClientIdParameter:
+      type: object
+      properties:
+        clientId:
+          type: string
+    VersionedFlowUpdateRequestEntity:
+      type: object
+      properties:
+        processGroupRevision:
+          $ref: '#/components/schemas/RevisionDTO'
+        request:
+          $ref: '#/components/schemas/VersionedFlowUpdateRequestDTO'
+      xml:
+        name: registeredFlowUpdateRequestEntity
+    ConnectableComponent:
+      type: object
+      description: The destination of the connection.
+      properties:
+        comments:
+          type: string
+          description: The comments for the connectable component.
+        groupId:
+          type: string
+          description: The id of the group that the connectable component resides in
+        id:
+          type: string
+          description: The id of the connectable component.
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        name:
+          type: string
+          description: The name of the connectable component
+        type:
+          type: string
+          description: The type of component the connectable is.
+          enum:
+          - PROCESSOR
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - FUNNEL
+    VersionedRemoteProcessGroup:
+      type: object
+      description: The Remote Process Groups
+      properties:
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        communicationsTimeout:
+          type: string
+          description: The time period used for the timeout when communicating with the target.
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        inputPorts:
+          type: array
+          description: A Set of Input Ports that can be connected to, in order to send data to the remote NiFi instance
+          items:
+            $ref: '#/components/schemas/VersionedRemoteGroupPort'
+          uniqueItems: true
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        localNetworkInterface:
+          type: string
+          description: The local network interface to send/receive data. If not specified, any local address is used. If clustered, all nodes must have an interface with this identifier.
+        name:
+          type: string
+          description: The component's name
+        outputPorts:
+          type: array
+          description: A Set of Output Ports that can be connected to, in order to pull data from the remote NiFi instance
+          items:
+            $ref: '#/components/schemas/VersionedRemoteGroupPort'
+          uniqueItems: true
+        position:
+          $ref: '#/components/schemas/Position'
+        proxyHost:
+          type: string
+        proxyPassword:
+          type: string
+        proxyPort:
+          type: integer
+          format: int32
+        proxyUser:
+          type: string
+        targetUris:
+          type: string
+          description: The target URIs of the remote process group. If target uris is not set but target uri is set, then returns the single target uri. If neither target uris nor target uri is set, then returns null.
+        transportProtocol:
+          type: string
+          description: 'The Transport Protocol that is used for Site-to-Site communications. Possible returned values: RAW, HTTP.'
+        yieldDuration:
+          type: string
+          description: When yielding, this amount of time must elapse before the remote process group is scheduled again.
+    FlowRegistryBucket:
+      type: object
+      properties:
+        createdTimestamp:
+          type: integer
+          format: int64
+        description:
+          type: string
+        identifier:
+          type: string
+        name:
+          type: string
+        permissions:
+          $ref: '#/components/schemas/FlowRegistryPermissions'
+    VersionedRemoteGroupPort:
+      type: object
+      description: A Set of Output Ports that can be connected to, in order to pull data from the remote NiFi instance
+      properties:
+        batchSize:
+          $ref: '#/components/schemas/BatchSize'
+        comments:
+          type: string
+          description: The user-supplied comments for the component
+        componentType:
+          type: string
+          enum:
+          - CONNECTION
+          - PROCESSOR
+          - PROCESS_GROUP
+          - REMOTE_PROCESS_GROUP
+          - INPUT_PORT
+          - OUTPUT_PORT
+          - REMOTE_INPUT_PORT
+          - REMOTE_OUTPUT_PORT
+          - FUNNEL
+          - LABEL
+          - CONTROLLER_SERVICE
+          - REPORTING_TASK
+          - FLOW_ANALYSIS_RULE
+          - PARAMETER_CONTEXT
+          - PARAMETER_PROVIDER
+          - FLOW_REGISTRY_CLIENT
+          - CONNECTOR
+        concurrentlySchedulableTaskCount:
+          type: integer
+          format: int32
+          description: The number of task that may transmit FlowFiles to the target port concurrently.
+        groupIdentifier:
+          type: string
+          description: The ID of the Process Group that this component belongs to
+        identifier:
+          type: string
+          description: The component's unique identifier
+        instanceIdentifier:
+          type: string
+          description: The instance ID of an existing component that is described by this VersionedComponent, or null if this is not mapped to an instantiated component
+        name:
+          type: string
+          description: The component's name
+        position:
+          $ref: '#/components/schemas/Position'
+        remoteGroupId:
+          type: string
+          description: The id of the remote process group that the port resides in.
+        scheduledState:
+          type: string
+          description: The scheduled state of the component
+          enum:
+          - ENABLED
+          - DISABLED
+          - RUNNING
+        targetId:
+          type: string
+          description: The ID of the port on the target NiFi instance
+        useCompression:
+          type: boolean
+          description: Whether the FlowFiles are compressed when sent to the target port.
+    RebaseAnalysisEntity:
+      type: object
+      properties:
+        analysisFingerprint:
+          type: string
+          description: A fingerprint representing the state of this analysis, used to verify the analysis is still valid when executing the rebase
+        currentVersion:
+          type: string
+          description: The current version of the flow in the Process Group
+        failureReason:
+          type: string
+          description: The reason the rebase is not allowed, or null if the rebase is allowed
+        localChanges:
+          type: array
+          description: The list of local changes that were made to the flow since the last version control operation
+          items:
+            $ref: '#/components/schemas/RebaseChangeDTO'
+        processGroupId:
+          type: string
+          description: The ID of the Process Group being rebased
+        rebaseAllowed:
+          type: boolean
+          description: Whether the rebase is allowed based on the analysis of local and upstream changes
+        targetVersion:
+          type: string
+          description: The target version to rebase to
+        upstreamChanges:
+          type: array
+          description: The set of upstream changes between the current version and the target version in the flow registry
+          items:
+            $ref: '#/components/schemas/ComponentDifferenceDTO'
+          uniqueItems: true
+      xml:
+        name: rebaseAnalysisEntity
+  securitySchemes:
+    CookieSecureAuthorizationBearer:
+      description: JSON Web Token authentication with session cookie
+      in: cookie
+      name: __Secure-Authorization-Bearer
+      type: apiKey
+    HTTPBearerJWT:
+      bearerFormat: JWT
+      description: HTTP Bearer authentication with JSON Web Token
+      scheme: Bearer
+      type: http
