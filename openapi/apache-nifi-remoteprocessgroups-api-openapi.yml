@@ -1034,3 +1034,9 @@ components:
       description: HTTP Bearer authentication with JSON Web Token
       scheme: Bearer
       type: http
+x-provenance:
+  method: harvested
+  publisher: Apache NiFi
+  source: https://nifi.apache.org/nifi-docs/swagger.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
