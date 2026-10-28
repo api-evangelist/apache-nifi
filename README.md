@@ -1,4 +1,4 @@
-# Apache NiFi (apache-nifi)
+# Apache NiFi
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,109 +66,125 @@
 
 Apache NiFi is a dataflow management system designed to automate the flow of data between systems. It provides a web-based user interface for designing, controlling, and monitoring data flows with real-time operational control, data provenance tracking, and support for hundreds of processors. NiFi Version 2 is the current major version with enhanced security and performance.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/apache-nifi/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/apache-nifi/refs/heads/main/apis.yml)
+**Areas:** Data Integration · Dataflows · ETL · IoT · Streaming · Data Pipeline
 
-## Scope
+## Apache NiFi on APIs.io
 
-- **Type:** Index
-- **Position:** Consumer
-- **Access:** 3rd-Party
+Everything profiled for Apache NiFi is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/apache-nifi/](https://apis.io/providers/apache-nifi/)** — or go straight to one of the APIs or properties below.
 
-## Tags
+### APIs (6)
 
-- Data Integration
-- Dataflow
-- ETL
-- IoT
-- Streaming
-- Data Pipeline
+- [Apache NiFi Registry](https://apis.io/apis/apache-nifi/apache-nifi-registry/) — NiFi Registry provides a central location for storage and management of shared NiFi flow resources, enabling versioned flows across NiFi environments. It…
+- [Apache MiNiFi](https://apis.io/apis/apache-nifi/apache-minifi/) — MiNiFi is a lightweight agent for edge data collection that is a subproject of NiFi. MiNiFi C++ (nifi-minifi-cpp) provides a small-footprint agent for IoT…
+- [Apache NiFi Access API](https://apis.io/apis/apache-nifi/apache-nifi-access-api/) — Authentication and access token management
+- [Apache NiFi Connections API](https://apis.io/apis/apache-nifi/apache-nifi-connections-api/) — Manage connections between processors
+- [Apache NiFi Controller Services API](https://apis.io/apis/apache-nifi/apache-nifi-controller-services-api/) — Manage shared controller services
+- [Apache NiFi Flow API](https://apis.io/apis/apache-nifi/apache-nifi-flow-api/) — Read overall flow status and process group hierarchy
 
-## Timestamps
+### Published properties
 
-- **Created:** 2026-03-16
-- **Modified:** 2026-04-19
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### Agentic access (1)
 
-### Apache NiFi REST API
+Which operations an agent can call, which act, and which need a human in the loop.
 
-The NiFi REST API provides comprehensive JWT-authenticated endpoints for managing processors, connections, controller services, process groups, reporting tasks, provenance, flow versions, system diagnostics, access control, parameter contexts, and data transfer. Base URL is http://nifi-host:8080/nifi-api. OpenAPI spec available at /nifi-docs/swagger.yaml.
+- [Apache Nifi Agentic Access](https://apis.io/agentic-access/apache-nifi/apache-nifi-agentic-access/)
 
-- **Human URL:** [https://nifi.apache.org/components/](https://nifi.apache.org/components/)
+#### Collections (5)
 
-#### Tags
+Postman and Open Collection request collections.
 
-- Dataflow
-- Flow Management
-- REST
-- JWT
+- [Apache NiFi REST API](https://apis.io/collections/apache-nifi/open-apache-nifi/)
+- [Apache NiFi REST Access API](https://apis.io/collections/apache-nifi/open-apache-nifi-access-api/)
+- [Apache NiFi REST Access Connections API](https://apis.io/collections/apache-nifi/open-apache-nifi-connections-api/)
+- [Apache NiFi REST Access Controller Services API](https://apis.io/collections/apache-nifi/open-apache-nifi-controller-services-api/)
+- [Apache NiFi REST Access Flow API](https://apis.io/collections/apache-nifi/open-apache-nifi-flow-api/)
 
-#### Properties
+#### Security (3)
 
-- [Documentation](https://nifi.apache.org/components/)
-- [OpenAPI](https://nifi.apache.org/nifi-docs/swagger.yaml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Getting Started](https://nifi.apache.org/documentation/guides/)
-- [GitHub Repository](https://github.com/apache/nifi)
-- [Postman Collection](collections/apache-nifi.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/apache-nifi.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Authentication, trust centre, and vulnerability disclosure.
 
-### Apache NiFi Registry
+- [Apache Nifi Authentication](https://apis.io/security/apache-nifi/apache-nifi-authentication/)
+- [Apache Nifi Domain Security](https://apis.io/security/apache-nifi/apache-nifi-domain-security/)
+- [Apache Nifi Vulnerability Disclosure](https://apis.io/security/apache-nifi/apache-nifi-vulnerability-disclosure/)
 
-NiFi Registry provides a central location for storage and management of shared NiFi flow resources, enabling versioned flows across NiFi environments. It provides its own REST API for managing buckets, flows, versions, and users.
+#### Plans and pricing (1)
 
-- **Human URL:** [https://nifi.apache.org/documentation/](https://nifi.apache.org/documentation/)
+Published plans, tiers and prices.
 
-#### Tags
+- [Apache Nifi Plans Pricing](https://apis.io/plans/apache-nifi/apache-nifi-plans-pricing/)
 
-- Flow Versioning
-- Registry
-- REST
+#### Rate limits (1)
 
-#### Properties
+Published request limits.
 
-- [Documentation](https://nifi.apache.org/documentation/)
-- [GitHub Repository](https://github.com/apache/nifi)
-- [Postman Collection](collections/apache-nifi.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/apache-nifi.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [Apache Nifi Rate Limits](https://apis.io/rate-limits/apache-nifi/apache-nifi-rate-limits/)
 
-### Apache MiNiFi
+#### FinOps (1)
 
-MiNiFi is a lightweight agent for edge data collection that is a subproject of NiFi. MiNiFi C++ (nifi-minifi-cpp) provides a small-footprint agent for IoT edge data collection with local processing and a remote NiFi parent instance for management.
+What the API costs to run, by operation.
 
-- **Human URL:** [https://nifi.apache.org/minifi/](https://nifi.apache.org/minifi/)
+- [Apache Nifi Finops](https://apis.io/finops/apache-nifi/apache-nifi-finops/)
 
-#### Tags
+## Where to find this API
 
-- Edge Computing
-- IoT
-- Lightweight Agent
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
-#### Properties
-
-- [Documentation](https://nifi.apache.org/minifi/)
-- [GitHub Repository](https://github.com/apache/nifi-minifi-cpp)
-- [Postman Collection](collections/apache-nifi.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/apache-nifi.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-## Common Properties
-
-- [LinkedIn](https://www.linkedin.com/company/apache-nifi)
-- [Portal](https://nifi.apache.org/)
-- [GitHub Organization](https://github.com/apache)
-- [GitHub Repository](https://github.com/apache/nifi)
-- [GitHub Repository](https://github.com/apache/nifi-minifi-cpp)
-- [GitHub Repository](https://github.com/apache/nifi-api)
-- [GitHub Repository](https://github.com/apache/nifi-site)
-- [Wiki](https://cwiki.apache.org/confluence/display/NIFI)
-- [Issue Tracker](https://issues.apache.org/jira/browse/NIFI)
-- [Slack](https://join.slack.com/t/apachenifi/shared_invite/zt-11njbtkdx-ZRU8FKYSWoEHRJetidy0zA)
+- [Website](https://www.apache.org/)
 - [Blog](https://nifi.apache.org/blog/)
-- [Terms of Service](https://www.apache.org/licenses/LICENSE-2.0)
-- [Features](undefined)
-- [Use Cases](undefined)
-- [Integrations](undefined)
+- [Terms of service](https://www.apache.org/licenses/LICENSE-2.0)
+- [GitHub](https://github.com/apache)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** info@apievangelist.com
+**Kin Score 38.6** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 57.1 |
+| Contract quality | 42.2 |
+| Contract governance | 0.0 |
+| Operational transparency | 36.8 |
+| Developer ergonomics | 47.6 |
+| Access clarity | 18.4 |
+
+**Agent readiness 17.9** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | — |
+| OpenAPI Examples | — |
+| Rate Limit Signal | derived (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 21.6** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/apache-nifi/](https://apis.io/providers/apache-nifi/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Apache NiFi: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/apache-nifi/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
